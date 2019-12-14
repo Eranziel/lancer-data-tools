@@ -8,13 +8,14 @@ class DataOutput:
         self.datafile = datafile
 
     def write(self, data):
-        for line in data:
-            if self.datafile is not None and self.datafile != "stdout":
-                try:
-                    with open(self.datafile, 'a') as f:
+        if self.datafile is not None and self.datafile != "stdout":
+            try:
+                with open(self.datafile, 'w') as f:
+                    for line in data:
                         f.write(line)
-                except:
-                    print("Error opening file {}".format(self.datafile))
-                    exit(1)
-            else:
+            except:
+                print("Error opening file {}".format(self.datafile))
+                exit(1)
+        else:
+            for line in data:
                 print(line)
