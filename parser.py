@@ -9,6 +9,9 @@ import json
 from frame import Frame
 from dataoutput import DataOutput
 
+talentDelim = ["TALENTS\n", "GEAR AND SYSTEMS\n"]
+pilotGearDelim = ["PILOT GEAR\n", "MECHS\n"]
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-t", "--talents", nargs="?", const="stdout",
@@ -21,39 +24,37 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Create data outputs for each selected output file type
-    if not args.raw:
-        print("No input file specified, exiting.")
-        exit(1)
     if args.talents:
         talentsOut = DataOutput(args.talents)
+        rawTalents = []
+        inTalents = False
     if args.pilot_gear:
-        pgearOut = DataOutput(args.pilot_gear)
+        pilotGearOut = DataOutput(args.pilot_gear)
+        rawPilotGear = []
+        inPilotGear = False
 
+    # Read raw file into memory - need to watch memory usage
     try:
-        with open(raw) as rawFile:
-            compendium = []
-            npcs = []
-            compFound = False
-            npcsFound = False
-            for line in rawFile:
-                if compFound is False and line == "Compendium\n":
-                    compFound = True
-                    compendium.append(line)
-                elif compFound is True and line == "Game Master's Guide\n":
-                    compFound = False
-                elif compFound is True:
-                    compendium.append(line)
-                elif npcsFound is False and line == "ACE\n":
-                    npcsFound = True
-                    npcs.append(line)
-                elif npcsFound is True:
-                    npcs.append(line)
-                else:
-                    pass
+        with open(args.raw, 'r') as rawFile:
+            rawLines = rawFile.readlines()
+    except FileNotFoundError:
+        print(f"Raw input file {raw} not found.")
+        exit(1)
 
-            dataOutput.out(compendium)
+    # Parse the text
+    for i in range(len(rawLines)):
+        line = rawLines[i]
+        if args.talents:
+            if not inTalents and line == talentDelim[0]:
+                inTalents = True
+                rawTalents.append(line)
+            elif inTalents and line == talentDelim[1]:
+                inTalents = False
+            elif inTalents:
+                rawTalents.append(line)
 
-    except:
-        print("Error reading file {}".format(raw))
+    # Output results
+    if args.talents:
+        talentsOut.write(rawTalents)
 else:
     print("No input given.")

@@ -7,7 +7,7 @@ class DataOutput:
     def __init__(self, datafile=None):
         self.datafile = datafile
 
-    def out(self, data):
+    def write(self, data):
         for line in data:
             if self.datafile is not None and self.datafile != "stdout":
                 try:
