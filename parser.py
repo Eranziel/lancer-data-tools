@@ -50,16 +50,6 @@ if __name__ == "__main__":
     parser.add_argument("raw", help="raw text input file")
     args = parser.parse_args()
 
-    # Create data outputs for each selected output file type
-    if args.talents:
-        talentsOut = DataOutput(args.talents)
-        rawTalents = []
-        inTalents = False
-    if args.pilot_gear:
-        pilotGearOut = DataOutput(args.pilot_gear)
-        rawPilotGear = []
-        inPilotGear = False
-
     # Read raw file into memory - need to watch memory usage
     try:
         with open(args.raw, 'r') as rawFile:
@@ -68,8 +58,13 @@ if __name__ == "__main__":
         print(f"Raw input file {rawFile} not found.")
         exit(1)
 
-    # Parse the text
     if args.talents:
+        # Create data output
+        dOut = DataOutput(args.talents)
+        rawTalents = []
+        inTalents = False
+
+        # Parse the text
         s, e = check_section(Talent.START, Talent.END)
         print(f"Talents start: {s}, end: {e}")
         rawTalents = rawLines[s:e+1]
@@ -80,13 +75,15 @@ if __name__ == "__main__":
                 divTalents.append(rawTalents[prev:i])
                 prev = i+1
 
-    # Output results
-    if args.talents:
+        # Output results
         talents = []
+        j = []
         for t in divTalents:
             talents.append(Talent(t))
-            # print(t)
-            # print("\n\n")
-        # talentsOut.write(rawTalents)
-else:
-    print("No input given.")
+        for t in talents:
+            j.append(t.to_dict())
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+    if args.pilot_gear:
+        dOut = DataOutput(args.pilot_gear)
+        rawPilotGear = []
+        inPilotGear = False
