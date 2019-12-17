@@ -1,32 +1,14 @@
+# NECESSARY PREP-WORK:
+# Make sure that each talent is preceded by ONE empty line.
 
 
-# Example Talent JSON
-# {
-#     "id": "ace",
-#     "name": "Ace",
-#     "description": "All pilots brag about their abilities, but some can back it up with proof: to be an ace means you are not only ranked among the most qualified of pilots — but the most qualified of Lancers. Whether you’re a talented rookie or a grizzled veteran, you’ve gained a level of notoriety through your piloting ability that has your callsign known throughout the system. Most enemy pilots flee when they recognize your mech’s distinctive livery, but some see your reputation as a chance to test their own mettle...",
-#     "ranks": [
-#       {
-#         "name": "Acrobatics",
-#         "description": "Make all agility checks and saves while flying with +1 accuracy. When any attack misses your mech while it’s flying, it can fly 2 spaces in any direction as a reaction."
-#       },
-#       {
-#         "name": "Afterburners",
-#         "description": "When you take any boost action while flying, you can elect to move 1d6 spaces further, but take half of that as heat."
-#       },
-#       {
-#         "name": "Supersonic",
-#         "description": "If your mech ends its turn flying, you may nominate a hostile or allied character in your movement range and line of sight as a quick action. At the end of that character’s turn, even if they are no longer in line of sight or movement range from you, your mech may fly to any free adjacent space to that target as a reaction, as long as there is a path to do so. This movement ignores engagement and does not provoke reactions."
-#       }
-#     ]
-#   }
 class Talent:
     START = ["ACE\n",
              "Every pilot brags about their abilities; ",
              "Whether you're a talented rookie"]
-    END = ["- Jäger (2 charges): The attack ",
-           "- SABOT (2 charges): The attack ",
-           "EFFICIENCY (RANK III): If you perform "]
+    END = ["- SABOT (2 charges): The attack ",
+           "EFFICIENCY (RANK III): If you perform ",
+           "\n"]
 
     """Class for talent data"""
     def __init__(self, raw_text=None):

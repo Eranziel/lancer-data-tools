@@ -10,9 +10,6 @@ from frame import Frame
 from talents import Talent
 from dataoutput import DataOutput
 
-talentDelim = ["TALENTS\n", "GEAR AND SYSTEMS\n"]
-pilotGearDelim = ["PILOT GEAR\n", "MECHS\n"]
-
 rawLines = []
 
 
@@ -23,20 +20,22 @@ def check_section(start, end):
         sfound = True
         efound = True
         for j in range(len(start)):
+            # If lines i through i+j all match start, record the starting line.
             if start_idx < 0:
                 sfound = sfound and rawLines[i+j].startswith(start[j])
             if end_idx < 0:
                 efound = efound and rawLines[i+j].startswith((end[j]))
+            # Stop if a line doesn't match either the start or end delimeters.
             if not sfound and not efound:
                 break
 
-        # If lines i through i+j all match start, record the starting line.
         if sfound and start_idx < 0:
             start_idx = i
         if efound and end_idx < 0:
             end_idx = i+j
         if start_idx >= 0 and end_idx >= 0:
             return start_idx, end_idx
+    print(f"There was a problem! s{start_idx}, e{end_idx}")
 
 
 if __name__ == "__main__":
@@ -52,7 +51,7 @@ if __name__ == "__main__":
 
     # Read raw file into memory - need to watch memory usage
     try:
-        with open(args.raw, 'r') as rawFile:
+        with open(args.raw, 'r', encoding='cp1252') as rawFile:
             rawLines = rawFile.readlines()
     except FileNotFoundError:
         print(f"Raw input file {rawFile} not found.")
