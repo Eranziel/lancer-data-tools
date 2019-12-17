@@ -8,6 +8,7 @@ import json
 
 from frame import Frame
 from talents import Talent
+from tags import Tag
 from dataoutput import DataOutput
 
 rawLines = []
@@ -42,10 +43,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-t", "--talents", nargs="?", const="stdout",
                         help="Generate talents JSON. Output to TALENTS, or stdout if not specified.")
-    parser.add_argument("-p", "--pilot-gear", nargs="?", const="stdout",
-                        help="Generate pilot gear JSON. Output to PILOT_GEAR, or stdout if not specified.")
-    parser.add_argument("-f", "--frames", nargs="?", const="stdout",
-                        help="Generate frame JSON. Output to FRAMES, or stdout if not specified.")
+    parser.add_argument("-T", "--tags", nargs="?", const="stdout",
+                        help="Generate tag data JSON. Output to TAGS, or stdout if not specified.")
+    # parser.add_argument("-p", "--pilot-gear", nargs="?", const="stdout",
+    #                     help="Generate pilot gear JSON. Output to PILOT_GEAR, or stdout if not specified.")
+    # parser.add_argument("-f", "--frames", nargs="?", const="stdout",
+    #                     help="Generate frame JSON. Output to FRAMES, or stdout if not specified.")
     parser.add_argument("raw", help="raw text input file")
     args = parser.parse_args()
 
@@ -82,7 +85,35 @@ if __name__ == "__main__":
         for t in talents:
             j.append(t.to_dict())
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
-    if args.pilot_gear:
-        dOut = DataOutput(args.pilot_gear)
-        rawPilotGear = []
-        inPilotGear = False
+    if args.tags:
+        # Create data output
+        dOut = DataOutput(args.tags)
+        rawTags = []
+        inTags = False
+
+        # Parse the text
+        s, e = check_section(Tag.START, Tag.END)
+        print(f"Tags start: {s}, end: {e}")
+        rawTags = rawLines[s:e+1]
+        tags = []
+        j = []
+        in_ignore = False
+        for rt in rawTags:
+            if not in_ignore and rt == Tag.FILT_IGN[0]:
+                in_ignore = True
+            elif in_ignore and rt == Tag.FILT_IGN[1]:
+                in_ignore = False
+            # Only process lines that start with a bullet
+            if rt.startswith("- "):
+                tag = Tag(rt.strip())
+                if in_ignore:
+                    tag.set_filter(True)
+                tags.append(tag)
+                print(tag.to_dict())
+                print()
+
+        # dOut.write(rawTags)
+    # if args.pilot_gear:
+    #     dOut = DataOutput(args.pilot_gear)
+    #     rawPilotGear = []
+    #     inPilotGear = False
