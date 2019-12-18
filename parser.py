@@ -9,6 +9,7 @@ import json
 from frame import Frame
 from talents import Talent
 from tags import Tag
+from pilotgear import PilotGear
 from dataoutput import DataOutput
 
 rawLines = []
@@ -45,8 +46,8 @@ if __name__ == "__main__":
                         help="Generate talents JSON. Output to TALENTS, or stdout if not specified.")
     parser.add_argument("-T", "--tags", nargs="?", const="stdout",
                         help="Generate tag data JSON. Output to TAGS, or stdout if not specified.")
-    # parser.add_argument("-p", "--pilot-gear", nargs="?", const="stdout",
-    #                     help="Generate pilot gear JSON. Output to PILOT_GEAR, or stdout if not specified.")
+    parser.add_argument("-p", "--pilot-gear", nargs="?", const="stdout",
+                        help="Generate pilot gear JSON. Output to PILOT_GEAR, or stdout if not specified.")
     # parser.add_argument("-f", "--frames", nargs="?", const="stdout",
     #                     help="Generate frame JSON. Output to FRAMES, or stdout if not specified.")
     parser.add_argument("raw", help="raw text input file")
@@ -112,9 +113,30 @@ if __name__ == "__main__":
         for t in tags:
             j.append(t.to_dict())
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+    if args.pilot_gear:
+        dOut = DataOutput(args.pilot_gear)
+        rawPilotGear = []
+        inPilotGear = False
 
-        # dOut.write(rawTags)
-    # if args.pilot_gear:
-    #     dOut = DataOutput(args.pilot_gear)
-    #     rawPilotGear = []
-    #     inPilotGear = False
+        # Parse the text
+        s, e = check_section(PilotGear.START, PilotGear.END)
+        print(f"Pilot Gear start: {s}, end: {e}")
+        rawPilotGear = rawLines[s:e+1]
+        divGear = []
+        prev = 0
+        for i in range(len(rawPilotGear)):
+            if rawPilotGear[i] == "\n":
+                divGear.append(rawPilotGear[prev:i])
+                prev = i+1
+        for g in divGear:
+
+
+        dOut.write(rawPilotGear)
+        # Output results
+        # talents = []
+        # j = []
+        # for t in divTalents:
+        #     talents.append(Talent(t))
+        # for t in talents:
+        #     j.append(t.to_dict())
+        # dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
