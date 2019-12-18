@@ -23,16 +23,18 @@ class Tag:
             self.parse_raw_text(raw_text)
 
     def parse_raw_text(self, raw_text):
-        VAL = "  X", "{VAL}"
+        VAL = " X", " {VAL}"
 
         # Strip out the bullet
         parts = raw_text[2:].split(":")
         self.name = parts[0]
         self.id = "tg_"+self.name.lower().replace(" ", "_").replace("(", "").replace(")", "").replace("_x", "")
-        if self.name.endswith(VAL[0]):
-            print(f"Replace {VAL[0]} in {self.name} with {VAL[1]}")
-            self.name.replace(VAL[0], VAL[1])
-        self.description = parts[1]
+        if VAL[0] in self.name:
+            # print(f"Replace {VAL[0]} in {self.name} with {VAL[1]}")
+            self.name = self.name.replace(VAL[0], VAL[1])
+        self.description = parts[1].strip()
+        if VAL[0] in self.description:
+            self.description = self.description.replace(VAL[0], VAL[1])
 
         # Debugging printout
         # print("\n============== TAG ====================")
