@@ -109,8 +109,9 @@ if __name__ == "__main__":
                 if in_ignore:
                     tag.set_filter(True)
                 tags.append(tag)
-                print(tag.to_dict())
-                print()
+        for t in tags:
+            j.append(t.to_dict())
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
 
         # dOut.write(rawTags)
     # if args.pilot_gear:
