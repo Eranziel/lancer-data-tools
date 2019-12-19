@@ -123,20 +123,73 @@ if __name__ == "__main__":
         print(f"Pilot Gear start: {s}, end: {e}")
         rawPilotGear = rawLines[s:e+1]
         divGear = []
+        pg = []
         prev = 0
         for i in range(len(rawPilotGear)):
             if rawPilotGear[i] == "\n":
                 divGear.append(rawPilotGear[prev:i])
                 prev = i+1
+        inWeapons = False
+        inArmor = False
+        inGear = False
         for g in divGear:
+            # print(f"Working on section:\n{g}")
+            # Check whether we're in a new section
+            for line in g:
+                if line == PilotGear.WEAPONS_SEC:
+                    print("Entering pilot weapons section")
+                    inWeapons = True
+                    inArmor = False
+                    inGear = False
+                elif line == PilotGear.ARMOR_SEC:
+                    print("Entering pilot armor section")
+                    inWeapons = False
+                    inArmor = True
+                    inGear = False
+                elif line == PilotGear.GEAR_SEC:
+                    print("Entering pilot gear section")
+                    inWeapons = False
+                    inArmor = False
+                    inGear = True
+            # Parse pilot weapons
+            if inWeapons:
+                r_range = False
+                r_threat = False
+                # Weapon profiles are all of length 4
+                if len(g) == 4:
+                    pg.append(PilotGear(raw_weapon=g))
+                # If it's less than 4 lines, it could be the descriptions.
+                #   Check the start of each line against the name of each weapon
+                #   to see if it is that weapon's description.
+                else:
+                    # Reset the range/threat flags at the next section which
+                    #   isn't a weapon.
+                    r_range = False
+                    r_threat = False
+                    for line in g:
+                        # Check to see whether this line is the threat/range
+                        #   header for a table of weapons.
+                        if line == "Threat":
+                            r_range = False
+                            r_threat = True
+                        elif line == "Range":
+                            r_range = True
+                            r_threat = False
+                        for p in pg:
+                            # If the line starts with the name of a weapon,
+                            #   it's the description for that weapon.
+                            if (p.type == PilotGear.TYPE_WEAPON and
+                                    line.lower().startswith(p.name.lower())):
+                                desc_start = line.find(":") + 1
+                                if desc_start > 0:
+                                    desc = line[desc_start:].strip()
+                                else:
+                                    desc = line.strip()
+                                p.set_desc(desc)
+                                break
 
-
-        dOut.write(rawPilotGear)
         # Output results
-        # talents = []
-        # j = []
-        # for t in divTalents:
-        #     talents.append(Talent(t))
-        # for t in talents:
-        #     j.append(t.to_dict())
-        # dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+        j = []
+        for p in pg:
+            j.append(p.to_dict())
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))

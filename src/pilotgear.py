@@ -1,5 +1,8 @@
 # NECESSARY PREP-WORK:
-# Make sure that each talent is preceded by ONE empty line.
+# Separate pieces of gear with empty lines.
+# The weapon descriptions for A/C and signature weapons modified slightly to put
+#  each description on its own line.
+
 
 class PilotGear:
     START = ["PILOT GEAR\n",
@@ -9,23 +12,23 @@ class PilotGear:
            "Gear",
            "Contains many essentials for surviving in hostile environments:"]
 
-    WEAPONS = "Archaic melee\n"
-    ARMOR = "Light Hardsuit\n"
-    GEAR = "CORRECTIVE\n"
+    WEAPONS_SEC = "Archaic melee\n"
+    ARMOR_SEC = "Light Hardsuit\n"
+    GEAR_SEC = "CORRECTIVE\n"
 
     TYPE_WEAPON = "weapon"
     TYPE_ARMOR = "armor"
     TYPE_GEAR = "gear"
 
-    """Class for talent data"""
+    """Class for pilot gear data"""
     def __init__(self, raw_weapon=None, raw_armor=None, raw_gear=None):
         self.id = ""
         self.type = ""
         self.name = ""
         self.description = ""
-        self.tags = []
 
         if raw_weapon:
+            self.tags = []
             self.range = []
             self.damage = []
             self.parse_weapon(raw_weapon)
@@ -36,43 +39,67 @@ class PilotGear:
 
     def parse_weapon(self, raw_text, w_threat=False, w_range=False):
         self.type = PilotGear.TYPE_WEAPON
+        # Parse name on first line.
         self.name = raw_text[0].strip()
         self.id = "pg_"+self.name.lower().replace(" ", "_")
+
+        # Parse tags on second line.
         tags = raw_text[1].split(",")
         for t in tags:
-            self.tags.append(dict(["id", "tg_"+t]))
+            if t != "-\n":
+                t_text = "tg_"+(t.strip().lower())
+                self.tags.append({"id": t_text})
+
+        # Parse range on third line.
         self.range = []
+        # If threat/range wasn't specified, look for it.
+        tokens = raw_text[2].split(" ")
         if not w_threat and not w_range:
-            tokens = raw_text[2].split(" ")
-            if tokens[0] == "Threat":
+            if tokens[0].strip() == "Threat":
                 w_threat = True
-            elif tokens[1] == "Range":
+            elif tokens[0].strip() == "Range":
                 w_range = True
             else:
                 print("Problem parsing weapon - no threat or range found!")
                 print(f"  Name: {self.name}")
                 print(f"  Range line: {raw_text[2]}")
+        # Set string for threat/range
+        r_type = ""
         if w_threat:
-            self.range.append(dict([("type", "Threat"), ("val", str(raw_text[2]))]))
+            r_type += " Threat"
         if w_range:
-            self.range.append(dict([("type", "Range"), ("val", str(raw_text[2]))]))
+            r_type += " Range"
+        r_type.strip()
+        if len(tokens) > 1:
+            r_val = tokens[1].strip()
+        else:
+            r_val = str(raw_text[2].strip())
+        self.range.append(dict([("type", r_type),
+                                ("val", r_val)]))
+
+        # Parse damage on fourth line.
         self.damage = []
         damage_types = raw_text[3].split(",")
         for d in damage_types:
             tokens = d.split(" ")
-            self.damage.append(dict([("type", tokens[0]), ("val", tokens[0])]))
+            self.damage.append(dict([("type", tokens[1].strip()),
+                                     ("val", tokens[0].strip())]))
 
         # Debugging printout
         print("\n\n============== PILOT WEAPON ====================")
         print(f"id: {self.id}")
         print(f"type: {self.type}")
         print(f"name: {self.name}")
-        print(f"desc: {self.description}\n")
+        print(f"desc: {self.description}")
+        print(f"tags: ")
+        for t in self.tags:
+            print(f"  {t}")
+        print(f"range: ")
         for r in self.range:
             print(f"  {r}")
+        print(f"damage: ")
         for d in self.damage:
             print(f"  {d}")
-
 
     def parse_armor(self, raw_text):
         self.type = PilotGear.TYPE_ARMOR
@@ -89,12 +116,13 @@ class PilotGear:
     def set_desc(self, new_desc):
         self.description = new_desc
 
-    def set_rank(self, idx, rank_name, rank_desc):
-        self.ranks[idx]["name"] = rank_name
-        self.ranks[idx]["description"] = rank_desc
-
     def to_dict(self):
-        return {"id": self.id,
-                "name": self.name,
-                "description": self.description,
-                "ranks": self.ranks}
+        d = {"id": self.id,
+             "name": self.name,
+             "type": self.type,
+             "description": self.description}
+        if self.type == PilotGear.TYPE_WEAPON:
+            d["tags"] = self.tags
+            d["range"] = self.range
+            d["damage"] = self.damage
+        return d

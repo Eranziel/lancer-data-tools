@@ -12,7 +12,7 @@ class Tag:
 
     FILT_IGN = ["PATTERNS\n", "OTHER WEAPON TAGS\n"]
 
-    """Class for talent data"""
+    """Class for tag data"""
     def __init__(self, raw_text=None):
         self.id = ""
         self.name = ""
