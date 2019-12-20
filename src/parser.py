@@ -10,6 +10,7 @@ from frame import Frame
 from talents import Talent
 from tags import Tag
 from pilotgear import PilotGear
+from skills import Skill
 from dataoutput import DataOutput
 
 rawLines = []
@@ -48,6 +49,8 @@ if __name__ == "__main__":
                         help="Generate tag data JSON. Output to TAGS, or stdout if not specified.")
     parser.add_argument("-p", "--pilot-gear", nargs="?", const="stdout",
                         help="Generate pilot gear JSON. Output to PILOT_GEAR, or stdout if not specified.")
+    parser.add_argument("-s", "--skills", nargs="?", const="stdout",
+                        help="Generate skill trigger JSON. Output to SKILLS, or stdout if not specified.")
     # parser.add_argument("-f", "--frames", nargs="?", const="stdout",
     #                     help="Generate frame JSON. Output to FRAMES, or stdout if not specified.")
     parser.add_argument("raw", help="raw text input file")
@@ -219,4 +222,28 @@ if __name__ == "__main__":
         j = []
         for p in pg:
             j.append(p.to_dict())
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+    if args.skills:
+        # Create data output
+        dOut = DataOutput(args.skills)
+        rawSkills = []
+        inSkills = False
+
+        # Parse the text
+        s, e = check_section(Skill.START, Skill.END)
+        print(f"Skills start: {s}, end: {e}")
+        rawSkills = rawLines[s:e+1]
+        skills = []
+        j = []
+        for i in range(len(rawSkills)):
+            if rawSkills[i].isupper():
+                skills.append(Skill(rawSkills[i:i+2]))
+            # Only process lines that start with a bullet
+            # if rt.startswith("- "):
+            #     tag = Tag(rt.strip())
+            #     if in_ignore:
+            #         tag.set_filter(True)
+            #     skills.append(tag)
+        for s in skills:
+            j.append(s.to_dict())
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
