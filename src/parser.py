@@ -71,17 +71,17 @@ if __name__ == "__main__":
         s, e = check_section(Talent.START, Talent.END)
         print(f"Talents start: {s}, end: {e}")
         rawTalents = rawLines[s:e+1]
-        divTalents = []
+        talentHunks = []
         prev = 0
         for i in range(len(rawTalents)):
             if rawTalents[i] == "\n":
-                divTalents.append(rawTalents[prev:i])
+                talentHunks.append(rawTalents[prev:i])
                 prev = i+1
 
         # Output results
         talents = []
         j = []
-        for t in divTalents:
+        for t in talentHunks:
             talents.append(Talent(t))
         for t in talents:
             j.append(t.to_dict())
@@ -114,6 +114,7 @@ if __name__ == "__main__":
             j.append(t.to_dict())
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.pilot_gear:
+        # Create data output
         dOut = DataOutput(args.pilot_gear)
         rawPilotGear = []
         inPilotGear = False
@@ -122,18 +123,23 @@ if __name__ == "__main__":
         s, e = check_section(PilotGear.START, PilotGear.END)
         print(f"Pilot Gear start: {s}, end: {e}")
         rawPilotGear = rawLines[s:e+1]
-        divGear = []
+        gearHunks = []
         pg = []
         prev = 0
         for i in range(len(rawPilotGear)):
             if rawPilotGear[i] == "\n":
-                divGear.append(rawPilotGear[prev:i])
+                gearHunks.append(rawPilotGear[prev:i])
                 prev = i+1
+        # Catch the last hunk
+        gearHunks.append(rawPilotGear[prev:])
+
+        # Initialize processing flags
         inWeapons = False
         inArmor = False
         inGear = False
-        for g in divGear:
-            # print(f"Working on section:\n{g}")
+        r_range = False
+        r_threat = False
+        for g in gearHunks:
             # Check whether we're in a new section
             for line in g:
                 if line == PilotGear.WEAPONS_SEC:
@@ -153,11 +159,10 @@ if __name__ == "__main__":
                     inGear = True
             # Parse pilot weapons
             if inWeapons:
-                r_range = False
-                r_threat = False
                 # Weapon profiles are all of length 4
                 if len(g) == 4:
-                    pg.append(PilotGear(raw_weapon=g))
+                    rw = (g, r_threat, r_range)
+                    pg.append(PilotGear(raw_weapon=rw))
                 # If it's less than 4 lines, it could be the descriptions.
                 #   Check the start of each line against the name of each weapon
                 #   to see if it is that weapon's description.
@@ -169,10 +174,10 @@ if __name__ == "__main__":
                     for line in g:
                         # Check to see whether this line is the threat/range
                         #   header for a table of weapons.
-                        if line == "Threat":
+                        if line == "Threat\n":
                             r_range = False
                             r_threat = True
-                        elif line == "Range":
+                        elif line == "Range\n":
                             r_range = True
                             r_threat = False
                         for p in pg:
@@ -187,6 +192,28 @@ if __name__ == "__main__":
                                     desc = line.strip()
                                 p.set_desc(desc)
                                 break
+            elif inArmor:
+                # Armor profiles are all of length 7
+                if len(g) == 7:
+                    pg.append(PilotGear(raw_armor=g))
+                else:
+                    # Check for an item description
+                    for line in g:
+                        for p in pg:
+                            if (p.type == PilotGear.TYPE_ARMOR and
+                                    line.lower().startswith(p.name.lower())):
+                                desc_start = line.find(":") + 1
+                                if desc_start > 0:
+                                    desc = line[desc_start:].strip()
+                                else:
+                                    desc = line.strip()
+                                p.set_desc(desc)
+                                break
+
+            elif inGear:
+                # Gear profiles are all of length > 1
+                if len(g) > 1:
+                    pg.append(PilotGear(raw_gear=g))
 
         # Output results
         j = []
