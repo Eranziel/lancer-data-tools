@@ -51,14 +51,14 @@ if __name__ == "__main__":
                         help="Generate pilot gear JSON. Output to PILOT_GEAR, or stdout if not specified.")
     parser.add_argument("-s", "--skills", nargs="?", const="stdout",
                         help="Generate skill trigger JSON. Output to SKILLS, or stdout if not specified.")
-    # parser.add_argument("-f", "--frames", nargs="?", const="stdout",
-    #                     help="Generate frame JSON. Output to FRAMES, or stdout if not specified.")
+    parser.add_argument("-f", "--frames", nargs="?", const="stdout",
+                        help="Generate frame JSON. Output to FRAMES, or stdout if not specified.")
     parser.add_argument("raw", help="raw text input file")
     args = parser.parse_args()
 
     # Read raw file into memory - need to watch memory usage
     try:
-        with open(args.raw, 'r', encoding='cp1252') as rawFile:
+        with open(args.raw, 'r', encoding='utf-8') as rawFile:
             rawLines = rawFile.readlines()
     except FileNotFoundError:
         print(f"Raw input file {rawFile} not found.")
@@ -238,12 +238,39 @@ if __name__ == "__main__":
         for i in range(len(rawSkills)):
             if rawSkills[i].isupper():
                 skills.append(Skill(rawSkills[i:i+2]))
-            # Only process lines that start with a bullet
-            # if rt.startswith("- "):
-            #     tag = Tag(rt.strip())
-            #     if in_ignore:
-            #         tag.set_filter(True)
-            #     skills.append(tag)
         for s in skills:
             j.append(s.to_dict())
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+    if args.frames:
+        # Create data output
+        dOut = DataOutput(args.frames)
+        rawFrames = []
+        inFrames = False
+
+        # Parse the text
+        s, e = check_section(Frame.START, Frame.END)
+        print(f"Frames start: {s}, end: {e}")
+        rawFrames = rawLines[s:e+1]
+        frameHunks = []
+        frames = []
+        j = []
+        prev = 0
+        for i in range(len(rawFrames)):
+            if rawFrames[i] == "\n":
+                frameHunks.append(rawFrames[prev:i])
+                prev = i+1
+        # Catch the last hunk
+        frameHunks.append(rawFrames[prev:])
+        # Strip out any empty hunks
+        while [] in frameHunks:
+            frameHunks.remove([])
+        for hunk in frameHunks:
+            # print(f"\nHunk:\n{hunk}")
+            # Determine whether this is a frame or a piece of licensed gear
+            if Frame.CORE_STATS in hunk:
+                frames.append(Frame(raw_text=hunk))
+
+        for frame in frames:
+            j.append(frame.to_dict())
+        # print(f"\n\nnumber of frames: {len(frames)}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
