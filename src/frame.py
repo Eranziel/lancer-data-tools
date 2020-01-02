@@ -20,6 +20,12 @@ class Frame:
       * MOURNING CLOAK
       * SWALLOWTAIL
       * PEGASUS
+    * In VLAD, remove the ":" after "MOUNTS".
+
+    NECESSARY POST-WORK:
+    * y_pos and aptitude values need to be manually entered.
+    * MANTICORE core system needs to be adjusted after parsing - parser misinterprets
+      the description as the passive name.
     """
 
     START = ["GMS STANDARD PATTERN I",
@@ -146,8 +152,10 @@ class Frame:
         else:
             description = raw_text[desc:lic]
         for line in description:
-            self.description += "\n"+line
-        self.description = self.description.strip()
+            if self.description == "":
+                self.description = line.strip()
+            else:
+                self.description += "<br>"+line.strip()
 
         # Sort licensed gear by license level
         for line in raw_text[lic:lic+4]:
@@ -226,8 +234,11 @@ class Frame:
         #   system has a description.
         if cap_lines[0] != 1:
             for desc_line in core_lines[1:cap_lines[0]]:
-                self.core_system["description"] += "\n"+desc_line
-            self.core_system["description"] = self.core_system["description"].strip()
+                if not desc_line.startswith(Frame.INTEGRATED):
+                    if self.core_system["description"] == "":
+                        self.core_system["description"] = desc_line.strip()
+                    else:
+                        self.core_system["description"] += "<br>"+desc_line.strip()
         # If the core system has a passive effect, then the first capital line
         #   is not the same line as the core active name.
         if cap_lines[0] != act_name:
@@ -237,7 +248,13 @@ class Frame:
                 self.core_system["integrated"] = {"id": int_mech_name}
             else:
                 self.core_system["passive_name"] = core_lines[cap_lines[0]]
-                self.core_system["passive_effect"] = core_lines[cap_lines[0]+1:act_name]
+                pass_effect = core_lines[cap_lines[0]+1:act_name]
+                self.core_system["passive_effect"] = ""
+                for line in pass_effect:
+                    if self.core_system["passive_effect"] == "":
+                        self.core_system["passive_effect"] = line.strip()
+                    else:
+                        self.core_system["passive_effect"] += "<br>"+line.strip()
         # Active name is on the line preceded by "Active (1 CP)"
         self.core_system["active_name"] = core_lines[act_name]
         # Line after the active name is the tags for the active effect
@@ -245,8 +262,10 @@ class Frame:
         # Line after the tags is the active effect
         act_effect = core_lines[act_name+2:]
         for line in act_effect:
-            self.core_system["active_effect"] += "\n"+line
-        self.core_system["active_effect"] = self.core_system["active_effect"].strip()
+            if self.core_system["active_effect"] == "":
+                self.core_system["active_effect"] = line.strip()
+            else:
+                self.core_system["active_effect"] += "<br>"+line.strip()
 
         # Debugging printout
         # print("\n\n============== FRAME ====================")
