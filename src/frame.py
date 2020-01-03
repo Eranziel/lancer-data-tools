@@ -1,4 +1,8 @@
-from licensegear import Mod, System, Weapon
+GMS = "GENERAL MASSIVE SYSTEMS\n"
+IPSN = "IPS-NORTHSTAR\n"
+SSC = "SMITH-SHIMANO CORPRO\n"
+HORUS = "HORUS\n"
+HA = "HARRISON ARMORY\n"
 
 
 class Frame:
@@ -28,9 +32,9 @@ class Frame:
       the description as the passive name.
     """
 
-    START = ["GMS STANDARD PATTERN I",
-             "Most humans don't think to ask about the history",
-             "Just the same, the GMS-SP1 \"Everest\" is often taken"]
+    START = ["GENERAL MASSIVE SYSTEMS\n",
+             "From Cradle to the stars, GMS: assured",
+             "General Massive Systems - GMS for short - is the"]
     END = ["This studded gauntlet draws on a core reactor pulse to momentarily",
            "This system can only be used in the DANGER ZONE",
            "Expend a charge and choose a character adjacent to you"]

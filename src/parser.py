@@ -7,6 +7,8 @@ import json
 # import asyncio
 
 from frame import Frame
+from corebonus import CoreBonus
+from licensegear import Mod, System, Weapon
 from talents import Talent
 from tags import Tag
 from pilotgear import PilotGear
@@ -14,6 +16,17 @@ from skills import Skill
 from dataoutput import DataOutput
 
 rawLines = []
+
+CORE_BONUSES = "../output/core_bonuses.json"
+FRAMES = "../output/frames.json"
+MANUFACTURERS = "../output/manufacturers.json"
+MODS = "../output/mods.json"
+PILOT_GEAR = "../output/pilot_gear.json"
+SKILLS = "../output/skills.json"
+SYSTEMS = "../output/systems.json"
+TAGS = "../output/tags.json"
+TALENTS = "../output/talents.json"
+WEAPONS = "../output/weapons.json"
 
 
 def check_section(start, end):
@@ -43,16 +56,17 @@ def check_section(start, end):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-t", "--talents", nargs="?", const="stdout",
-                        help="Generate talents JSON. Output to TALENTS, or stdout if not specified.")
-    parser.add_argument("-T", "--tags", nargs="?", const="stdout",
-                        help="Generate tag data JSON. Output to TAGS, or stdout if not specified.")
-    parser.add_argument("-p", "--pilot-gear", nargs="?", const="stdout",
-                        help="Generate pilot gear JSON. Output to PILOT_GEAR, or stdout if not specified.")
-    parser.add_argument("-s", "--skills", nargs="?", const="stdout",
-                        help="Generate skill trigger JSON. Output to SKILLS, or stdout if not specified.")
-    parser.add_argument("-f", "--frames", nargs="?", const="stdout",
-                        help="Generate frame JSON. Output to FRAMES, or stdout if not specified.")
+    parser.add_argument("--stdout", help="Output to stdout instead of file.")
+    parser.add_argument("-t", "--talents", action="store_true",
+                        help="Generate talents JSON.")
+    parser.add_argument("-T", "--tags", action="store_true",
+                        help="Generate tag data JSON.")
+    parser.add_argument("-p", "--pilot-gear", action="store_true",
+                        help="Generate pilot gear JSON.")
+    parser.add_argument("-s", "--skills", action="store_true",
+                        help="Generate skill trigger JSON.")
+    parser.add_argument("-f", "--frames", action="store_true",
+                        help="Generate frame, core bonus, and mech gear JSON.")
     parser.add_argument("raw", help="raw text input file")
     args = parser.parse_args()
 
@@ -66,7 +80,10 @@ if __name__ == "__main__":
 
     if args.talents:
         # Create data output
-        dOut = DataOutput(args.talents)
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(TALENTS)
         rawTalents = []
         inTalents = False
 
@@ -91,7 +108,10 @@ if __name__ == "__main__":
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.tags:
         # Create data output
-        dOut = DataOutput(args.tags)
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(TAGS)
         rawTags = []
         inTags = False
 
@@ -118,7 +138,10 @@ if __name__ == "__main__":
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.pilot_gear:
         # Create data output
-        dOut = DataOutput(args.pilot_gear)
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(PILOT_GEAR)
         rawPilotGear = []
         inPilotGear = False
 
@@ -225,7 +248,10 @@ if __name__ == "__main__":
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.skills:
         # Create data output
-        dOut = DataOutput(args.skills)
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(SKILLS)
         rawSkills = []
         inSkills = False
 
@@ -243,7 +269,10 @@ if __name__ == "__main__":
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.frames:
         # Create data output
-        dOut = DataOutput(args.frames)
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(FRAMES)
         rawFrames = []
         inFrames = False
 
@@ -253,6 +282,7 @@ if __name__ == "__main__":
         rawFrames = rawLines[s:e+1]
         frameHunks = []
         frames = []
+        coreBonuses = []
         j = []
         prev = 0
         for i in range(len(rawFrames)):
@@ -264,11 +294,29 @@ if __name__ == "__main__":
         # Strip out any empty hunks
         while [] in frameHunks:
             frameHunks.remove([])
+        cbSource = "NONE"
         for hunk in frameHunks:
             # print(f"\nHunk:\n{hunk}")
+            # Keep track of which manufacturer we're in.
+            if hunk[0] == CoreBonus.GMS:
+                cbSource = "GMS"
+            elif hunk[0] == CoreBonus.IPSN:
+                cbSource = "IPS-N"
+            elif hunk[0] == CoreBonus.SSC:
+                cbSource = "SSC"
+            elif hunk[0] == CoreBonus.HORUS:
+                cbSource = "HORUS"
+            elif hunk[0] == CoreBonus.HA:
+                cbSource = "HA"
             # Determine whether this is a frame or a piece of licensed gear
             if Frame.CORE_STATS in hunk:
                 frames.append(Frame(raw_text=hunk))
+            elif CoreBonus.CORE in hunk[0]:
+                text = hunk[1:]
+                for i in range(len(text)):
+                    if text[i].isupper():
+                        raw = (cbSource, text[i:i+3])
+                        coreBonuses.append(CoreBonus(raw=raw))
 
         for frame in frames:
             j.append(frame.to_dict())
