@@ -3,6 +3,8 @@
 
 
 class Tag:
+    """Class for tag data"""
+
     START = ["HARM TYPE\n",
              "Weapons deal one of four types of damage - ",
              "- BURN X: On a hit, this weapon deals X"]
@@ -12,7 +14,6 @@ class Tag:
 
     FILT_IGN = ["PATTERNS\n", "OTHER WEAPON TAGS\n"]
 
-    """Class for tag data"""
     def __init__(self, raw_text=None):
         self.id = ""
         self.name = ""
@@ -21,6 +22,14 @@ class Tag:
 
         if raw_text:
             self.parse_raw_text(raw_text)
+
+    def __str__(self):
+        output = "\n============== TAG ===================="
+        output += f"\nid: {self.id}"
+        output += f"\nname: |{self.name}|"
+        output += f"\ndesc: {self.description}"
+        output += f"\nfilter: {self.filter_ignore}"
+        return output
 
     def parse_raw_text(self, raw_text):
         VAL = " X", " {VAL}"
@@ -35,13 +44,6 @@ class Tag:
         self.description = parts[1].strip()
         if VAL[0] in self.description:
             self.description = self.description.replace(VAL[0], VAL[1])
-
-        # Debugging printout
-        # print("\n============== TAG ====================")
-        # print(f"id: {self.id}")
-        # print(f"name: |{self.name}|")
-        # print(f"desc: {self.description}")
-        # print(f"filter: {self.filter_ignore}")
 
     def set_id(self, new_id):
         self.id = new_id

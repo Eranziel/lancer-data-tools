@@ -107,6 +107,29 @@ class Frame:
         if raw_text is not None:
             self.parse_frame(raw_text)
 
+    def __str__(self):
+        output = "\n============== FRAME ===================="
+        output += f"\nid: {self.id}"
+        output += f"\nsource: {self.source}"
+        output += f"\nname: {self.name}"
+        output += f"\ntype: {self.mechtype}"
+        output += f"\ndesc: {self.description}"
+        output += f"\nlicense: {self.license}"
+        output += f"\ny_pos: {self.y_pos}"
+        output += f"\nmounts: {self.mounts}"
+        output += f"\nstats:"
+        for stat in self.stats:
+            output += f"\n   {stat}: {self.stats[stat]}"
+        output += f"\ntraits:"
+        for trait in self.traits:
+            output += f"\n   {trait}"
+        output += f"\ncore:"
+        for key in self.core_system:
+            output += f"\n   {key}: {self.core_system[key]}"
+        output += f"\ndata_type: {self.data_type}"
+        output += f"\naptitude: {self.aptitude}"
+        return output
+
     def parse_frame(self, raw_text):
         name = raw_text[0].strip()
         spc = name.find(" ")
@@ -269,29 +292,6 @@ class Frame:
                 self.core_system["active_effect"] = line.strip()
             else:
                 self.core_system["active_effect"] += "<br>"+line.strip()
-
-        # Debugging printout
-        # print("\n\n============== FRAME ====================")
-        # # print(f"raw: {raw_text}")
-        # print(f"id: {self.id}")
-        # print(f"source: {self.source}")
-        # print(f"name: {self.name}")
-        # print(f"type: {self.mechtype}")
-        # print(f"desc: {self.description}")
-        # print(f"license: {self.license}")
-        # print(f"y_pos: {self.y_pos}")
-        # print(f"mounts: {self.mounts}")
-        # print(f"stats:")
-        # for stat in self.stats:
-        #     print(f"   {stat}: {self.stats[stat]}")
-        # print(f"traits:")
-        # for trait in self.traits:
-        #     print(f"   {trait}")
-        # print(f"core:")
-        # for key in self.core_system:
-        #     print(f"   {key}: {self.core_system[key]}")
-        # print(f"data_type: {self.data_type}")
-        # print(f"aptitude: {self.aptitude}")
 
     def parse_tags(self, tagline):
         tags = tagline.split(",")

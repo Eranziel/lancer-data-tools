@@ -22,16 +22,17 @@ class Skill:
         if raw_text:
             self.parse_raw_text(raw_text)
 
+    def __str__(self):
+        output = "\n============== TRIGGER ===================="
+        output += f"\nid: {self.id}"
+        output += f"\nname: {self.name}"
+        output += f"\ndesc: {self.description}"
+        return output
+
     def parse_raw_text(self, raw_text):
         self.name = raw_text[0]
         self.id = "sk_"+self.name.lower().replace(" ", "_")
         self.description = raw_text[1]
-
-        # Debugging printout
-        print("\n============== TRIGGER ====================")
-        print(f"id: {self.id}")
-        print(f"name: {self.name}")
-        print(f"desc: {self.description}")
 
     def set_id(self, new_id):
         self.id = new_id

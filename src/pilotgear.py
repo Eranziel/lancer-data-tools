@@ -56,6 +56,49 @@ class PilotGear:
             self.uses = 0
             self.parse_gear(raw_gear)
 
+    def __str__(self):
+        if self.type == PilotGear.TYPE_ARMOR:
+            output = "\n============== PILOT ARMOR ===================="
+            output += f"\nid: {self.id}"
+            output += f"\ntype: {self.type}"
+            output += f"\nname: {self.name}"
+            output += f"\ndesc: {self.description}"
+            output += f"\ntags: "
+            for t in self.tags:
+                output += f"\n  {t}"
+            output += f"\nhp_bonus: {self.hp_bonus}"
+            output += f"\narmor: {self.armor}"
+            output += f"\nevasion: {self.evasion}"
+            output += f"\nedef: {self.edef}"
+            output += f"\nspeed: {self.speed}"
+        elif self.type == PilotGear.TYPE_GEAR:
+            output = "\n============== PILOT GEAR ===================="
+            output += f"\nid: {self.id}"
+            output += f"\ntype: {self.type}"
+            output += f"\nname: {self.name}"
+            output += f"\ndesc: {self.description}"
+            output += f"\ntags: "
+            for t in self.tags:
+                output += f"\n  {t}"
+            output += f"\nuses: {self.uses}"
+        elif self.type == PilotGear.TYPE_WEAPON:
+            output = "\n============== PILOT WEAPON ===================="
+            output += f"\nid: {self.id}"
+            output += f"\ntype: {self.type}"
+            output += f"\nname: {self.name}"
+            output += f"\ndesc: {self.description}"
+            output += f"\ntags: "
+            for t in self.tags:
+                output += f"\n  {t}"
+            output += f"\nrange: "
+            for r in self.range:
+                output += f"\n  {r}"
+            output += f"\ndamage: "
+            for d in self.damage:
+                output += f"\n  {d}"
+
+        return output
+
     def parse_weapon(self, raw_text, w_threat=False, w_range=False):
         """
         Parses raw weapon text into the object.
@@ -115,22 +158,6 @@ class PilotGear:
             self.damage.append(dict([("type", d_type),
                                      ("val", d_val)]))
 
-        # Debugging printout
-        # print("\n\n============== PILOT WEAPON ====================")
-        # print(f"id: {self.id}")
-        # print(f"type: {self.type}")
-        # print(f"name: {self.name}")
-        # print(f"desc: {self.description}")
-        # print(f"tags: ")
-        # for t in self.tags:
-        #     print(f"  {t}")
-        # print(f"range: ")
-        # for r in self.range:
-        #     print(f"  {r}")
-        # print(f"damage: ")
-        # for d in self.damage:
-        #     print(f"  {d}")
-
     def parse_armor(self, raw_text):
         """
         Parses raw armor text into the object.
@@ -158,21 +185,6 @@ class PilotGear:
         self.edef = int(raw_text[5])
         # Parse Speed on 7th line
         self.speed = int(raw_text[6])
-
-        # Debugging printout
-        # print("\n\n============== PILOT ARMOR ====================")
-        # print(f"id: {self.id}")
-        # print(f"type: {self.type}")
-        # print(f"name: {self.name}")
-        # print(f"desc: {self.description}")
-        # print(f"tags: ")
-        # for t in self.tags:
-        #     print(f"  {t}")
-        # print(f"hp_bonus: {self.hp_bonus}")
-        # print(f"armor: {self.armor}")
-        # print(f"evasion: {self.evasion}")
-        # print(f"edef: {self.edef}")
-        # print(f"speed: {self.speed}")
 
     def parse_gear(self, raw_text):
         """

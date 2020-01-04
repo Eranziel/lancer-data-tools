@@ -30,6 +30,15 @@ class CoreBonus:
         if raw is not None:
             self.parse_text(raw)
 
+    def __str__(self):
+        output = "\n============== CORE BONUS ===================="
+        output += f"\nid: {self.id}"
+        output += f"\nname: {self.name}"
+        output += f"\nsource: {self.source}"
+        output += f"\neffect: {self.effect}"
+        output += f"\ndesc: {self.description}"
+        return output
+
     def parse_text(self, raw):
         self.source = raw[0].strip()
         text = raw[1]
@@ -38,14 +47,6 @@ class CoreBonus:
         self.id = "cb_" + self.name.lower().replace(" ", "_").replace("-", "_").replace("'", "")
         self.description = text[1].strip()
         self.effect = text[2].strip()
-
-        # Debugging printout
-        # print("\n\n============== CORE BONUS ====================")
-        # print(f"id: {self.id}")
-        # print(f"name: {self.name}")
-        # print(f"source: {self.source}")
-        # print(f"effect: {self.effect}")
-        # print(f"desc: {self.description}")
 
     def to_dict(self):
         return dict([

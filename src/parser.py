@@ -378,6 +378,6 @@ if __name__ == "__main__":
         for system in systems:
             j.append(system.to_dict())
             # Debugging printout
-            print("\n" + str(system))
+            # print("\n" + str(system))
         print(f"Outputting JSON for {len(systems)} systems to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))

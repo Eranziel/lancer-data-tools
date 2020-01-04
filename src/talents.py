@@ -3,6 +3,8 @@
 
 
 class Talent:
+    """Class for talent data"""
+
     START = ["ACE\n",
              "Every pilot brags about their abilities; ",
              "Whether you're a talented rookie"]
@@ -10,7 +12,6 @@ class Talent:
            "EFFICIENCY (RANK III): If you perform ",
            "\n"]
 
-    """Class for talent data"""
     def __init__(self, raw_text=None):
         self.id = ""
         self.name = ""
@@ -20,6 +21,18 @@ class Talent:
 
         if raw_text:
             self.parse_raw_text(raw_text)
+
+    def __str__(self):
+        output = "\n============== TALENT ===================="
+        output += f"\nrank start: {rank_start}"
+        output += f"\nid: {self.id}"
+        output += f"\nname: {self.name}"
+        output += f"\ndesc: {self.description}\n"
+        output += f"\nranks:"
+        for r in self.ranks:
+            output += f"\n    name: {r['name']}"
+            output += f"\n    desc: {r['description']}"
+        return output
 
     def parse_raw_text(self, raw_text):
         RANK = [u" (RANK I): ",
@@ -64,17 +77,6 @@ class Talent:
                 else:
                     r_desc += " " + line.strip()
             self.ranks[i]["description"] = r_desc
-
-        # Debugging printout
-        # print("\n\n============== TALENT ====================")
-        # print(f"rank start: {rank_start}")
-        # print(f"id: {self.id}")
-        # print(f"name: {self.name}")
-        # print(f"desc: {self.description}\n")
-        # print(f"ranks:")
-        # for r in self.ranks:
-        #     print(f"    name: {r['name']}")
-        #     print(f"    desc: {r['description']}")
 
     def set_id(self, new_id):
         self.id = new_id
