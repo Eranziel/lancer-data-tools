@@ -1,6 +1,6 @@
 #!python
 
-"""Parses data for mech frames"""
+"""Parses data from rulebook text"""
 
 import argparse
 import json
@@ -30,6 +30,12 @@ WEAPONS = "../output/weapons.json"
 
 
 def check_section(start, end):
+    """
+    Checks which lines a section spans.
+    @param start: [str]: a set of lines defining the start of the section.
+    @param end: [str]: a set of lines defining the end of the section.
+    @return: (int, int): the start and end indexes within the raw text.
+    """
     start_idx = -1
     end_idx = -1
     for i in range(len(rawLines)):
@@ -279,6 +285,9 @@ if __name__ == "__main__":
         frameHunks = []
         frames = []
         coreBonuses = []
+        systems = []
+        weapons = []
+        mods = []
         prev = 0
         for i in range(len(rawFrames)):
             if rawFrames[i] == "\n":
@@ -289,29 +298,54 @@ if __name__ == "__main__":
         # Strip out any empty hunks
         while [] in frameHunks:
             frameHunks.remove([])
-        cbSource = "NONE"
+        source = "NONE"
+        gmsSec = "NONE"
         for hunk in frameHunks:
             # print(f"\nHunk:\n{hunk}")
-            # Keep track of which manufacturer we're in.
+            # Keep track of which subsection we're in.
             if hunk[0] == CoreBonus.GMS:
-                cbSource = "GMS"
+                source = "GMS"
+                gmsSec = "NONE"
             elif hunk[0] == CoreBonus.IPSN:
-                cbSource = "IPS-N"
+                source = "IPS-N"
+                gmsSec = "NONE"
             elif hunk[0] == CoreBonus.SSC:
-                cbSource = "SSC"
+                source = "SSC"
+                gmsSec = "NONE"
             elif hunk[0] == CoreBonus.HORUS:
-                cbSource = "HORUS"
+                source = "HORUS"
+                gmsSec = "NONE"
             elif hunk[0] == CoreBonus.HA:
-                cbSource = "HA"
-            # Determine whether this is a frame or a piece of licensed gear
+                source = "HA"
+                gmsSec = "NONE"
+            elif hunk[0] == System.GMS_SYSTEMS:
+                gmsSec = "Systems"
+            elif hunk[0] == System.GMS_FLIGHT:
+                gmsSec = "Flight"
+            elif hunk[0] == Weapon.GMS_WEP_TABLE:
+                gmsSec = "Weapons"
+
+            # Determine what kind of data this hunk is for.
+            #   Frames
             if Frame.CORE_STATS in hunk:
                 frames.append(Frame(raw_text=hunk))
+            #   Core Bonuses
             elif CoreBonus.CORE in hunk[0]:
                 text = hunk[1:]
                 for i in range(len(text)):
                     if text[i].isupper():
-                        raw = (cbSource, text[i:i+3])
+                        raw = (source, text[i:i + 3])
                         coreBonuses.append(CoreBonus(raw=raw))
+            #   Systems
+            elif (gmsSec == "Systems"
+                  or gmsSec == "Flight"):
+                if len(hunk) >= 3 and hunk[0] != System.GMS_FLIGHT:
+                    raw = (source, hunk)
+                    systems.append(System(raw=raw))
+
+            #   Weapons
+
+            #   Weapon Mods
 
         # Create data output for frames
         if args.stdout:
@@ -333,4 +367,17 @@ if __name__ == "__main__":
         for cb in coreBonuses:
             j.append(cb.to_dict())
         print(f"Outputting JSON for {len(coreBonuses)} core bonuses to {dOut.target}")
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+
+        # Create data output for systems
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(SYSTEMS)
+        j = []
+        for system in systems:
+            j.append(system.to_dict())
+            # Debugging printout
+            print("\n" + str(system))
+        print(f"Outputting JSON for {len(systems)} systems to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))

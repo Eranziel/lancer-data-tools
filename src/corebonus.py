@@ -1,6 +1,17 @@
 
 
 class CoreBonus:
+    """
+    Class for core bonus data.
+    NECESSARY PRE-WORK:
+    * Ensure the paragraph of core bonuses is preceded and followed by empty lines.
+
+    NECESSARY POST-WORK:
+    * Add the "mounted_effect" fields to:
+      * cb_auto_stabilizing_hardpoints
+      * cb_overpower_caliber
+      * cb_mount_retrofitting
+    """
 
     CORE = "CORE BONUSES\n"
     GMS = "GENERAL MASSIVE SYSTEMS\n"

@@ -1,8 +1,3 @@
-GMS = "GENERAL MASSIVE SYSTEMS\n"
-IPSN = "IPS-NORTHSTAR\n"
-SSC = "SMITH-SHIMANO CORPRO\n"
-HORUS = "HORUS\n"
-HA = "HARRISON ARMORY\n"
 
 
 class Frame:
@@ -30,14 +25,18 @@ class Frame:
     * y_pos and aptitude values need to be manually entered.
     * MANTICORE core system needs to be adjusted after parsing - parser misinterprets
       the description as the passive name.
+    * Add <code></code> tags to RA text:
+      * HYDRA's OROCHI Disarticulation description.
+      * MANTICORE's Charged Exoskeleton description.
+      * MINOTAUR's Metafold Maze description.
     """
 
     START = ["GENERAL MASSIVE SYSTEMS\n",
              "From Cradle to the stars, GMS: assured",
              "General Massive Systems - GMS for short - is the"]
-    END = ["This studded gauntlet draws on a core reactor pulse to momentarily",
-           "This system can only be used in the DANGER ZONE",
-           "Expend a charge and choose a character adjacent to you"]
+    END = ["This system can only be used in the DANGER ZONE",
+           "Expend a charge and choose a character adjacent to you",
+           "\n"]
 
     LICENSE = ("License:\n", "I. ", "II. ", "III. ")
     CORE_STATS = "CORE STATS\n"
