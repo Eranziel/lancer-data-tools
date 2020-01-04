@@ -79,12 +79,6 @@ if __name__ == "__main__":
         exit(1)
 
     if args.talents:
-        # Create data output
-        if args.stdout:
-            dOut = DataOutput("stdout")
-        else:
-            dOut = DataOutput(TALENTS)
-        rawTalents = []
         inTalents = False
 
         # Parse the text
@@ -98,21 +92,22 @@ if __name__ == "__main__":
                 talentHunks.append(rawTalents[prev:i])
                 prev = i+1
 
-        # Output results
         talents = []
-        j = []
         for t in talentHunks:
             talents.append(Talent(t))
-        for t in talents:
-            j.append(t.to_dict())
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
-    if args.tags:
+
         # Create data output
         if args.stdout:
             dOut = DataOutput("stdout")
         else:
-            dOut = DataOutput(TAGS)
-        rawTags = []
+            dOut = DataOutput(TALENTS)
+        # Output results
+        j = []
+        for t in talents:
+            j.append(t.to_dict())
+        print(f"Outputting JSON for {len(talents)} talents to {dOut.target}")
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+    if args.tags:
         inTags = False
 
         # Parse the text
@@ -120,7 +115,6 @@ if __name__ == "__main__":
         print(f"Tags start: {s}, end: {e}")
         rawTags = rawLines[s:e+1]
         tags = []
-        j = []
         in_ignore = False
         for rt in rawTags:
             if not in_ignore and rt == Tag.FILT_IGN[0]:
@@ -133,16 +127,18 @@ if __name__ == "__main__":
                 if in_ignore:
                     tag.set_filter(True)
                 tags.append(tag)
-        for t in tags:
-            j.append(t.to_dict())
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
-    if args.pilot_gear:
         # Create data output
         if args.stdout:
             dOut = DataOutput("stdout")
         else:
-            dOut = DataOutput(PILOT_GEAR)
-        rawPilotGear = []
+            dOut = DataOutput(TAGS)
+        # Output results
+        j = []
+        for t in tags:
+            j.append(t.to_dict())
+        print(f"Outputting JSON for {len(tags)} tags to {dOut.target}")
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+    if args.pilot_gear:
         inPilotGear = False
 
         # Parse the text
@@ -241,10 +237,16 @@ if __name__ == "__main__":
                 if len(g) > 1:
                     pg.append(PilotGear(raw_gear=g))
 
+        # Create data output
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(PILOT_GEAR)
         # Output results
         j = []
         for p in pg:
             j.append(p.to_dict())
+        print(f"Outputting JSON for {len(pg)} pieces of pilot gear to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.skills:
         # Create data output
@@ -252,7 +254,6 @@ if __name__ == "__main__":
             dOut = DataOutput("stdout")
         else:
             dOut = DataOutput(SKILLS)
-        rawSkills = []
         inSkills = False
 
         # Parse the text
@@ -260,20 +261,15 @@ if __name__ == "__main__":
         print(f"Skills start: {s}, end: {e}")
         rawSkills = rawLines[s:e+1]
         skills = []
-        j = []
         for i in range(len(rawSkills)):
             if rawSkills[i].isupper():
                 skills.append(Skill(rawSkills[i:i+2]))
+        j = []
         for s in skills:
             j.append(s.to_dict())
+        print(f"Outputting JSON for {len(skills)} skills to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.frames:
-        # Create data output
-        if args.stdout:
-            dOut = DataOutput("stdout")
-        else:
-            dOut = DataOutput(FRAMES)
-        rawFrames = []
         inFrames = False
 
         # Parse the text
@@ -283,7 +279,6 @@ if __name__ == "__main__":
         frameHunks = []
         frames = []
         coreBonuses = []
-        j = []
         prev = 0
         for i in range(len(rawFrames)):
             if rawFrames[i] == "\n":
@@ -318,7 +313,24 @@ if __name__ == "__main__":
                         raw = (cbSource, text[i:i+3])
                         coreBonuses.append(CoreBonus(raw=raw))
 
+        # Create data output for frames
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(FRAMES)
+        j = []
         for frame in frames:
             j.append(frame.to_dict())
-        # print(f"\n\nnumber of frames: {len(frames)}")
+        print(f"Outputting JSON for {len(frames)} frames to {dOut.target}")
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+
+        # Create data output for core bonuses
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(CORE_BONUSES)
+        j = []
+        for cb in coreBonuses:
+            j.append(cb.to_dict())
+        print(f"Outputting JSON for {len(coreBonuses)} core bonuses to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))

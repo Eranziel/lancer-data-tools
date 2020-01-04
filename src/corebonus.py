@@ -29,12 +29,12 @@ class CoreBonus:
         self.effect = text[2].strip()
 
         # Debugging printout
-        print("\n\n============== CORE BONUS ====================")
-        print(f"id: {self.id}")
-        print(f"name: {self.name}")
-        print(f"source: {self.source}")
-        print(f"effect: {self.effect}")
-        print(f"desc: {self.description}")
+        # print("\n\n============== CORE BONUS ====================")
+        # print(f"id: {self.id}")
+        # print(f"name: {self.name}")
+        # print(f"source: {self.source}")
+        # print(f"effect: {self.effect}")
+        # print(f"desc: {self.description}")
 
     def to_dict(self):
         return dict([
