@@ -4,17 +4,17 @@
 class DataOutput:
     """Handles output to either file or console"""
 
-    def __init__(self, datafile=None):
-        self.datafile = datafile
+    def __init__(self, target=None):
+        self.target = target
 
     def write(self, data):
-        if self.datafile is not None and self.datafile != "stdout":
+        if self.target is not None and self.target != "stdout":
             try:
-                with open(self.datafile, 'w') as f:
+                with open(self.target, 'w') as f:
                     for line in data:
                         f.write(line)
             except:
-                print("Error opening file {}".format(self.datafile))
+                print("Error opening file {}".format(self.target))
                 exit(1)
         else:
             for line in data:
