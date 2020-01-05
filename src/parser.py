@@ -5,6 +5,7 @@
 import argparse
 import json
 # import asyncio
+from deepmerge import always_merger
 
 from frame import Frame
 from corebonus import CoreBonus
@@ -74,19 +75,16 @@ def read_mask(mask_name):
         exit(1)
 
 
-def mask_override(mask, original):
+def mask_override(original, mask):
+    result = original
     # Overrides need an ID to reference
     if "id" in original.keys() and mask != []:
         for m in mask:
             # If there is a matching ID in the mask, insert/replace
             #   all other elements of the mask into the original.
             if m["id"] == original["id"]:
-                for key in m.keys():
-                    # TODO: recursively go into dicts, instead of replacing
-                    #   wholesale.
-                    original[key] = m[key]
-                break
-    return original
+                result = always_merger.merge(original, m)
+    return result
 
 
 def weapon_check(text):
@@ -157,7 +155,7 @@ if __name__ == "__main__":
         # Output results
         j = []
         for t in talents:
-            j.append(mask_override(mask, t.to_dict()))
+            j.append(mask_override(t.to_dict(), mask))
         print(f"Outputting JSON for {len(talents)} talents to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.tags:
@@ -188,7 +186,7 @@ if __name__ == "__main__":
         # Output results
         j = []
         for t in tags:
-            j.append(mask_override(mask, t.to_dict()))
+            j.append(mask_override(t.to_dict(), mask))
         print(f"Outputting JSON for {len(tags)} tags to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.pilot_gear:
@@ -298,7 +296,7 @@ if __name__ == "__main__":
         # Output results
         j = []
         for p in pg:
-            j.append(mask_override(mask, p.to_dict()))
+            j.append(mask_override(p.to_dict(), mask))
         print(f"Outputting JSON for {len(pg)} pieces of pilot gear to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.skills:
@@ -319,7 +317,7 @@ if __name__ == "__main__":
                 skills.append(Skill(rawSkills[i:i+2]))
         j = []
         for s in skills:
-            j.append(mask_override(mask, s.to_dict()))
+            j.append(mask_override(s.to_dict(), mask))
         print(f"Outputting JSON for {len(skills)} skills to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.frames:
@@ -417,7 +415,7 @@ if __name__ == "__main__":
             dOut = DataOutput(FRAMES)
         j = []
         for frame in frames:
-            j.append(mask_override(mask, frame.to_dict()))
+            j.append(mask_override(frame.to_dict(), mask))
         print(f"Outputting JSON for {len(frames)} frames to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
 
@@ -428,7 +426,7 @@ if __name__ == "__main__":
             dOut = DataOutput(CORE_BONUSES)
         j = []
         for cb in coreBonuses:
-            j.append(mask_override(mask, cb.to_dict()))
+            j.append(mask_override(cb.to_dict(), mask))
         print(f"Outputting JSON for {len(coreBonuses)} core bonuses to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
 
@@ -439,7 +437,7 @@ if __name__ == "__main__":
             dOut = DataOutput(WEAPONS)
         j = []
         for weapon in weapons:
-            j.append(mask_override(mask, weapon.to_dict()))
+            j.append(mask_override(weapon.to_dict(), mask))
             # Debugging printout
             # print("\n" + str(weapon))
         print(f"Outputting JSON for {len(weapons)} weapons to {dOut.target}")
@@ -452,7 +450,7 @@ if __name__ == "__main__":
             dOut = DataOutput(SYSTEMS)
         j = []
         for system in systems:
-            j.append(mask_override(mask, system.to_dict()))
+            j.append(mask_override(system.to_dict(), mask))
             # Debugging printout
             # print("\n" + str(system))
         print(f"Outputting JSON for {len(systems)} systems to {dOut.target}")
