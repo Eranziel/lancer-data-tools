@@ -17,6 +17,7 @@ from dataoutput import DataOutput
 
 rawLines = []
 
+# Output file names
 CORE_BONUSES = "../output/core_bonuses.json"
 FRAMES = "../output/frames.json"
 MANUFACTURERS = "../output/manufacturers.json"
@@ -60,6 +61,44 @@ def check_section(start, end):
     print(f"There was a problem! s{start_idx}, e{end_idx}")
 
 
+def read_mask(mask_name):
+    try:
+        with open(mask_name, 'r', encoding='utf-8') as mask_file:
+            mask_lines = mask_file.readlines()
+        mask_str = ""
+        for line in mask_lines:
+            mask_str += line
+        return json.loads(mask_str)
+    except FileNotFoundError:
+        print(f"Raw input file {rawFile} not found.")
+        exit(1)
+
+
+def mask_override(mask, original):
+    # Overrides need an ID to reference
+    if "id" in original.keys() and mask != []:
+        for m in mask:
+            # If there is a matching ID in the mask, insert/replace
+            #   all other elements of the mask into the original.
+            if m["id"] == original["id"]:
+                for key in m.keys():
+                    # TODO: recursively go into dicts, instead of replacing
+                    #   wholesale.
+                    original[key] = m[key]
+                break
+    return original
+
+
+def weapon_check(text):
+    result = False
+    for line in text:
+        if line.startswith("---"):
+            return False
+        if line.startswith(Weapon.RANGE) or line.startswith(Weapon.THREAT):
+            result = True
+    return result
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--stdout", help="Output to stdout instead of file.")
@@ -73,6 +112,8 @@ if __name__ == "__main__":
                         help="Generate skill trigger JSON.")
     parser.add_argument("-f", "--frames", action="store_true",
                         help="Generate frame, core bonus, and mech gear JSON.")
+    parser.add_argument("-m", "--mask", nargs=1,
+                        help="Specify a mask file with overrides for specific id's.")
     parser.add_argument("raw", help="raw text input file")
     args = parser.parse_args()
 
@@ -83,6 +124,12 @@ if __name__ == "__main__":
     except FileNotFoundError:
         print(f"Raw input file {rawFile} not found.")
         exit(1)
+
+    # Read the mask file.
+    if args.mask:
+        mask = read_mask(args.mask[0])
+    else:
+        mask = []
 
     if args.talents:
         inTalents = False
@@ -110,7 +157,7 @@ if __name__ == "__main__":
         # Output results
         j = []
         for t in talents:
-            j.append(t.to_dict())
+            j.append(mask_override(mask, t.to_dict()))
         print(f"Outputting JSON for {len(talents)} talents to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.tags:
@@ -141,7 +188,7 @@ if __name__ == "__main__":
         # Output results
         j = []
         for t in tags:
-            j.append(t.to_dict())
+            j.append(mask_override(mask, t.to_dict()))
         print(f"Outputting JSON for {len(tags)} tags to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.pilot_gear:
@@ -251,7 +298,7 @@ if __name__ == "__main__":
         # Output results
         j = []
         for p in pg:
-            j.append(p.to_dict())
+            j.append(mask_override(mask, p.to_dict()))
         print(f"Outputting JSON for {len(pg)} pieces of pilot gear to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.skills:
@@ -272,7 +319,7 @@ if __name__ == "__main__":
                 skills.append(Skill(rawSkills[i:i+2]))
         j = []
         for s in skills:
-            j.append(s.to_dict())
+            j.append(mask_override(mask, s.to_dict()))
         print(f"Outputting JSON for {len(skills)} skills to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.frames:
@@ -300,6 +347,7 @@ if __name__ == "__main__":
             frameHunks.remove([])
         source = "NONE"
         gmsSec = "NONE"
+        gmsWepDesc = ""
         for hunk in frameHunks:
             # print(f"\nHunk:\n{hunk}")
             # Keep track of which subsection we're in.
@@ -324,6 +372,14 @@ if __name__ == "__main__":
                 gmsSec = "Flight"
             elif hunk[0] == Weapon.GMS_WEP_TABLE:
                 gmsSec = "Weapons"
+                # Get the description for the GMS weapons
+                for line in hunk[1:]:
+                    # Ignore lines with only one word
+                    if len(line.split(" ")) > 1:
+                        if gmsWepDesc == "":
+                            gmsWepDesc = line.strip()
+                        else:
+                            gmsWepDesc += "<br>"+line.strip()
 
             # Determine what kind of data this hunk is for.
             #   Frames
@@ -336,16 +392,23 @@ if __name__ == "__main__":
                     if text[i].isupper():
                         raw = (source, text[i:i + 3])
                         coreBonuses.append(CoreBonus(raw=raw))
+            #   Weapons
+            elif gmsSec == "Weapons":
+                # All GMS weapon entries are 5 lines
+                if len(hunk) == 5:
+                    weapons.append(Weapon(raw_text=hunk, gms=gmsWepDesc, src=source))
+            elif weapon_check(hunk):
+                weapons.append(Weapon(raw_text=hunk, gms=None, src=source,
+                                      lic_table=frames[-1].license))
+            #   Weapon Mods
+
             #   Systems
             elif (gmsSec == "Systems"
                   or gmsSec == "Flight"):
                 if len(hunk) >= 3 and hunk[0] != System.GMS_FLIGHT:
-                    raw = (source, hunk)
-                    systems.append(System(raw=raw))
-
-            #   Weapons
-
-            #   Weapon Mods
+                    systems.append(System(raw=hunk, src=source))
+                    if gmsSec == "Flight":
+                        systems[-1].type = "Flight System"
 
         # Create data output for frames
         if args.stdout:
@@ -354,7 +417,7 @@ if __name__ == "__main__":
             dOut = DataOutput(FRAMES)
         j = []
         for frame in frames:
-            j.append(frame.to_dict())
+            j.append(mask_override(mask, frame.to_dict()))
         print(f"Outputting JSON for {len(frames)} frames to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
 
@@ -365,8 +428,21 @@ if __name__ == "__main__":
             dOut = DataOutput(CORE_BONUSES)
         j = []
         for cb in coreBonuses:
-            j.append(cb.to_dict())
+            j.append(mask_override(mask, cb.to_dict()))
         print(f"Outputting JSON for {len(coreBonuses)} core bonuses to {dOut.target}")
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+
+        # Create data output for weapons
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(WEAPONS)
+        j = []
+        for weapon in weapons:
+            j.append(mask_override(mask, weapon.to_dict()))
+            # Debugging printout
+            # print("\n" + str(weapon))
+        print(f"Outputting JSON for {len(weapons)} weapons to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
 
         # Create data output for systems
@@ -376,7 +452,7 @@ if __name__ == "__main__":
             dOut = DataOutput(SYSTEMS)
         j = []
         for system in systems:
-            j.append(system.to_dict())
+            j.append(mask_override(mask, system.to_dict()))
             # Debugging printout
             # print("\n" + str(system))
         print(f"Outputting JSON for {len(systems)} systems to {dOut.target}")

@@ -188,17 +188,17 @@ class Frame:
             if line.startswith(Frame.LICENSE[1]):
                 # Remove the rank identifier from the start of the line
                 line = line[len(Frame.LICENSE[1]):]
-                license_gear = [t.strip() for t in line.split(",")]
+                license_gear = [t.strip().lower() for t in line.split(",")]
                 self.license[0] = license_gear
             elif line.startswith(Frame.LICENSE[2]):
                 # Remove the rank identifier from the start of the line
                 line = line[len(Frame.LICENSE[2]):]
-                license_gear = [t.strip() for t in line.split(",")]
+                license_gear = [t.strip().lower() for t in line.split(",")]
                 self.license[1] = license_gear
             elif line.startswith(Frame.LICENSE[3]):
                 # Remove the rank identifier from the start of the line
                 line = line[len(Frame.LICENSE[3]):]
-                license_gear = [t.strip() for t in line.split(",")]
+                license_gear = [t.strip().lower() for t in line.split(",")]
                 self.license[2] = license_gear
 
         # Stats go until traits
