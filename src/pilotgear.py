@@ -1,3 +1,4 @@
+from parseutil import *
 
 
 class PilotGear:
@@ -16,6 +17,8 @@ class PilotGear:
     END = ["WILDERNESS SURVIVAL KIT",
            "Gear",
            "Contains many essentials for surviving in hostile environments:"]
+
+    PREFIX = "pg_"
 
     WEAPONS_SEC = "Archaic melee\n"
     ARMOR_SEC = "Light Hardsuit\n"
@@ -112,7 +115,8 @@ class PilotGear:
         self.type = PilotGear.TYPE_WEAPON
         # Parse name and id from first line.
         self.name = raw_text[0].strip().title()
-        self.id = "pg_"+self.name.lower().replace(" ", "_").replace("/", "")
+        self.id = gen_id(PilotGear.PREFIX, self.name)
+        # self.id = "pg_"+self.name.lower().replace(" ", "_").replace("/", "")
 
         # Parse tags on second line.
         self.parse_tags(raw_text[1])

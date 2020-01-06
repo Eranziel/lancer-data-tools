@@ -1,5 +1,4 @@
-# NECESSARY PREP-WORK:
-# None yet.
+from parseutil import *
 
 
 class Tag:
@@ -13,6 +12,8 @@ class Tag:
            "- SIDEARM: This weapon can be used to FIGHT "]
 
     FILT_IGN = ["PATTERNS\n", "OTHER WEAPON TAGS\n"]
+
+    PREFIX = "tg_"
 
     def __init__(self, raw_text=None):
         self.id = ""
@@ -37,7 +38,15 @@ class Tag:
         # Strip out the bullet
         parts = raw_text[2:].split(":")
         self.name = parts[0]
-        self.id = "tg_"+self.name.lower().replace(" ", "_").replace("(", "").replace(")", "").replace("_x", "")
+        # If a tag has a short name, use it for the tag ID since it will be
+        #   what the parser finds on gear.
+        if "(" in self.name and ")" in self.name:
+            self.id = gen_id(Tag.PREFIX,
+                             self.name[self.name.find("(")+1:self.name.find(")")])
+        else:
+            self.id = gen_id(Tag.PREFIX, self.name)
+        self.id = self.id.replace("_x", "")
+        # self.id = "tg_"+self.name.lower().replace(" ", "_").replace("(", "").replace(")", "").replace("_x", "")
         if VAL[0] in self.name:
             # print(f"Replace {VAL[0]} in {self.name} with {VAL[1]}")
             self.name = self.name.replace(VAL[0], VAL[1])

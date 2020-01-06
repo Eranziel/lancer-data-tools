@@ -1,9 +1,12 @@
-# NECESSARY PREP-WORK:
-# Make sure that each talent is preceded by ONE empty line.
+from parseutil import *
 
 
 class Talent:
-    """Class for talent data"""
+    """
+    Class for talent data
+    NECESSARY PREP-WORK:
+    * Ensure each talent is preceded and followed by one empty line.
+    """
 
     START = ["ACE\n",
              "Every pilot brags about their abilities; ",
@@ -11,6 +14,8 @@ class Talent:
     END = ["- SABOT (2 charges): The attack ",
            "EFFICIENCY (RANK III): If you perform ",
            "\n"]
+
+    PREFIX = "t_"
 
     def __init__(self, raw_text=None):
         self.id = ""
@@ -46,7 +51,8 @@ class Talent:
             # Name is the first non-empty line
             if self.name == "" and line != "":
                 self.name = line
-                self.id = "t_"+self.name.lower().replace(" ", "_")
+                self.id = gen_id(Talent.PREFIX, self.name)
+                # self.id = "t_"+self.name.lower().replace(" ", "_")
                 name_line = i
             # Don't look for the rest until the name is found
             elif 0 <= name_line < i:

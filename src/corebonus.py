@@ -1,3 +1,4 @@
+from parseutil import *
 
 
 class CoreBonus:
@@ -12,6 +13,8 @@ class CoreBonus:
       * cb_overpower_caliber
       * cb_mount_retrofitting
     """
+
+    PREFIX = "cb_"
 
     CORE = "CORE BONUSES\n"
     GMS = "GENERAL MASSIVE SYSTEMS\n"
@@ -44,7 +47,8 @@ class CoreBonus:
         text = raw[1]
 
         self.name = text[0].strip()
-        self.id = "cb_" + self.name.lower().replace(" ", "_").replace("-", "_").replace("'", "")
+        self.id = gem_id(CoreBonus.PREFIX, self.name)
+        # self.id = "cb_" + self.name.lower().replace(" ", "_").replace("-", "_").replace("'", "")
         self.description = text[1].strip()
         self.effect = text[2].strip()
 

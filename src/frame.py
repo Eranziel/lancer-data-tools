@@ -1,3 +1,4 @@
+from parseutil import *
 
 
 class Frame:
@@ -37,6 +38,8 @@ class Frame:
     END = ["This system can only be used in the DANGER ZONE",
            "Expend a charge and choose a character adjacent to you",
            "\n"]
+
+    PREFIX = "mf_"
 
     LICENSE = ("License:\n", "I. ", "II. ", "III. ")
     CORE_STATS = "CORE STATS\n"
@@ -138,7 +141,8 @@ class Frame:
         # Manufacturer acronym goes in source.
         self.source = name[:spc].strip()
         # Generate the id from the name
-        self.id = "mf_"+self.name.strip().lower().replace(" ", "_").replace("\"", "").replace("'", "")
+        self.id = gen_id(Frame.PREFIX, self.name)
+        # self.id = "mf_"+self.name.strip().lower().replace(" ", "_").replace("\"", "").replace("'", "")
 
         # Raw text indices for subsections
         desc = lic = stats = traits = sp = mounts = core = 0

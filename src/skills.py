@@ -1,3 +1,4 @@
+from parseutil import *
 
 
 class Skill:
@@ -11,6 +12,8 @@ class Skill:
     END = ["Use force or threats to make someone",
            "WORD ON THE STREET\n",
            "Get gossip, news, or hearsay from the streets,"]
+
+    PREFIX = "sk_"
 
     def __init__(self, raw_text=None):
         self.id = ""
@@ -31,7 +34,8 @@ class Skill:
 
     def parse_raw_text(self, raw_text):
         self.name = raw_text[0].strip()
-        self.id = "sk_"+self.name.lower().replace(" ", "_")
+        self.id = gen_id(Skill.PREFIX, self.name)
+        # self.id = "sk_"+self.name.lower().replace(" ", "_")
         self.description = raw_text[1].strip()
 
     def set_id(self, new_id):
