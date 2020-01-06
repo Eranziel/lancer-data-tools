@@ -30,9 +30,9 @@ class Skill:
         return output
 
     def parse_raw_text(self, raw_text):
-        self.name = raw_text[0]
+        self.name = raw_text[0].strip()
         self.id = "sk_"+self.name.lower().replace(" ", "_")
-        self.description = raw_text[1]
+        self.description = raw_text[1].strip()
 
     def set_id(self, new_id):
         self.id = new_id
