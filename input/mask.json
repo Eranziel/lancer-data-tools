@@ -337,7 +337,21 @@
   },
   {
     "id": "mf_barbarossa",
-    "y_pos": "32"
+    "y_pos": "32",
+    "core_system": {
+      "integrated": {
+        "id": "mw_barbarossa_integrated"
+      }
+    },
+    "counters": [
+      {
+        "id": "ctr_apocalypse_rail",
+        "name": "APOCALYPSE DIE",
+        "default_value": 4,
+        "min": 1,
+        "max": 4
+      }
+    ]
   },
   {
     "id": "mf_genghis",
@@ -357,7 +371,16 @@
   },
   {
     "id": "mf_sherman",
-    "y_pos": "36"
+    "y_pos": "36",
+    "counters": [
+      {
+        "id": "ctr_zf4_solidcore",
+        "name": "ZF4 CHARGES",
+        "default_value": 1,
+        "min": 1,
+        "max": 4
+      }
+    ]
   },
   {
     "id": "mf_tokugawa",
@@ -384,5 +407,234 @@
         "val": "1d6"
       }
     ]
+  },
+  {
+    "id": "mw_fuel_rod_gun",
+    "name": "Fuel Rod Gun",
+    "mount": "Integrated",
+    "type": "CQB",
+    "damage": [
+      {
+        "type": "energy",
+        "val": "1d3+2"
+      }
+    ],
+    "range": [
+      {
+        "type": "Range",
+        "val": 3
+      },
+      {
+        "type": "Threat",
+        "val": 3
+      }
+    ],
+    "tags": [
+      {
+        "id": "tg_limited",
+        "val": 3
+      },
+      {
+        "id": "tg_unique"
+      }
+    ],
+    "source": "",
+    "license": "",
+    "license_level": "",
+    "effect": "On Attack: Clear 4 heat.",
+    "description": "Gained from the \"Nuclear Cavalier\" Rank 3 Talent",
+    "data_type": "weapon",
+    "aptitude": {
+      "ranged": 1
+    }
+  },
+  {
+    "id": "mw_prototype_1",
+    "name": "Prototype Weapon",
+    "mount": "Integrated",
+    "type": "Special",
+    "damage": [
+      {
+        "type": "variable",
+        "val": "1d6+2"
+      }
+    ],
+    "range": [
+      {
+        "type": "Threat",
+        "val": 1
+      },
+      {
+        "type": "Range",
+        "val": 10
+      }
+    ],
+    "tags": [
+      {
+        "id": "tg_limited",
+        "val": "1d6+2"
+      },
+      {
+        "id": "tg_set_max_uses"
+      },
+      {
+        "id": "tg_overkill"
+      }
+    ],
+    "source": "",
+    "license": " ",
+    "license_level": "",
+    "effect": "This weapon is an experimental prototype, customized according to your specific requirements.<br>When you install it, or during a FULL REPAIR, you may choose a new weapon type, damage type, and either Threat 1 (melee) or Range 10 (all other types). Additionally, each time you perform a FULL REPAIR, reroll 1d6+2 to determine this weapon’s LIMITED uses.",
+    "description": "Gained from the \"Engineer\" Rank 1 Talent",
+    "data_type": "weapon",
+    "aptitude": {
+      "ranged": 1,
+      "Melee": 1
+    }
+  },
+  {
+    "id": "prototype2",
+    "name": "Prototype Weapon",
+    "mount": "Integrated",
+    "type": "Special",
+    "damage": [
+      {
+        "type": "variable",
+        "val": "1d6+2"
+      }
+    ],
+    "range": [
+      {
+        "type": "Range",
+        "val": 10
+      }
+    ],
+    "tags": [
+      {
+        "id": "limited",
+        "val": "1d6+2"
+      },
+      {
+        "id": "setmaxuses"
+      },
+      {
+        "id": "overkill"
+      }
+    ],
+    "source": "",
+    "license": " ",
+    "license_level": "",
+    "effect": "Choose between the following attributes upon installation:<br><ul><li><b>Type: </b>Melee, Rifle, Cannon, Launcher, Nexus or CQB</li><li><b>Range:</b> Threat 1 (Melee) or Range 8</li><li><b>Damage:</b> 1d6+2 Kinetic, Explosive, or Energy</li></ul><br>Roll this weapon's Limited property each full repair. You can change the profile of this weapon each time you full repair.<br>On a full repair, you can remove and tweak essential components of your system in order to increase the effectiveness of your prototype weapon. Choose 2 of the following:<ul><li><b>Tweak Optics</b>: You always fire your prototype weapon with +1 Accuracy.</li><li><b>Tweak Computer</b>: Your prototype weapon gains the Smart property.</li><li><b>Remove Reactor Shielding</b>: A ranged prototype weapon can fire as a cone 3 weapon, a line 5 weapon, or a blast 1 weapon (choose when you fire). A melee prototype weapon can fire as a burst 1 weapon. However, your weapon costs 2 heat to fire this way.</li></ul>",
+    "description": "Gained from the \"Engineer\" Rank 2 Talent",
+    "data_type": "weapon",
+    "aptitude": {
+      "ranged": 1,
+      "Melee": 1
+    }
+  },
+  {
+    "id": "prototype3",
+    "name": "Prototype Weapon",
+    "mount": "Integrated",
+    "type": "Special",
+    "damage": [
+      {
+        "type": "variable",
+        "val": "1d6+4"
+      }
+    ],
+    "range": [
+      {
+        "type": "Range",
+        "val": 10
+      }
+    ],
+    "tags": [
+      {
+        "id": "limited",
+        "val": "2d6"
+      },
+      {
+        "id": "setmaxuses"
+      },
+      {
+        "id": "overkill"
+      }
+    ],
+    "source": "",
+    "license": " ",
+    "license_level": "",
+    "effect": "Choose between the following attributes upon installation:<br><ul><li><b>Type: </b>Melee, Rifle, Cannon, Launcher, Nexus or CQB</li><li><b>Range: </b>Threat 1 (Melee) or Range 10</li><li><b>Damage:</b> 1d6+4 Kinetic, Explosive, or Energy</li></ul><br>Roll this weapon's Limited property each full repair. You can change the profile of this weapon each time you full repair.<br>On a full repair, you can remove and tweak essential components of your system in order to increase the effectiveness of your prototype weapon.<br>Choose 2 of the following:<ul><li>Tweak Optics: You always fire your prototype weapon with +1 Accuracy.</li><li>Tweak Computer: Your prototype weapon gains the Smart property.</li><li>Remove Reactor Shielding: Your prototype weapon can fire as a cone 3 weapon, a line 5 weapon, or a blast 1 weapon(choose when you fire), but costs 2 heat to fire.</li></ul>",
+    "description": "Gained from the \"Engineer\" Rank 3 Talent",
+    "data_type": "weapon",
+    "aptitude": {
+      "ranged": 1,
+      "Melee": 1
+    }
+  },
+  {
+    "id": "mw_raleigh_integrated",
+    "name": "M35 Mjolnir",
+    "mount": "Main",
+    "type": "CQB",
+    "range": [
+      {
+        "type": "Range",
+        "val": 5
+      },
+      {
+        "type": "Threat",
+        "val": 3
+      }
+    ],
+    "damage": [
+      {
+        "type": "kinetic",
+        "val": 4
+      }
+    ],
+    "effect": "1/round, when you reload any weapon, this weapon can be fired as a free action.",
+    "tags": []
+  },
+  {
+    "id": "mw_barbarossa_integrated",
+    "name": "Apocalypse Rail",
+    "mount": "Ship-class",
+    "type": "Spool Weapon",
+    "effect": "The Apocalypse Rail must be charged before it can be fired, using the <b>Charge Rail</b> CORE Power.<br>This weapon has different profiles determined by the current value of the APOCALYPSE DIE when you fire it. Each profile replaces the one proceeding it.<br><b>4.</b> Cannot be fired<br><b>3. [RANGE 20, BLAST 2, 2d6 explosive]</b> Objects within the affected area automatically take 20 AP explosive damage. After the attack, the blast cloud lingers, providing soft cover to characters within the affected area until the end of your next turn.<br><b>2. [RANGE 25, BLAST 2, 3d6 explosive]</b> Objects and terrain in the area automatically take 40 AP explosive damage, and on hit characters become SHREDDED and IMPAIRED until the end of their next turn. The blast cloud is a burning storm: until the end of your next turn, characters within the affected area receive soft cover, and characters that start their turn within the area or move there for the first time in a round take 4 burn.<br><b>1. [RANGE 30, BLAST 2, 4d6 explosive]</b> Objects and terrain in the area automatically take 100 AP explosive damage, and characters become SHREDDED and STUNNED until the end of their next turn on hit. The ground in the affected area is vaporized on impact: for the rest of the scene, it is difficult terrain, characters within the affected area receive soft cover, and characters that start their turn with the area or move there for the first time in a round take 4 burn.<br>The APOCALYPSE RAIL cannot be fired at targets within RANGE 5.",
+    "tags": []
+  },
+  {
+    "id": "mw_sherman_integrated",
+    "name": "ZF4 SOLIDCORE",
+    "mount": "Main",
+    "type": "Cannon",
+    "range": [
+      {
+        "type": "Line",
+        "val": "4/Charge"
+      }
+    ],
+    "damage": [
+      {
+        "type": "energy",
+        "val": "1d6/Charge"
+      }
+    ],
+    "effect": "This weapon’s profile is determined by the number of CHARGES it carries. It begins with 1 CHARGE, dealing 1d6 energy damage with Line 4. Each time you STABILIZE, you gain an additional 1 CHARGE, up to a maximum of 4. The ZF4 gains an additional +4 Line and +1d6 energy damage for each charge, and resets to 1 CHARGE after each attack. CHARGES persist between scenes, but are lost during a full repair.",
+    "tags": []
+  },
+  {
+    "id": "mw_lancaster_integrated",
+    "name": "Latch Drone",
+    "mount": "Main",
+    "type": "Launcher",
+    "range": [
+      {
+        "type": "Range",
+        "val": 8
+      }
+    ],
+    "effect": "This weapon can’t make normal attacks. Instead, choose an allied mech within RANGE and line of sight and make a ranged attack against EVASION 8. On a hit, either you or your target may spend 1 REPAIR to restore half your target’s HP."
   }
 ]
