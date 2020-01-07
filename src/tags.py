@@ -38,11 +38,10 @@ class Tag:
         # Strip out the bullet
         parts = raw_text[2:].split(":")
         self.name = parts[0]
-        # If a tag has a short name, use it for the tag ID since it will be
-        #   what the parser finds on gear.
-        if "(" in self.name and ")" in self.name:
+        # Ugly hack of a special case for AP.
+        if "(AP)" in self.name:
             self.id = gen_id(Tag.PREFIX,
-                             self.name[self.name.find("(")+1:self.name.find(")")])
+                             "AP")
         else:
             self.id = gen_id(Tag.PREFIX, self.name)
         self.id = self.id.replace("_x", "")

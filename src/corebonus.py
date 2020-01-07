@@ -47,7 +47,7 @@ class CoreBonus:
         text = raw[1]
 
         self.name = text[0].strip()
-        self.id = gem_id(CoreBonus.PREFIX, self.name)
+        self.id = gen_id(CoreBonus.PREFIX, self.name)
         # self.id = "cb_" + self.name.lower().replace(" ", "_").replace("-", "_").replace("'", "")
         self.description = text[1].strip()
         self.effect = text[2].strip()

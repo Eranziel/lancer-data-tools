@@ -244,7 +244,7 @@ class Frame:
                 self.mounts[i] = "Flex"
 
         # Core system goes until the end
-        # Find all of the lines with are all caps - these are the passive
+        # Find all of the lines that are all caps - these are the passive
         #   and active names.
         core_lines = raw_text[core+1:]
         cap_lines = []
@@ -301,9 +301,9 @@ class Frame:
         tags = tagline.split(",")
         for t in tags:
             if t != "-\n":
-                # Remove the "(1CP)" before the tag id gets created.
+                # The "Active (1CP)" is not a proper tag - skip it.
                 if t.endswith("(1CP)"):
-                    t = t[:t.find("(1CP)")]
+                    continue
                 words = t.strip().split(" ")
                 if words[-1].isdecimal():
                     t_text = ""

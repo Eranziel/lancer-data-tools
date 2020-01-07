@@ -48,6 +48,9 @@ class Mod(IMechGear):
     NECESSARY PREP WORK:
     *
     """
+
+    PREFIX = "wm_"
+
     def __init__(self, raw_text=None):
         pass
 
@@ -64,6 +67,8 @@ class System(IMechGear):
     GMS_SYSTEMS = "GMS GENERAL MARKET SYSTEMS\n"
     GMS_FLIGHT = "GMS FLIGHT SYSTEMS\n"
     GMS_SYS_END = "You can fly when you BOOST or make a standard move; however"
+
+    PREFIX = "ms_"
 
     def __init__(self, raw=None, src=None):
         """
@@ -108,7 +113,7 @@ class System(IMechGear):
 
     def parse_text(self, raw_text):
         self.name = raw_text[0].strip()
-        self.id = gen_id("ms_", self.name)
+        self.id = gen_id(System.PREFIX, self.name)
 
         self.parse_tags(raw_text[1])
 
@@ -179,6 +184,8 @@ class Weapon(IMechGear):
     * Each weapon must be preceded and followed by an empty line.
     """
 
+    PREFIX = "mw_"
+
     GMS_WEP_TABLE = "GMS MECH WEAPONS\n"
     GMS_WEP_END = "GMS GENERAL MARKET SYSTEMS\n"
     TYPES = ["Melee", "CQB", "Rifle", "Launcher", "Cannon", "Nexus", "???"]
@@ -248,7 +255,8 @@ class Weapon(IMechGear):
     def parse_text(self, raw, gms, src):
         self.source = src
         self.name = raw[0].strip()
-        self.id = gen_id("mw_", self.name)
+        self.id = gen_id(Weapon.PREFIX, self.name)
+        # self.id = gen_id("mw_", self.name)
 
         if gms is not None:
             self.parse_type(raw[1])

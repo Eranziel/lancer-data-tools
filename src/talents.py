@@ -77,11 +77,11 @@ class Talent:
             else:
                 next_r = len(raw_text)
             for line in raw_text[rank_start[i]+1:next_r]:
-                # Put bulleted points on new line
+                # Use html formatting for bullets
                 if line.startswith("- "):
-                    r_desc += "<br>" + line.strip()
+                    r_desc += "<li>" + line[2:].strip()
                 else:
-                    r_desc += " " + line.strip()
+                    r_desc += "<br>" + line.strip()
             self.ranks[i]["description"] = r_desc
 
     def set_id(self, new_id):
