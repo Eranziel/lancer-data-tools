@@ -41,41 +41,41 @@ def check_section(start, end):
     start_idx = -1
     end_idx = -1
     for i in range(len(rawLines)):
-        sfound = True
-        efound = True
+        s_found = True
+        e_found = True
         for j in range(len(start)):
             # If lines i through i+j all match start, record the starting line.
             if start_idx < 0:
-                sfound = sfound and rawLines[i+j].startswith(start[j])
+                s_found = s_found and rawLines[i+j].startswith(start[j])
             if end_idx < 0:
-                efound = efound and rawLines[i+j].startswith((end[j]))
+                e_found = e_found and rawLines[i+j].startswith((end[j]))
             # Stop if a line doesn't match either the start or end delimeters.
-            if not sfound and not efound:
+            if not s_found and not e_found:
                 break
 
-        if sfound and start_idx < 0:
+        if s_found and start_idx < 0:
             start_idx = i
-        if efound and end_idx < 0:
+        if e_found and end_idx < 0:
             end_idx = i+j
         if start_idx >= 0 and end_idx >= 0:
             return start_idx, end_idx
     print(f"There was a problem! s{start_idx}, e{end_idx}")
 
 
-def read_mask(mask_name):
+def read_override(file_name):
     try:
-        with open(mask_name, 'r', encoding='utf-8') as mask_file:
-            mask_lines = mask_file.readlines()
-        mask_str = ""
-        for line in mask_lines:
-            mask_str += line
-        return json.loads(mask_str)
+        with open(file_name, 'r', encoding='utf-8') as mask_file:
+            file_lines = mask_file.readlines()
+        file_str = ""
+        for line in file_lines:
+            file_str += line
+        return json.loads(file_str)
     except FileNotFoundError:
-        print(f"Raw input file {rawFile} not found.")
+        print(f"Mask file {file_name} not found.")
         exit(1)
 
 
-def mask_override(original, mask):
+def apply_override(original, mask):
     result = original
     # Overrides need an ID to reference
     if "id" in original.keys() and mask != []:
@@ -85,6 +85,20 @@ def mask_override(original, mask):
             if m["id"] == original["id"]:
                 result = always_merger.merge(original, m)
     return result
+
+
+def add_missing_overrides(js_list, mask, prefix):
+    if mask == [] or js_list == []:
+        return
+    for m in mask:
+        if m["id"].startswith(prefix):
+            present = False
+            for j in js_list:
+                if "id" in j.keys() and j["id"] == m["id"]:
+                    present = True
+                    break
+            if not present:
+                js_list.append(m)
 
 
 def weapon_check(text):
@@ -125,7 +139,7 @@ if __name__ == "__main__":
 
     # Read the mask file.
     if args.mask:
-        mask = read_mask(args.mask[0])
+        mask = read_override(args.mask[0])
     else:
         mask = []
 
@@ -155,7 +169,8 @@ if __name__ == "__main__":
         # Output results
         j = []
         for t in talents:
-            j.append(mask_override(t.to_dict(), mask))
+            j.append(apply_override(t.to_dict(), mask))
+        add_missing_overrides(j, mask, Talent.PREFIX)
         print(f"Outputting JSON for {len(talents)} talents to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.tags:
@@ -186,7 +201,8 @@ if __name__ == "__main__":
         # Output results
         j = []
         for t in tags:
-            j.append(mask_override(t.to_dict(), mask))
+            j.append(apply_override(t.to_dict(), mask))
+        add_missing_overrides(j, mask, Tag.PREFIX)
         print(f"Outputting JSON for {len(tags)} tags to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.pilot_gear:
@@ -296,7 +312,8 @@ if __name__ == "__main__":
         # Output results
         j = []
         for p in pg:
-            j.append(mask_override(p.to_dict(), mask))
+            j.append(apply_override(p.to_dict(), mask))
+        add_missing_overrides(j, mask, PilotGear.PREFIX)
         print(f"Outputting JSON for {len(pg)} pieces of pilot gear to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.skills:
@@ -317,7 +334,8 @@ if __name__ == "__main__":
                 skills.append(Skill(rawSkills[i:i+2]))
         j = []
         for s in skills:
-            j.append(mask_override(s.to_dict(), mask))
+            j.append(apply_override(s.to_dict(), mask))
+        add_missing_overrides(j, mask, Skill.PREFIX)
         print(f"Outputting JSON for {len(skills)} skills to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
     if args.frames:
@@ -415,7 +433,8 @@ if __name__ == "__main__":
             dOut = DataOutput(FRAMES)
         j = []
         for frame in frames:
-            j.append(mask_override(frame.to_dict(), mask))
+            j.append(apply_override(frame.to_dict(), mask))
+        add_missing_overrides(j, mask, Frame.PREFIX)
         print(f"Outputting JSON for {len(frames)} frames to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
 
@@ -426,7 +445,8 @@ if __name__ == "__main__":
             dOut = DataOutput(CORE_BONUSES)
         j = []
         for cb in coreBonuses:
-            j.append(mask_override(cb.to_dict(), mask))
+            j.append(apply_override(cb.to_dict(), mask))
+        add_missing_overrides(j, mask, CoreBonus.PREFIX)
         print(f"Outputting JSON for {len(coreBonuses)} core bonuses to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
 
@@ -437,9 +457,10 @@ if __name__ == "__main__":
             dOut = DataOutput(WEAPONS)
         j = []
         for weapon in weapons:
-            j.append(mask_override(weapon.to_dict(), mask))
+            j.append(apply_override(weapon.to_dict(), mask))
             # Debugging printout
             # print("\n" + str(weapon))
+        add_missing_overrides(j, mask, Weapon.PREFIX)
         print(f"Outputting JSON for {len(weapons)} weapons to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
 
@@ -450,8 +471,9 @@ if __name__ == "__main__":
             dOut = DataOutput(SYSTEMS)
         j = []
         for system in systems:
-            j.append(mask_override(system.to_dict(), mask))
+            j.append(apply_override(system.to_dict(), mask))
             # Debugging printout
             # print("\n" + str(system))
+        add_missing_overrides(j, mask, System.PREFIX)
         print(f"Outputting JSON for {len(systems)} systems to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
