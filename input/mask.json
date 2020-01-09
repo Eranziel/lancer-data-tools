@@ -305,7 +305,7 @@
   },
   {
     "id": "mf_manticore",
-    "y_pos": "48",
+    "y_pos": "49",
     "core_system": {
       "name": "Charged Exoskeleton",
       "description": "And RA Said Unto Themself:<br><code>LET MY NAME ENVELOP YOU. SEEK NO SHELTER FROM THE FLAME OR THE TEETH OF THE BEAST. CLOAK YOURSELF IN THE FIRE OF MY WORD AND CAST BACK TO YOUR ENEMIES THAT WHICH WOULD BLACKEN YOUR FORM.</code>",
@@ -493,7 +493,7 @@
     }
   },
   {
-    "id": "prototype2",
+    "id": "mw_prototype_2",
     "name": "Prototype Weapon",
     "mount": "Integrated",
     "type": "Special",
@@ -505,26 +505,30 @@
     ],
     "range": [
       {
+        "type": "Threat",
+        "val": 1
+      },
+      {
         "type": "Range",
         "val": 10
       }
     ],
     "tags": [
       {
-        "id": "limited",
+        "id": "tg_limited",
         "val": "1d6+2"
       },
       {
-        "id": "setmaxuses"
+        "id": "tg_set_max_uses"
       },
       {
-        "id": "overkill"
+        "id": "tg_overkill"
       }
     ],
     "source": "",
     "license": " ",
     "license_level": "",
-    "effect": "Choose between the following attributes upon installation:<br><ul><li><b>Type: </b>Melee, Rifle, Cannon, Launcher, Nexus or CQB</li><li><b>Range:</b> Threat 1 (Melee) or Range 8</li><li><b>Damage:</b> 1d6+2 Kinetic, Explosive, or Energy</li></ul><br>Roll this weapon's Limited property each full repair. You can change the profile of this weapon each time you full repair.<br>On a full repair, you can remove and tweak essential components of your system in order to increase the effectiveness of your prototype weapon. Choose 2 of the following:<ul><li><b>Tweak Optics</b>: You always fire your prototype weapon with +1 Accuracy.</li><li><b>Tweak Computer</b>: Your prototype weapon gains the Smart property.</li><li><b>Remove Reactor Shielding</b>: A ranged prototype weapon can fire as a cone 3 weapon, a line 5 weapon, or a blast 1 weapon (choose when you fire). A melee prototype weapon can fire as a burst 1 weapon. However, your weapon costs 2 heat to fire this way.</li></ul>",
+    "effect": "This weapon is an experimental prototype, customized according to your specific requirements.<br>When you install it, or during a FULL REPAIR, you may choose a new weapon type, damage type, and either Threat 1 (melee) or Range 10 (all other types). Additionally, each time you perform a FULL REPAIR, reroll 1d6+2 to determine this weapon’s LIMITED uses and choose two of the following:<br><li>TWEAKED OPTICS: Your prototype weapon always gains +1 ACCURACY on attacks.<li>TWEAKED COMPUTER: Your prototype weapon is SMART.<li>STRIPPED REACTOR SHIELDING: Each time you attack with your prototype weapon, you may choose – at the cost of 2 heat – to attack with one of the following options, depending on its weapon type:<li><li>RANGED WEAPON: CONE 3, LINE 5, or [BLAST 1, RANGE 10].<li><li>MELEE WEAPON: BURST 1.",
     "description": "Gained from the \"Engineer\" Rank 2 Talent",
     "data_type": "weapon",
     "aptitude": {
@@ -533,7 +537,7 @@
     }
   },
   {
-    "id": "prototype3",
+    "id": "mw_prototype_3",
     "name": "Prototype Weapon",
     "mount": "Integrated",
     "type": "Special",
@@ -545,26 +549,30 @@
     ],
     "range": [
       {
+        "type": "Threat",
+        "val": 1
+      },
+      {
         "type": "Range",
         "val": 10
       }
     ],
     "tags": [
       {
-        "id": "limited",
+        "id": "tg_limited",
         "val": "2d6"
       },
       {
-        "id": "setmaxuses"
+        "id": "tg_set_max_uses"
       },
       {
-        "id": "overkill"
+        "id": "tg_overkill"
       }
     ],
     "source": "",
     "license": " ",
     "license_level": "",
-    "effect": "Choose between the following attributes upon installation:<br><ul><li><b>Type: </b>Melee, Rifle, Cannon, Launcher, Nexus or CQB</li><li><b>Range: </b>Threat 1 (Melee) or Range 10</li><li><b>Damage:</b> 1d6+4 Kinetic, Explosive, or Energy</li></ul><br>Roll this weapon's Limited property each full repair. You can change the profile of this weapon each time you full repair.<br>On a full repair, you can remove and tweak essential components of your system in order to increase the effectiveness of your prototype weapon.<br>Choose 2 of the following:<ul><li>Tweak Optics: You always fire your prototype weapon with +1 Accuracy.</li><li>Tweak Computer: Your prototype weapon gains the Smart property.</li><li>Remove Reactor Shielding: Your prototype weapon can fire as a cone 3 weapon, a line 5 weapon, or a blast 1 weapon(choose when you fire), but costs 2 heat to fire.</li></ul>",
+    "effect": "This weapon is an experimental prototype, customized according to your specific requirements.<br>When you install it, or during a FULL REPAIR, you may choose a new weapon type, damage type, and either Threat 1 (melee) or Range 10 (all other types). Additionally, each time you perform a FULL REPAIR, reroll 2d6 to determine this weapon’s LIMITED uses and choose two of the following:<br><li>TWEAKED OPTICS: Your prototype weapon always gains +1 ACCURACY on attacks.<li>TWEAKED COMPUTER: Your prototype weapon is SMART.<li>STRIPPED REACTOR SHIELDING: Each time you attack with your prototype weapon, you may choose – at the cost of 2 heat – to attack with one of the following options, depending on its weapon type:<li><li>RANGED WEAPON: CONE 3, LINE 5, or [BLAST 1, RANGE 10].<li><li>MELEE WEAPON: BURST 1.",
     "description": "Gained from the \"Engineer\" Rank 3 Talent",
     "data_type": "weapon",
     "aptitude": {
@@ -636,5 +644,71 @@
       }
     ],
     "effect": "This weapon can’t make normal attacks. Instead, choose an allied mech within RANGE and line of sight and make a ranged attack against EVASION 8. On a hit, either you or your target may spend 1 REPAIR to restore half your target’s HP."
+  },
+  {
+    "id": "ms_technophile_1",
+    "name": "Servant-Class NHP",
+    "type": "AI",
+    "talent_item": true,
+    "talent_id": "t_technophile",
+    "talent_rank": 1,
+    "sp": 0,
+    "tags": [
+      {
+        "id": "tg_ai"
+      },
+      {
+        "id": "tg_unique"
+      }
+    ],
+    "source": "",
+    "license": "",
+    "license_level": 0,
+    "effect": "Your mech gains the AI tag.<br>You have developed a custom NHP. This NHP can speak to you and has a personality, but they are less advanced than most NHPs and are incapable of independent thought, relying on you for direction. When acting alone, they will follow the last direction given and defend themself as needed; however, they have limited initiative and don’t benefit from your talents.",
+    "description": "<span class='ra-quiet'>[an eager student].</span><br>Gained from the <i>Technophile: Rank I</i> pilot talent."
+  },
+  {
+    "id": "ms_technophile_2",
+    "name": "Student-Class NHP",
+    "type": "AI",
+    "talent_item": true,
+    "talent_id": "t_technophile",
+    "talent_rank": 2,
+    "sp": 0,
+    "tags": [
+      {
+        "id": "tg_ai"
+      },
+      {
+        "id": "tg_unique"
+      }
+    ],
+    "source": "",
+    "license": "",
+    "license_level": 0,
+    "effect": "Your custom NHP has developed further, and is now capable of independent thought. It can make complex decisions and judgments and act independently, without instruction.<br>Your mech gains the AI tag.<br>1/round, with the assistance of your NHP, you may reroll any mech skill check or save. You must keep the new result, even if it’s worse.",
+    "description": "<span class='ra-quiet'>[time to wake up, child]</span><b>Gained from the <i>Technophile: Rank II</i> pilot talent."
+  },
+  {
+    "id": "ms_technophile_3",
+    "name": "Enlightenment-Class NHP",
+    "type": "AI",
+    "talent_item": true,
+    "talent_id": "t_technophile",
+    "talent_rank": 3,
+    "sp": 0,
+    "tags": [
+      {
+        "id": "tg_ai"
+      },
+      {
+        "id": "tg_unique"
+      }
+    ],
+    "source": "",
+    "license": "",
+    "license_level": 0,
+    "effect": "Your mech gains the AI tag; however, this NHP doesn’t count towards the number of AIs you may have installed at once.<br>This NHP benefits from your talents when piloting your mech. Additionally, you may carry them with you outside of your mech, either as a miniaturized casket, a hardsuit-integrated flash plug, or with a hard-port implant.<br>1/round, with the assistance of your NHP, you may reroll any mech skill check or save. You must keep the new result, even if it’s worse.",
+    "description": "<span class='ra-quiet'>[let’s sit a while, and think on things to come]</span><br>Gained from the <i>Technophile: Rank III</i> pilot talent."
   }
 ]
