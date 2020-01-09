@@ -12,8 +12,9 @@ class IMechGear:
             tagline = tagline.partition(",")[2]
 
         tags = tagline.split(",")
+        # print(f"tag line: {tags}")
         for t in tags:
-            if t != "-\n":
+            if t != "-":
                 words = t.strip().split(" ")
                 # If the tag contains a number, parse it as 'val'.
                 val = None
@@ -27,7 +28,9 @@ class IMechGear:
                 d = {"id": gen_id("tg_", t_text)}
                 if val is not None:
                     d["val"] = val
-                self.tags.append(d)
+                # Don't add non-existent tags
+                if d["id"] != "tg_":
+                    self.tags.append(d)
 
     def set_level(self, lic_table):
         for i in range(len(lic_table)):
@@ -51,8 +54,103 @@ class Mod(IMechGear):
 
     PREFIX = "wm_"
 
-    def __init__(self, raw_text=None):
+    def __init__(self, raw_text=None, src="", lic_table=[]):
+        """
+        Create a new weapon mod.
+        @param raw_text: [str]: raw text.
+        @param src: str: source manufacturer.
+        """
+        self.id = ""
+        self.name = ""
+        self.sp = 0
+        self.applied_to = []
+        self.applied_string = ""
+        self.source = ""
+        self.license = ""
+        self.license_level = 0
+        self.effect = ""
+        self.description = ""
+        self.data_type = "mod"
+        self.tags = []
+
+        if raw_text is not None:
+            self.parse_text(raw_text, src)
+        if len(lic_table) > 0:
+            self.set_level(lic_table)
+
+    def __str__(self):
+        output = "\n\n============== MOD ===================="
+        output += f"\nid: {self.id}"
+        output += f"\nname: {self.name}"
+        output += f"\nsp: {self.sp}"
+        output += f"\napplied_to:"
+        for apply in self.applied_to:
+            output += f"\n   {apply}"
+        output += f"\napplied_string: {self.applied_string}"
+        output += f"\nsource: {self.source}"
+        output += f"\nlicense: {self.license}"
+        output += f"\nll: {self.license_level}"
+        output += f"\ndesc: {self.description}"
+        output += f"\neffect: {self.effect}"
+        output += f"\ndata_type: {self.data_type}"
+        output += f"\nadded_tags:"
+        for tag in self.tags:
+            output += f"\n   {tag}"
+        return output
+
+    def parse_text(self, raw_text, src):
+        self.source = src
+        self.name = raw_text[0].strip()
+        self.id = gen_id(Mod.PREFIX, self.name)
+
+        # Remove the Mod tag before parsing tags.
+        mod_i = raw_text[1].find("Mod")
+        self.parse_tags((raw_text[1][:mod_i] + raw_text[1][mod_i+3:]).strip())
+
+        # Find the split between description and effect
+        split = -1
+        for i in range(len(raw_text)):
+            if raw_text[i] == "---\n":
+                split = i
+                break
+        if split > 0:
+            for line in raw_text[2:split]:
+                if self.description == "":
+                    self.description = line.strip()
+                else:
+                    self.description += "<br>"+line.strip()
+            for line in raw_text[split+1:]:
+                if self.effect == "":
+                    self.effect = line.strip()
+                else:
+                    self.effect += "<br>"+line.strip()
+        else:  # No split means there is no description.
+            for line in raw_text[2:]:
+                if self.effect == "":
+                    self.effect = line.strip()
+                else:
+                    self.effect += "<br>"+line.strip()
+
+    def parse_applied(self):
+        """
+        Check the effect line for the weapons this mod can apply to.
+        @return:
+        """
         pass
+
+    def to_dict(self):
+        return {"id": self.id,
+                "name": self.name,
+                "sp": self.sp,
+                "applied_to": self.applied_to,
+                "applied_string": self.applied_string,
+                "source": self.source,
+                "license": self.license,
+                "license_level": self.license_level,
+                "effect": self.effect,
+                "description": self.description,
+                "data_type": self.data_type,
+                "added_tags": self.tags}
 
 
 class System(IMechGear):
@@ -70,10 +168,10 @@ class System(IMechGear):
 
     PREFIX = "ms_"
 
-    def __init__(self, raw=None, src=None):
+    def __init__(self, raw_text=None, src="", lic_table=[]):
         """
         Create a new system.
-        @param raw: [str]: raw text.
+        @param raw_text: [str]: raw text.
         @param src: str: source manufacturer.
         """
         self.id = ""
@@ -89,9 +187,10 @@ class System(IMechGear):
         self.data_type = "system"
         self.aptitude = dict([])
 
-        if raw is not None:
-            self.source = src
-            self.parse_text(raw)
+        if raw_text is not None:
+            self.parse_text(raw_text, src)
+        if len(lic_table) > 0:
+            self.set_level(lic_table)
 
     def __str__(self):
         output = "\n\n============== SYSTEM ===================="
@@ -111,11 +210,12 @@ class System(IMechGear):
         output += f"\naptitude: {self.aptitude}"
         return output
 
-    def parse_text(self, raw_text):
+    def parse_text(self, raw_text, src):
+        self.source = src
         self.name = raw_text[0].strip()
         self.id = gen_id(System.PREFIX, self.name)
 
-        self.parse_tags(raw_text[1])
+        self.parse_tags(raw_text[1].strip())
 
         # Find the split between description and effect
         split = -1
@@ -260,7 +360,7 @@ class Weapon(IMechGear):
 
         if gms is not None:
             self.parse_type(raw[1])
-            self.parse_tags(raw[2])
+            self.parse_tags(raw[2].strip())
             self.parse_stats(raw[3], gms=True)
             self.parse_damage(raw[4])
             self.description = gms

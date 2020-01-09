@@ -101,13 +101,29 @@ def add_missing_overrides(js_list, mask, prefix):
                 js_list.append(m)
 
 
-def weapon_check(text):
+def weapon_check(txt):
     result = False
-    for line in text:
+    for line in txt:
         if line.startswith("---"):
             return False
         if line.startswith(Weapon.RANGE) or line.startswith(Weapon.THREAT):
             result = True
+    return result
+
+
+def mod_check(txt):
+    if len(txt) >= 2 and "Mod" in txt[1]:
+        return True
+    return False
+
+
+def sys_check(txt):
+    result = False
+    if "Mod" in txt[1]:
+        return False
+    for line in txt:
+        if line.startswith("---"):
+            return True
     return result
 
 
@@ -417,14 +433,19 @@ if __name__ == "__main__":
                 weapons.append(Weapon(raw_text=hunk, gms=None, src=source,
                                       lic_table=frames[-1].license))
             #   Weapon Mods
-
+            elif mod_check(hunk):
+                mods.append(Mod(raw_text=hunk, src=source,
+                                lic_table=frames[-1].license))
             #   Systems
             elif (gmsSec == "Systems"
                   or gmsSec == "Flight"):
                 if len(hunk) >= 3 and hunk[0] != System.GMS_FLIGHT:
-                    systems.append(System(raw=hunk, src=source))
+                    systems.append(System(raw_text=hunk, src=source))
                     if gmsSec == "Flight":
                         systems[-1].type = "Flight System"
+            elif sys_check(hunk):
+                systems.append(System(raw_text=hunk, src=source,
+                                      lic_table=frames[-1].license))
 
         # Create data output for frames
         if args.stdout:
@@ -462,6 +483,20 @@ if __name__ == "__main__":
             # print("\n" + str(weapon))
         add_missing_overrides(j, mask, Weapon.PREFIX)
         print(f"Outputting JSON for {len(weapons)} weapons to {dOut.target}")
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+
+        # Create data output for mods
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(MODS)
+        j = []
+        for mod in mods:
+            j.append(apply_override(mod.to_dict(), mask))
+            # Debugging printout
+            # print("\n" + str(mod))
+        add_missing_overrides(j, mask, Mod.PREFIX)
+        print(f"Outputting JSON for {len(mods)} mods to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
 
         # Create data output for systems

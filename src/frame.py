@@ -21,6 +21,7 @@ class Frame:
       * SWALLOWTAIL
       * PEGASUS
     * In VLAD, remove the ":" after "MOUNTS".
+    * In BALOR, fix rank 3 number in the license table.
 
     NECESSARY POST-WORK:
     * y_pos and aptitude values need to be manually entered.
