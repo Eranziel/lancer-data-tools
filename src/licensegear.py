@@ -57,6 +57,9 @@ class Mod(IMechGear):
 
     PREFIX = "wm_"
 
+    APPLIES_ALL = "Choose a weapon:"
+    APPLIES = "Choose a "
+
     def __init__(self, raw_text=None, src="", lic_table=[]):
         """
         Create a new weapon mod.
@@ -66,6 +69,7 @@ class Mod(IMechGear):
         self.id = ""
         self.name = ""
         self.sp = 0
+        self.tags = []
         self.applied_to = []
         self.applied_string = ""
         self.source = ""
@@ -74,7 +78,10 @@ class Mod(IMechGear):
         self.effect = ""
         self.description = ""
         self.data_type = "mod"
-        self.tags = []
+        self.added_tags = []
+        self.added_range = dict([])
+        self.added_damage = dict([])
+        self.aptitude = dict([])
 
         if raw_text is not None:
             self.parse_text(raw_text, src)
@@ -86,6 +93,9 @@ class Mod(IMechGear):
         output += f"\nid: {self.id}"
         output += f"\nname: {self.name}"
         output += f"\nsp: {self.sp}"
+        output += f"\ntags:"
+        for tag in self.tags:
+            output += f"\n   {tag}"
         output += f"\napplied_to:"
         for apply in self.applied_to:
             output += f"\n   {apply}"
@@ -96,9 +106,6 @@ class Mod(IMechGear):
         output += f"\ndesc: {self.description}"
         output += f"\neffect: {self.effect}"
         output += f"\ndata_type: {self.data_type}"
-        output += f"\nadded_tags:"
-        for tag in self.tags:
-            output += f"\n   {tag}"
         return output
 
     def parse_text(self, raw_text, src):
@@ -106,9 +113,7 @@ class Mod(IMechGear):
         self.name = raw_text[0].strip()
         self.id = gen_id(Mod.PREFIX, self.name)
 
-        # Remove the Mod tag before parsing tags.
-        mod_i = raw_text[1].find("Mod")
-        self.parse_tags((raw_text[1][:mod_i] + raw_text[1][mod_i+3:]).strip())
+        self.parse_tags(raw_text[1].strip())
 
         # Find the split between description and effect
         split = -1
@@ -142,18 +147,27 @@ class Mod(IMechGear):
         pass
 
     def to_dict(self):
-        return {"id": self.id,
-                "name": self.name,
-                "sp": self.sp,
-                "applied_to": self.applied_to,
-                "applied_string": self.applied_string,
-                "source": self.source,
-                "license": self.license,
-                "license_level": self.license_level,
-                "effect": self.effect,
-                "description": self.description,
-                "data_type": self.data_type,
-                "added_tags": self.tags}
+        d = {"id": self.id,
+             "name": self.name,
+             "sp": self.sp,
+             "applied_to": self.applied_to,
+             "applied_string": self.applied_string,
+             "source": self.source,
+             "license": self.license,
+             "license_level": self.license_level,
+             "effect": self.effect,
+             "description": self.description,
+             "data_type": self.data_type,
+             "aptitude": self.aptitude}
+        if len(self.tags) > 0:
+            d["tags"] = self.tags
+        if len(self.added_tags) > 0:
+            d["added_tags"] = self.added_tags
+        if len(self.added_range) > 0:
+            d["added_range"] = self.added_range
+        if len(self.added_damage) > 0:
+            d["added_damage"] = self.added_damage
+        return d
 
 
 class System(IMechGear):
@@ -228,6 +242,9 @@ class System(IMechGear):
                 break
         if split > 0:
             for line in raw_text[2:split]:
+                line = line.strip()
+                if line.startswith("[") and line.endswith("]"):
+                    line = "<span class='ra-quiet'>"+line+"</span>"
                 if self.description == "":
                     self.description = line.strip()
                 else:
@@ -258,12 +275,18 @@ class System(IMechGear):
             elif tag["id"] == "tg_shield":
                 self.type = "Shield"
                 break
+            elif tag["id"] == "tg_quick_tech" or tag["id"] == "tg_full_tech":
+                self.type = "Tech"
+                break
         # Set system type based on effect
         if ("DEPLOYABLE" in self.effect
                 or ("(Mine" in self.effect and "(Grenade" in self.effect)):
             self.type = "Deployable"
         elif ("DRONE" in self.effect):
             self.type = "Drone"
+        elif ("tech action" in self.effect.lower() or
+              "tech attack" in self.effect.lower()):
+            self.type = "Tech"
 
     def to_dict(self):
         return {"id": self.id,
@@ -473,7 +496,7 @@ class Weapon(IMechGear):
                     self.parse_damage(part.replace(Weapon.DAMAGE, ""))
 
     def parse_damage(self, dam_str):
-        dam_str = dam_str.strip()
+        dam_str = dam_str.strip().replace(".", "")
         delim = " + "
         types = []
         if delim in dam_str:
@@ -488,8 +511,14 @@ class Weapon(IMechGear):
 
         for t in types:
             tokens = t.split(" ")
+            # If the damage has an "or" in it, it's variable.
+            if " or " in t:
+                dam = dict([
+                    ("type", "variable"),
+                    ("val", tokens[0])
+                ])
             # Damage amount of "???" is special
-            if tokens[0] == "???":
+            elif tokens[0] == "???":
                 dam = dict([
                     ("override", True),
                     ("val", "??? kinetic")
