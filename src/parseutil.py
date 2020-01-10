@@ -1,3 +1,5 @@
+#!/bin/python3
+# -*- utf-8 -*-
 
 
 def gen_id(prefix, name):

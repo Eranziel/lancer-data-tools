@@ -1,4 +1,5 @@
-#!python
+#!/bin/python3
+# -*- utf-8 -*-
 
 """Parses data from rulebook text"""
 
@@ -46,9 +47,9 @@ def check_section(start, end):
         for j in range(len(start)):
             # If lines i through i+j all match start, record the starting line.
             if start_idx < 0:
-                s_found = s_found and rawLines[i+j].startswith(start[j])
+                s_found = s_found and rawLines[i + j].startswith(start[j])
             if end_idx < 0:
-                e_found = e_found and rawLines[i+j].startswith((end[j]))
+                e_found = e_found and rawLines[i + j].startswith((end[j]))
             # Stop if a line doesn't match either the start or end delimeters.
             if not s_found and not e_found:
                 break
@@ -56,7 +57,7 @@ def check_section(start, end):
         if s_found and start_idx < 0:
             start_idx = i
         if e_found and end_idx < 0:
-            end_idx = i+j
+            end_idx = i + j
         if start_idx >= 0 and end_idx >= 0:
             return start_idx, end_idx
     print(f"There was a problem! s{start_idx}, e{end_idx}")
@@ -165,13 +166,13 @@ if __name__ == "__main__":
         # Parse the text
         s, e = check_section(Talent.START, Talent.END)
         print(f"Talents start: {s}, end: {e}")
-        rawTalents = rawLines[s:e+1]
+        rawTalents = rawLines[s:e + 1]
         talentHunks = []
         prev = 0
         for i in range(len(rawTalents)):
             if rawTalents[i] == "\n":
                 talentHunks.append(rawTalents[prev:i])
-                prev = i+1
+                prev = i + 1
 
         talents = []
         for t in talentHunks:
@@ -195,7 +196,7 @@ if __name__ == "__main__":
         # Parse the text
         s, e = check_section(Tag.START, Tag.END)
         print(f"Tags start: {s}, end: {e}")
-        rawTags = rawLines[s:e+1]
+        rawTags = rawLines[s:e + 1]
         tags = []
         in_ignore = False
         for rt in rawTags:
@@ -227,14 +228,14 @@ if __name__ == "__main__":
         # Parse the text
         s, e = check_section(PilotGear.START, PilotGear.END)
         print(f"Pilot Gear start: {s}, end: {e}")
-        rawPilotGear = rawLines[s:e+1]
+        rawPilotGear = rawLines[s:e + 1]
         gearHunks = []
         pg = []
         prev = 0
         for i in range(len(rawPilotGear)):
             if rawPilotGear[i] == "\n":
                 gearHunks.append(rawPilotGear[prev:i])
-                prev = i+1
+                prev = i + 1
         # Catch the last hunk
         gearHunks.append(rawPilotGear[prev:])
 
@@ -343,11 +344,11 @@ if __name__ == "__main__":
         # Parse the text
         s, e = check_section(Skill.START, Skill.END)
         print(f"Skills start: {s}, end: {e}")
-        rawSkills = rawLines[s:e+1]
+        rawSkills = rawLines[s:e + 1]
         skills = []
         for i in range(len(rawSkills)):
             if rawSkills[i].isupper():
-                skills.append(Skill(rawSkills[i:i+2]))
+                skills.append(Skill(rawSkills[i:i + 2]))
         j = []
         for s in skills:
             j.append(apply_override(s.to_dict(), mask))
@@ -360,7 +361,7 @@ if __name__ == "__main__":
         # Parse the text
         s, e = check_section(Frame.START, Frame.END)
         print(f"Frames start: {s}, end: {e}")
-        rawFrames = rawLines[s:e+1]
+        rawFrames = rawLines[s:e + 1]
         frameHunks = []
         frames = []
         coreBonuses = []
@@ -371,7 +372,7 @@ if __name__ == "__main__":
         for i in range(len(rawFrames)):
             if rawFrames[i] == "\n":
                 frameHunks.append(rawFrames[prev:i])
-                prev = i+1
+                prev = i + 1
         # Catch the last hunk
         frameHunks.append(rawFrames[prev:])
         # Strip out any empty hunks
@@ -411,7 +412,7 @@ if __name__ == "__main__":
                         if gmsWepDesc == "":
                             gmsWepDesc = line.strip()
                         else:
-                            gmsWepDesc += "<br>"+line.strip()
+                            gmsWepDesc += "<br>" + line.strip()
 
             # Determine what kind of data this hunk is for.
             #   Frames

@@ -1,3 +1,6 @@
+#!/bin/python3
+# -*- utf-8 -*-
+
 from parseutil import *
 
 

@@ -1,4 +1,5 @@
-#!python
+#!/bin/python3
+# -*- utf-8 -*-
 
 
 class DataOutput:
