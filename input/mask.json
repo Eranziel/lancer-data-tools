@@ -387,15 +387,6 @@
     "y_pos": "5"
   },
   {
-    "id": "mw_ghoul_nexus",
-    "damage": [
-      {
-        "type": "variable",
-        "val": "1d3+2"
-      }
-    ]
-  },
-  {
     "id": "mw_plasma_thrower",
     "effect": "Can be fired as Cone 7 <i>or</i> Line 10<br>After firing this weapon, white-hot flames continue to burn in 3 free spaces of your choice within the affected area, lasting for the rest of the scene. When characters start their turn in one of these spaces or enter one for the first time in a round, they take 1d6 energy damage."
   },
