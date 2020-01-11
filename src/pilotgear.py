@@ -211,6 +211,8 @@ class PilotGear:
         self.description = raw_text[2].strip()
         if len(raw_text) > 3:
             for line in raw_text[3:]:
+                if line.startswith("- "):
+                    line = line.replace("- ", "<li>", 1).strip()
                 self.description += "<br>"+line.strip()
 
     def set_id(self, new_id):
@@ -240,7 +242,8 @@ class PilotGear:
                          "val": int(words[-1])}
                 else:
                     d = {"id": "tg_"+(t.strip().lower().replace(" ", "_"))}
-                self.tags.append(d)
+                if not is_duplicate_tag(d, self.tags):
+                    self.tags.append(d)
 
     def to_dict(self):
         d = {"id": self.id,

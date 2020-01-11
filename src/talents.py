@@ -65,7 +65,12 @@ class Talent:
                         rank_start[j] = i
         # Description starts line after name, and ends at line before rank 1.
         for line in raw_text[name_line+1:rank_start[0]]:
-            self.description += line.strip()
+            if line.startswith("- "):
+                line = line.replace("- ", "<li>", 1).strip()
+            if self.description == "":
+                self.description = line.strip()
+            else:
+                self.description += "<br>" + line.strip()
         # Get ranks text
         for i in range(len(rank_start)):
             line = raw_text[rank_start[i]].strip()

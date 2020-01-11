@@ -120,12 +120,18 @@ class Mod(IMechGear):
                 split = i
                 break
         if split > 0:
+            # Description
             for line in raw_text[2:split]:
+                if line.startswith("- "):
+                    line = line.replace("- ", "<li>", 1).strip()
                 if self.description == "":
                     self.description = line.strip()
                 else:
                     self.description += "<br>"+line.strip()
+            # Effect
             for line in raw_text[split+1:]:
+                if line.startswith("- "):
+                    line = line.replace("- ", "<li>", 1).strip()
                 if self.effect == "":
                     self.effect = line.strip()
                 else:
@@ -285,21 +291,30 @@ class System(IMechGear):
                 split = i
                 break
         if split > 0:
+            # Description
             for line in raw_text[2:split]:
-                line = line.strip()
+                if line.startswith("- "):
+                    line = line.replace("- ", "<li>", 1).strip()
                 if line.startswith("[") and line.endswith("]"):
                     line = "<span class='ra-quiet'>"+line+"</span>"
                 if self.description == "":
                     self.description = line.strip()
                 else:
                     self.description += "<br>"+line.strip()
-            for line in raw_text[split+1:]:
+            # Effect
+            raw_effect = raw_text[split+1:]
+            for line in raw_effect:
+                if line.startswith("- "):
+                    line = line.replace("- ", "<li>", 1).strip()
                 if self.effect == "":
                     self.effect = line.strip()
                 else:
                     self.effect += "<br>"+line.strip()
         else:  # No split means there is no description.
-            for line in raw_text[2:]:
+            raw_effect = raw_text[2:]
+            for line in raw_effect:
+                if line.startswith("- "):
+                    line = line.replace("- ", "<li>", 1).strip()
                 if self.effect == "":
                     self.effect = line.strip()
                 else:
@@ -472,12 +487,16 @@ class Weapon(IMechGear):
             self.parse_stats(raw[spec_line])
             # Description is from 3rd line until spec line
             for line in raw[2:spec_line]:
+                if line.startswith("- "):
+                    line = line.replace("- ", "<li>", 1).strip()
                 if self.description == "":
                     self.description = line.strip()
                 else:
                     self.description += line.strip()
             # Effects are everything after spec line
             for line in raw[spec_line+1:]:
+                if line.startswith("- "):
+                    line = line.replace("- ", "<li>", 1).strip()
                 if self.effect == "":
                     self.effect = line.strip()
                 else:

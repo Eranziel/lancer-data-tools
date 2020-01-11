@@ -189,6 +189,8 @@ class Frame:
         else:
             description = raw_text[desc:lic]
         for line in description:
+            if line.startswith("- "):
+                line = line.replace("- ", "<li>", 1).strip()
             if self.description == "":
                 self.description = line.strip()
             else:
@@ -272,6 +274,8 @@ class Frame:
         if cap_lines[0] != 1:
             for desc_line in core_lines[1:cap_lines[0]]:
                 if not desc_line.startswith(Frame.INTEGRATED):
+                    if desc_line.startswith("- "):
+                        desc_line = desc_line.replace("- ", "<li>", 1).strip()
                     if self.core_system["description"] == "":
                         self.core_system["description"] = desc_line.strip()
                     else:
@@ -288,6 +292,8 @@ class Frame:
                 pass_effect = core_lines[cap_lines[0]+1:act_name]
                 self.core_system["passive_effect"] = ""
                 for line in pass_effect:
+                    if line.startswith("- "):
+                        line = line.replace("- ", "<li>", 1).strip()
                     if self.core_system["passive_effect"] == "":
                         self.core_system["passive_effect"] = line.strip()
                     else:
@@ -299,6 +305,8 @@ class Frame:
         # Line after the tags is the active effect
         act_effect = core_lines[act_name+2:]
         for line in act_effect:
+            if line.startswith("- "):
+                line = line.replace("- ", "<li>", 1).strip()
             if self.core_system["active_effect"] == "":
                 self.core_system["active_effect"] = line.strip()
             else:
