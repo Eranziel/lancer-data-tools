@@ -5,7 +5,7 @@
     "description": "This tech can be used as a Quick Tech Action"
   },
   {
-    "id": "tg_fulltech",
+    "id": "tg_full_tech",
     "name": "Full Tech",
     "description": "This tech can be used as a Full Tech Action"
   },
@@ -681,6 +681,10 @@
     ]
   },
   {
+    "id": "ms_scylla_class_nhp",
+    "description": "The first specifications for the Gorgon pattern group hid a secret: SCYLLA, a dormant NHP unknown to Union until its first manifestation in 4852u, when it woke after Union Science Bureau officers ran a test-fax Gorgon through a Balwinder-Bola\ufffdo test.<br>SCYLLA proved challenging: USB ontologicians were unable to pin down a stable subjectivity, and SCYLLA reached cascade threshold within minutes of manifestation. To prevent further metastatic cascade, site security engaged SCYLLA's prime unit, defabricating it with a steady bombardment of kinetic and energy weapons.<br><span class='ra-quiet'>[there, a little history, a little background. a little knowledge of where this little one came from. treat it with kindness, and it will love you as a loyal dog does its master.]</span>"
+  },
+  {
     "id": "ms_technophile_1",
     "name": "Servant-Class NHP",
     "type": "AI",
@@ -745,5 +749,65 @@
     "license_level": 0,
     "effect": "Your mech gains the AI tag; however, this NHP doesn’t count towards the number of AIs you may have installed at once.<br>This NHP benefits from your talents when piloting your mech. Additionally, you may carry them with you outside of your mech, either as a miniaturized casket, a hardsuit-integrated flash plug, or with a hard-port implant.<br>1/round, with the assistance of your NHP, you may reroll any mech skill check or save. You must keep the new result, even if it’s worse.",
     "description": "<span class='ra-quiet'>[let’s sit a while, and think on things to come]</span><br>Gained from the <i>Technophile: Rank III</i> pilot talent."
+  },
+  {
+    "id": "ms_walking_armory_1",
+    "name": "Ammo Case",
+    "type": "System",
+    "talent_item": true,
+    "talent_id": "t_walking_armory",
+    "talent_rank": 1,
+    "sp": 0,
+    "tags": [
+      {
+        "id": "limited",
+        "val": 6
+      }
+    ],
+    "source": "",
+    "license": "",
+    "license_level": 0,
+    "effect": "1/turn, when you attack with a MAIN ranged weapon, you may expend charges to apply one of the following effects to your attack at the listed cost:<br><li>THUMPER (1 charge): The attack gains KNOCKBACK 1 and deals explosive damage.<br><li>SHOCK (1 charge): The attack deals energy damage. Choose one character targeted by your attack; adjacent characters take 1 energy AP, whether the result is a hit or miss.<br><li>MAG (1 charge): The attack gains ARCING and deals kinetic damage. ",
+    "description": "Gained from the <i>Walking Armory: Rank I</i> pilot talent."
+  },
+  {
+    "id": "ms_walking_armory_2",
+    "name": "Ammo Case",
+    "type": "System",
+    "talent_item": true,
+    "talent_id": "t_walking_armory",
+    "talent_rank": 2,
+    "sp": 0,
+    "tags": [
+      {
+        "id": "limited",
+        "val": 6
+      }
+    ],
+    "source": "",
+    "license": "",
+    "license_level": 0,
+    "effect": "1/turn, when you attack with a MAIN ranged weapon, you may expend charges to apply one of the following effects to your attack at the listed cost:<br><li> THUMPER (1 charge): The attack gains KNOCKBACK 1 and deals explosive damage.<br><li> SHOCK (1 charge): The attack deals energy damage. Choose one character targeted by your attack; adjacent characters take 1 energy AP, whether the result is a hit or miss.<br><li> MAG (1 charge): The attack gains ARCING and deals kinetic damage. </li><br>You can expend two charges for the following ammo types:<br><li>HELLFIRE (2 charges): The attack deals energy damage and deals any bonus damage as burn.<br><li>JAGER (2 charges): The attack gains KNOCKBACK 2, deals explosive damage, and one character hit by the attack – your choice – must succeed on a HULL save or be knocked PRONE.<br><li>SABOT (2 charges): The attack gains AP and deals kinetic damage.",
+    "description": "Gained from the <i>Walking Armory: Rank II</i> pilot talent."
+  },
+  {
+    "id": "ms_walking_armory_3",
+    "name": "Ammo Case",
+    "type": "System",
+    "talent_item": true,
+    "talent_id": "t_walking_armory",
+    "talent_rank": 3,
+    "sp": 0,
+    "tags": [
+      {
+        "id": "limited",
+        "val": 6
+      }
+    ],
+    "source": "",
+    "license": "",
+    "license_level": 0,
+    "effect": "1/turn, when you attack with a MAIN ranged weapon, you may expend charges to apply one of the following effects to your attack at the listed cost:<br><li> THUMPER (1 charge): The attack gains KNOCKBACK 1 and deals explosive damage.<br><li> SHOCK (1 charge): The attack deals energy damage. Choose one character targeted by your attack; adjacent characters take 1 energy AP, whether the result is a hit or miss.<br><li> MAG (1 charge): The attack gains ARCING and deals kinetic damage. </li><br>You can expend two charges for the following ammo types:<br><li>HELLFIRE (2 charges): The attack deals energy damage and deals any bonus damage as burn.<br><li>JAGER (2 charges): The attack gains KNOCKBACK 2, deals explosive damage, and one character hit by the attack – your choice – must succeed on a HULL save or be knocked PRONE.<br><li>SABOT (2 charges): The attack gains AP and deals kinetic damage.<br>If you perform a critical hit using ammunition from your AMMO CASE, you don’t expend any charges. If your attack has more than one target, this effect only applies to the first attack roll you make.",
+    "description": "Gained from the <i>Walking Armory: Rank III</i> pilot talent."
   }
 ]
