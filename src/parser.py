@@ -107,7 +107,7 @@ def weapon_check(txt):
     for line in txt:
         if line.startswith("---"):
             return False
-        if line.startswith(Weapon.RANGE) or line.startswith(Weapon.THREAT):
+        if line.startswith(Weapon.RANGE) or line.startswith(Weapon.THREAT) or line.startswith(Weapon.DAMAGE):
             result = True
     return result
 
@@ -380,7 +380,7 @@ if __name__ == "__main__":
             frameHunks.remove([])
         source = "NONE"
         gmsSec = "NONE"
-        gmsWepDesc = ""
+        gmsWepDesc = ["" for i in range(4)]
         for hunk in frameHunks:
             # print(f"\nHunk:\n{hunk}")
             # Keep track of which subsection we're in.
@@ -407,12 +407,26 @@ if __name__ == "__main__":
                 gmsSec = "Weapons"
                 # Get the description for the GMS weapons
                 for line in hunk[1:]:
-                    # Ignore lines with only one word
-                    if len(line.split(" ")) > 1:
-                        if gmsWepDesc == "":
-                            gmsWepDesc = line.strip()
-                        else:
-                            gmsWepDesc += "<br>" + line.strip()
+                    # GMS Type-I description
+                    if Weapon.GMS_TYPES[0] in line:
+                        gmsWepDesc[0] = hunk[1] + "<br>" + line.strip()
+                    # GMS Type-II descriptions
+                    elif Weapon.GMS_TYPES[1] in line:
+                        line = line.strip()
+                        # Both descriptions start with the first sentence.
+                        period = line.find(".")
+                        charged = thermal = hunk[1] + "<br>" + line[:period+1]
+                        # Find the division between charged blades and thermal guns.
+                        div = line.find(Weapon.GMS_T2_THERMAL)
+                        # Finish charged blades string.
+                        charged += line[period+1:div]
+                        # Finish thermal guns string.
+                        thermal += " " + line[div:]
+                        gmsWepDesc[1] = charged
+                        gmsWepDesc[2] = thermal
+                    # GMS Type-III description
+                    elif Weapon.GMS_TYPES[2] in line:
+                        gmsWepDesc[3] = hunk[1] + "<br>" + line.strip()
 
             # Determine what kind of data this hunk is for.
             #   Frames

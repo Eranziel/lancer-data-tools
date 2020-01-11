@@ -8,6 +8,7 @@ class IMechGear:
     """
     Interface for mech gear, defining common methods.
     """
+
     def parse_tags(self, tagline):
         if "SP" in tagline:
             self.sp = int(tagline.split(",")[0].split(" ")[0])
@@ -56,9 +57,6 @@ class Mod(IMechGear):
     """
 
     PREFIX = "wm_"
-
-    APPLIES_ALL = "Choose a weapon:"
-    APPLIES = "Choose a "
 
     def __init__(self, raw_text=None, src="", lic_table=[]):
         """
@@ -139,12 +137,58 @@ class Mod(IMechGear):
                 else:
                     self.effect += "<br>"+line.strip()
 
+        self.parse_applied()
+
     def parse_applied(self):
         """
         Check the effect line for the weapons this mod can apply to.
         @return:
         """
-        pass
+        applied_list = self.effect[:self.effect.find(":")]
+
+        # Find all the weapon types mentioned in the mod's effect.
+        for word in applied_list.strip().replace(",", "").split(" "):
+            if word in Weapon.TYPES:
+                self.applied_to.append(word.strip())
+
+        # Create the applied string - user-visible string.
+        # Start by checking whether it works on all weapons.
+        applies_any = True
+        for w_type in Weapon.TYPES:
+            applies_any = applies_any and w_type in self.applied_to
+        if applies_any:
+            self.applied_string = "Any"
+        # It doesn't work on all weapons.
+        else:
+            # Next check whether it works on all ranged weapons.
+            ranged_types = Weapon.TYPES.copy()
+            ranged_types.remove("MELEE")
+            applies_ranged = True
+            for w_type in ranged_types:
+                applies_ranged = applies_ranged and w_type in self.applied_to
+            if applies_ranged:
+                self.applied_string = "Any Ranged"
+            # It doesn't apply to all ranged weapons.
+            # Add all the type strings together, with commas between.
+            else:
+                self.applied_string = ""
+                for a_t in self.applied_to:
+                    # First type becomes the base string.
+                    if self.applied_string == "":
+                        self.applied_string = a_t
+                    # Add the last weapon type, preceded by "or".
+                    elif a_t == self.applied_to[-1]:
+                        if len(self.applied_to) > 2:
+                            self.applied_string += ", or " + a_t
+                        else:
+                            self.applied_string += " or " + a_t
+                    # Not first and not last, just put a comma in between.
+                    else:
+                        self.applied_string += ", " + a_t
+        # If we get to here and applied_to and applied_string are empty, it applies to all.
+        if self.applied_string == "" and len(self.applied_to) == 0:
+            self.applied_to = Weapon.TYPES.copy()
+            self.applied_string = "Any"
 
     def to_dict(self):
         d = {"id": self.id,
@@ -185,7 +229,7 @@ class System(IMechGear):
 
     PREFIX = "ms_"
 
-    def __init__(self, raw_text=None, src="", lic_table=[]):
+    def __init__(self, raw_text=None, src="", lic_table=()):
         """
         Create a new system.
         @param raw_text: [str]: raw text.
@@ -314,22 +358,37 @@ class Weapon(IMechGear):
 
     GMS_WEP_TABLE = "GMS MECH WEAPONS\n"
     GMS_WEP_END = "GMS GENERAL MARKET SYSTEMS\n"
-    TYPES = ["Melee", "CQB", "Rifle", "Launcher", "Cannon", "Nexus", "???"]
+    GMS_TYPES = ["Type-I (T-1)", "Type-II (T-2)", "Type-III (T-3)"]
+    GMS_T2_THERMAL = "GMS's T-2 energy weapons,"
+    GMS_TYPE_LIST = [
+        ["assault rifle",
+         "heavy machine gun",
+         "heavy melee weapon",
+         "pistol",
+         "shotgun",
+         "tactical knife",
+         "tactical melee weapon"],
+        ["charged blade",
+         "heavy charged blade"],
+        ["thermal lance",
+         "thermal pistol",
+         "thermal rifle"],
+        ["anti-materiel rifle",
+         "cyclone pulse rifle",
+         "howitzer",
+         "missile rack",
+         "mortar",
+         "nexus (hunter-killer)",
+         "nexus (light)",
+         "rocket-propelled grenade",
+         "segment knife"]
+    ]
+
+    TYPES = ["MELEE", "CQB", "RIFLE", "LAUNCHER", "CANNON", "NEXUS"]
     MOUNTS = ["Auxiliary", "Main", "Heavy", "Superheavy"]
     RANGE = "R: "
     THREAT = "T: "
     DAMAGE = "D: "
-    RANGES = dict([
-        ("Range", "Range"),
-        ("R:", "Range"),
-        ("Threat", "Threat"),
-        ("T:", "Threat"),
-        ("Blast", "Blast"),
-        ("Bust", "Bust"),
-        ("Line", "Line"),
-        ("Cone", "Cone")
-    ])
-    DAM_TYPES = ["kinetic", "explosive", "energy", "burn", "heat", "variable"]
 
     def __init__(self, raw_text=None, gms=None, src="", lic_table=[]):
         self.id = ""
@@ -389,7 +448,10 @@ class Weapon(IMechGear):
             self.parse_tags(raw[2].strip())
             self.parse_stats(raw[3], gms=True)
             self.parse_damage(raw[4])
-            self.description = gms
+            for i in range(len(Weapon.GMS_TYPE_LIST)):
+                gms_type = Weapon.GMS_TYPE_LIST[i]
+                if self.name.lower() in gms_type:
+                    self.description = gms[i]
         else:
             # Parse the mount, type, and tags on second line
             if "," in raw[1]:
@@ -403,7 +465,8 @@ class Weapon(IMechGear):
             spec_line = 0
             for i in range(len(raw)):
                 if raw[i].startswith(Weapon.RANGE) or \
-                        raw[i].startswith(Weapon.THREAT):
+                        raw[i].startswith(Weapon.THREAT) or \
+                        raw[i].startswith(Weapon.DAMAGE):
                     spec_line = i
                     break
             self.parse_stats(raw[spec_line])
@@ -436,7 +499,7 @@ class Weapon(IMechGear):
                 # If the range spec is only a number, it is range
                 if r.isnumeric():
                     d = dict([
-                        ("type", Weapon.RANGES["Range"]),
+                        ("type", "Range"),
                         ("val", int(r))
                     ])
                     self.range.append(d)
@@ -464,7 +527,7 @@ class Weapon(IMechGear):
                         r = r.strip()
                         if r.isnumeric():
                             d = dict([
-                                ("type", Weapon.RANGES["Range"]),
+                                ("type", "Range"),
                                 ("val", int(r))
                             ])
                             self.range.append(d)
@@ -473,7 +536,7 @@ class Weapon(IMechGear):
                             if "???" in words:
                                 d = dict([
                                     ("override", True),
-                                    ("type", Weapon.RANGES["Range"]),
+                                    ("type", "Range"),
                                     ("val", "???")
                                 ])
                             else:
@@ -487,7 +550,7 @@ class Weapon(IMechGear):
                     part = part.replace(Weapon.THREAT, "")
                     if part.isnumeric():
                         d = dict([
-                            ("type", Weapon.RANGES["Threat"]),
+                            ("type", "Threat"),
                             ("val", int(part))
                         ])
                         self.range.append(d)
@@ -524,10 +587,7 @@ class Weapon(IMechGear):
                     ("val", "??? kinetic")
                 ])
             elif tokens[0] == "Special":
-                dam = dict([
-                    ("override", True),
-                    ("val", "special")
-                ])
+                return
             else:
                 dam = dict([
                     ("type", tokens[1]),

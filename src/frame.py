@@ -23,8 +23,11 @@ class Frame:
       * MOURNING CLOAK
       * SWALLOWTAIL
       * PEGASUS
+    * In NELSON license table, change "Thermal Charges" to "Thermal Charge"
     * In VLAD, remove the ":" after "MOUNTS".
     * In BALOR, fix rank 3 number in the license table.
+    * In BARBAROSSA, add this line after the name line of Siege Cannon:
+        D: 3d6 explosive
 
     NECESSARY POST-WORK:
     * y_pos and aptitude values need to be manually entered.
