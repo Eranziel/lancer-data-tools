@@ -26,6 +26,8 @@ class IMechGear:
                 for word in words:
                     if word.isdecimal():
                         val = int(word)
+                    elif is_die_roll(word):
+                        val = word
                     else:
                         t_text += " "+word
                 t_text.strip()
@@ -33,7 +35,7 @@ class IMechGear:
                 if val is not None:
                     d["val"] = val
                 # Don't add non-existent tags
-                if d["id"] != "tg_":
+                if d["id"] != "tg_" and not is_duplicate_tag(d, self.tags):
                     self.tags.append(d)
 
     def set_level(self, lic_table):
@@ -319,6 +321,30 @@ class System(IMechGear):
                     self.effect = line.strip()
                 else:
                     self.effect += "<br>"+line.strip()
+
+        # Inherit tags from the effect action, if any.
+        if "mech gains the AI" in raw_effect[0]:
+            # for line in raw_effect:
+            #     print(f"   {line.strip()}")
+            # print(f"")
+            # Line 0 is the system effect,
+            # line 1 is the action name,
+            # line 2 is the tags for the effect.
+            # self.parse_tags(raw_effect[2])
+
+            for line in raw_effect:
+                if line.startswith("- "):
+                    check_line = line.replace("- ", "", 1).strip()
+                else:
+                    check_line = line.strip()
+                if (check_line.startswith("Protocol") or
+                        check_line.endswith("Protocol") or
+                        check_line.startswith("Quick Action") or
+                        check_line.startswith("Full Action") or
+                        check_line.startswith("Quick Tech") or
+                        check_line.startswith("Full Tech") or
+                        check_line.startswith("Reaction")):
+                    self.parse_tags(check_line)
 
         # Set system type based on tags
         for tag in self.tags:

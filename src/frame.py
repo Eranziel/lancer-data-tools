@@ -28,6 +28,9 @@ class Frame:
     * In BALOR, fix rank 3 number in the license table.
     * In BARBAROSSA, add this line after the name line of Siege Cannon:
         D: 3d6 explosive
+    * In GENGHIS, switch "Protocol" and "Limited 1" after "AGNI Protocol" (fixed in next release)
+    * In SHERMAN, move "Protocol" to end of line after "ASURA Protocol" (fixed in next release)
+    * In TOKUGAWA, move "Protocol" to end of line after "AMATERASU Protocol" (fixed in next release)
 
     NECESSARY POST-WORK:
     * y_pos and aptitude values need to be manually entered.
@@ -328,7 +331,8 @@ class Frame:
                          "val": int(words[-1])}
                 else:
                     d = {"id": "tg_"+(t.strip().lower().replace(" ", "_"))}
-                self.core_system["tags"].append(d)
+                if not is_duplicate_tag(d, self.core_system["tags"]):
+                    self.core_system["tags"].append(d)
 
     def to_dict(self):
         return {"id": self.id,
