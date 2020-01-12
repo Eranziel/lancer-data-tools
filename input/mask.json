@@ -529,7 +529,7 @@
     "source": "",
     "license": " ",
     "license_level": "",
-    "effect": "This weapon is an experimental prototype, customized according to your specific requirements.<br>When you install it, or during a FULL REPAIR, you may choose a new weapon type, damage type, and either Threat 1 (melee) or Range 10 (all other types). Additionally, each time you perform a FULL REPAIR, reroll 1d6+2 to determine this weapon’s LIMITED uses and choose two of the following:<br><li>TWEAKED OPTICS: Your prototype weapon always gains +1 ACCURACY on attacks.<li>TWEAKED COMPUTER: Your prototype weapon is SMART.<li>STRIPPED REACTOR SHIELDING: Each time you attack with your prototype weapon, you may choose – at the cost of 2 heat – to attack with one of the following options, depending on its weapon type:<li><li>RANGED WEAPON: CONE 3, LINE 5, or [BLAST 1, RANGE 10].<li><li>MELEE WEAPON: BURST 1.",
+    "effect": "This weapon is an experimental prototype, customized according to your specific requirements.<br>When you install it, or during a FULL REPAIR, you may choose a new weapon type, damage type, and either Threat 1 (melee) or Range 10 (all other types). Additionally, each time you perform a FULL REPAIR, reroll 1d6+2 to determine this weapon’s LIMITED uses and choose two of the following:<br><li>TWEAKED OPTICS: Your prototype weapon always gains +1 ACCURACY on attacks.<li>TWEAKED COMPUTER: Your prototype weapon is SMART.<li>STRIPPED REACTOR SHIELDING: Each time you attack with your prototype weapon, you may choose – at the cost of 2 heat – to attack with one of the following options, depending on its weapon type:<ul><li>RANGED WEAPON: CONE 3, LINE 5, or [BLAST 1, RANGE 10].</li><li>MELEE WEAPON: BURST 1.</li></ul>",
     "description": "Gained from the \"Engineer\" Rank 2 Talent",
     "data_type": "weapon",
     "aptitude": {
@@ -573,7 +573,7 @@
     "source": "",
     "license": " ",
     "license_level": "",
-    "effect": "This weapon is an experimental prototype, customized according to your specific requirements.<br>When you install it, or during a FULL REPAIR, you may choose a new weapon type, damage type, and either Threat 1 (melee) or Range 10 (all other types). Additionally, each time you perform a FULL REPAIR, reroll 2d6 to determine this weapon’s LIMITED uses and choose two of the following:<br><li>TWEAKED OPTICS: Your prototype weapon always gains +1 ACCURACY on attacks.<li>TWEAKED COMPUTER: Your prototype weapon is SMART.<li>STRIPPED REACTOR SHIELDING: Each time you attack with your prototype weapon, you may choose – at the cost of 2 heat – to attack with one of the following options, depending on its weapon type:<li><li>RANGED WEAPON: CONE 3, LINE 5, or [BLAST 1, RANGE 10].<li><li>MELEE WEAPON: BURST 1.",
+    "effect": "This weapon is an experimental prototype, customized according to your specific requirements.<br>When you install it, or during a FULL REPAIR, you may choose a new weapon type, damage type, and either Threat 1 (melee) or Range 10 (all other types). Additionally, each time you perform a FULL REPAIR, reroll 2d6 to determine this weapon’s LIMITED uses and choose two of the following:<br><li>TWEAKED OPTICS: Your prototype weapon always gains +1 ACCURACY on attacks.<li>TWEAKED COMPUTER: Your prototype weapon is SMART.<li>STRIPPED REACTOR SHIELDING: Each time you attack with your prototype weapon, you may choose – at the cost of 2 heat – to attack with one of the following options, depending on its weapon type:<ul><li>RANGED WEAPON: CONE 3, LINE 5, or [BLAST 1, RANGE 10].</li><li>MELEE WEAPON: BURST 1.</li></ul>",
     "description": "Gained from the \"Engineer\" Rank 3 Talent",
     "data_type": "weapon",
     "aptitude": {
@@ -760,14 +760,14 @@
     "sp": 0,
     "tags": [
       {
-        "id": "limited",
+        "id": "tg_limited",
         "val": 6
       }
     ],
     "source": "",
     "license": "",
     "license_level": 0,
-    "effect": "1/turn, when you attack with a MAIN ranged weapon, you may expend charges to apply one of the following effects to your attack at the listed cost:<br><li>THUMPER (1 charge): The attack gains KNOCKBACK 1 and deals explosive damage.<br><li>SHOCK (1 charge): The attack deals energy damage. Choose one character targeted by your attack; adjacent characters take 1 energy AP, whether the result is a hit or miss.<br><li>MAG (1 charge): The attack gains ARCING and deals kinetic damage. ",
+    "effect": "1/turn, when you attack with a MAIN ranged weapon, you may expend charges to apply one of the following effects to your attack at the listed cost:<li>THUMPER (1 charge): The attack gains KNOCKBACK 1 and deals explosive damage.</li><li>SHOCK (1 charge): The attack deals energy damage. Choose one character targeted by your attack; adjacent characters take 1 energy AP, whether the result is a hit or miss.</li><li>MAG (1 charge): The attack gains ARCING and deals kinetic damage.</li>",
     "description": "Gained from the <i>Walking Armory: Rank I</i> pilot talent."
   },
   {
@@ -780,14 +780,14 @@
     "sp": 0,
     "tags": [
       {
-        "id": "limited",
+        "id": "tg_limited",
         "val": 6
       }
     ],
     "source": "",
     "license": "",
     "license_level": 0,
-    "effect": "1/turn, when you attack with a MAIN ranged weapon, you may expend charges to apply one of the following effects to your attack at the listed cost:<br><li> THUMPER (1 charge): The attack gains KNOCKBACK 1 and deals explosive damage.<br><li> SHOCK (1 charge): The attack deals energy damage. Choose one character targeted by your attack; adjacent characters take 1 energy AP, whether the result is a hit or miss.<br><li> MAG (1 charge): The attack gains ARCING and deals kinetic damage. </li><br>You can expend two charges for the following ammo types:<br><li>HELLFIRE (2 charges): The attack deals energy damage and deals any bonus damage as burn.<br><li>JAGER (2 charges): The attack gains KNOCKBACK 2, deals explosive damage, and one character hit by the attack – your choice – must succeed on a HULL save or be knocked PRONE.<br><li>SABOT (2 charges): The attack gains AP and deals kinetic damage.",
+    "effect": "1/turn, when you attack with a MAIN ranged weapon, you may expend charges to apply one of the following effects to your attack at the listed cost:<li>THUMPER (1 charge): The attack gains KNOCKBACK 1 and deals explosive damage.</li><li>SHOCK (1 charge): The attack deals energy damage. Choose one character targeted by your attack; adjacent characters take 1 energy AP, whether the result is a hit or miss.</li><li>MAG (1 charge): The attack gains ARCING and deals kinetic damage.</li><br>You can expend two charges for the following ammo types:<li>HELLFIRE (2 charges): The attack deals energy damage and deals any bonus damage as burn.</li><li>JAGER (2 charges): The attack gains KNOCKBACK 2, deals explosive damage, and one character hit by the attack – your choice – must succeed on a HULL save or be knocked PRONE.</li><li>SABOT (2 charges): The attack gains AP and deals kinetic damage.</li>",
     "description": "Gained from the <i>Walking Armory: Rank II</i> pilot talent."
   },
   {
@@ -800,14 +800,14 @@
     "sp": 0,
     "tags": [
       {
-        "id": "limited",
+        "id": "tg_limited",
         "val": 6
       }
     ],
     "source": "",
     "license": "",
     "license_level": 0,
-    "effect": "1/turn, when you attack with a MAIN ranged weapon, you may expend charges to apply one of the following effects to your attack at the listed cost:<br><li> THUMPER (1 charge): The attack gains KNOCKBACK 1 and deals explosive damage.<br><li> SHOCK (1 charge): The attack deals energy damage. Choose one character targeted by your attack; adjacent characters take 1 energy AP, whether the result is a hit or miss.<br><li> MAG (1 charge): The attack gains ARCING and deals kinetic damage. </li><br>You can expend two charges for the following ammo types:<br><li>HELLFIRE (2 charges): The attack deals energy damage and deals any bonus damage as burn.<br><li>JAGER (2 charges): The attack gains KNOCKBACK 2, deals explosive damage, and one character hit by the attack – your choice – must succeed on a HULL save or be knocked PRONE.<br><li>SABOT (2 charges): The attack gains AP and deals kinetic damage.<br>If you perform a critical hit using ammunition from your AMMO CASE, you don’t expend any charges. If your attack has more than one target, this effect only applies to the first attack roll you make.",
+    "effect": "1/turn, when you attack with a MAIN ranged weapon, you may expend charges to apply one of the following effects to your attack at the listed cost:<li>THUMPER (1 charge): The attack gains KNOCKBACK 1 and deals explosive damage.</li><li>SHOCK (1 charge): The attack deals energy damage. Choose one character targeted by your attack; adjacent characters take 1 energy AP, whether the result is a hit or miss.</li><li>MAG (1 charge): The attack gains ARCING and deals kinetic damage.</li><br>You can expend two charges for the following ammo types:<li>HELLFIRE (2 charges): The attack deals energy damage and deals any bonus damage as burn.</li><li>JAGER (2 charges): The attack gains KNOCKBACK 2, deals explosive damage, and one character hit by the attack – your choice – must succeed on a HULL save or be knocked PRONE.</li><li>SABOT (2 charges): The attack gains AP and deals kinetic damage.</li><br>If you perform a critical hit using ammunition from your AMMO CASE, you don’t expend any charges. If your attack has more than one target, this effect only applies to the first attack roll you make.",
     "description": "Gained from the <i>Walking Armory: Rank III</i> pilot talent."
   }
 ]
