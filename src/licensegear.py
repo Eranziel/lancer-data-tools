@@ -10,6 +10,11 @@ class IMechGear:
     """
 
     def parse_tags(self, tagline):
+        """
+        Parse tags for mech gear.
+        @param tagline: str: The line of text which contains the tags.
+        @return: None.
+        """
         if "SP" in tagline:
             self.sp = int(tagline.split(",")[0].split(" ")[0])
             # Take the "X SP," substring off of the front.
@@ -39,6 +44,12 @@ class IMechGear:
                     self.tags.append(d)
 
     def set_level(self, lic_table):
+        """
+        Set the license and level for the piece of gear.
+        @param lic_table: [[str]]: 1st index is the license level, 2nd index is the
+        name of the gear/frame that unlocks at that level.
+        @return: None.
+        """
         for i in range(len(lic_table)):
             for item in lic_table[i]:
                 if " frame" in item:
@@ -55,7 +66,7 @@ class Mod(IMechGear):
     """
     Class for weapon mods.
     NECESSARY PREP WORK:
-    *
+    * Each weapon must be preceded and followed by an empty line.
     """
 
     PREFIX = "wm_"
@@ -109,6 +120,12 @@ class Mod(IMechGear):
         return output
 
     def parse_text(self, raw_text, src):
+        """
+        Parse the raw text for the weapon mod.
+        @param raw_text: [str]: The text to parse.
+        @param src: str: The source manufacturer.
+        @return: None.
+        """
         self.source = src
         self.name = raw_text[0].strip()
         self.id = gen_id(Mod.PREFIX, self.name)
@@ -150,7 +167,7 @@ class Mod(IMechGear):
     def parse_applied(self):
         """
         Check the effect line for the weapons this mod can apply to.
-        @return:
+        @return: None.
         """
         applied_list = self.effect[:self.effect.find(":")]
 
@@ -280,6 +297,12 @@ class System(IMechGear):
         return output
 
     def parse_text(self, raw_text, src):
+        """
+        Parse the text for the mech system.
+        @param raw_text: [str]: The raw text.
+        @param src: str: The source manufacturer.
+        @return: None.
+        """
         self.source = src
         self.name = raw_text[0].strip()
         self.id = gen_id(System.PREFIX, self.name)
@@ -324,14 +347,6 @@ class System(IMechGear):
 
         # Inherit tags from the effect action, if any.
         if "mech gains the AI" in raw_effect[0]:
-            # for line in raw_effect:
-            #     print(f"   {line.strip()}")
-            # print(f"")
-            # Line 0 is the system effect,
-            # line 1 is the action name,
-            # line 2 is the tags for the effect.
-            # self.parse_tags(raw_effect[2])
-
             for line in raw_effect:
                 if line.startswith("- "):
                     check_line = line.replace("- ", "", 1).strip()
@@ -479,6 +494,13 @@ class Weapon(IMechGear):
         return output
 
     def parse_text(self, raw, gms, src):
+        """
+        Parse the raw text for the weapon.
+        @param raw: [str]: The text to parse.
+        @param gms: [str] or None: List of GMS weapon descriptions.
+        @param src: str: Source manufacturer.
+        @return: None.
+        """
         self.source = src
         self.name = raw[0].strip()
         self.id = gen_id(Weapon.PREFIX, self.name)
@@ -529,11 +551,22 @@ class Weapon(IMechGear):
                     self.effect += line.strip()
 
     def parse_type(self, type_line):
+        """
+        Parse the weapon size and type.
+        @param type_line: str: Text for the size and type.
+        @return: None.
+        """
         words = type_line.split(" ")
         self.mount = words[0].strip()
         self.type = words[1].strip()
 
     def parse_stats(self, line, gms=False):
+        """
+        Parse the range and damage spec line.
+        @param line: str: The line with range and damage.
+        @param gms: bool: If True, use GMS table parsing.
+        @return: None.
+        """
         if gms:
             line = line.strip()
             if "/" in line:
@@ -604,6 +637,11 @@ class Weapon(IMechGear):
                     self.parse_damage(part.replace(Weapon.DAMAGE, ""))
 
     def parse_damage(self, dam_str):
+        """
+        Parse the damage string.
+        @param dam_str: str: Damage string.
+        @return: None.
+        """
         dam_str = dam_str.strip().replace(".", "")
         delim = " + "
         types = []

@@ -64,6 +64,12 @@ def check_section(start, end):
 
 
 def read_override(file_name):
+    """
+    Reads the override mask file and returns a list of dicts representing
+    the contents.
+    @param file_name: str: the name of the mask file.
+    @return: [dict]: JSON from the mask file, converted to list of dicts.
+    """
     try:
         with open(file_name, 'r', encoding='utf-8') as mask_file:
             file_lines = mask_file.readlines()
@@ -77,6 +83,14 @@ def read_override(file_name):
 
 
 def apply_override(original, mask):
+    """
+    Applies the given mask data.
+    @param original: dict: The parsed data to be overridden.
+    @param mask: [dict]: The data read from the mask file.
+    @return: dict: Returns a copy of original. Matching keys take the
+    value from the mask, keys in the mask which aren't in original are
+    added, and any list keys are merged.
+    """
     result = original
     # Overrides need an ID to reference
     if "id" in original.keys() and mask != []:
@@ -89,6 +103,15 @@ def apply_override(original, mask):
 
 
 def add_missing_overrides(js_list, mask, prefix):
+    """
+    Adds elements from the mask which aren't present in the parsed data.
+    @param js_list: [dict]: The parsed data.
+    @param mask: [dict]: The data read from the mask file.
+    @param prefix: str: The id prefix being handled.
+    @return: [dict]: Returns a copy of js_list. If there are id's in mask
+    which start with prefix and aren't present in js_list, they are inserted
+    into the returned copy.
+    """
     if mask == [] or js_list == []:
         return
     for m in mask:
@@ -103,6 +126,11 @@ def add_missing_overrides(js_list, mask, prefix):
 
 
 def weapon_check(txt):
+    """
+    Check whether a text hunk is a weapon.
+    @param txt: [str]: The text hunk to check.
+    @return: bool: True if the hunk is a weapon.
+    """
     result = False
     for line in txt:
         if line.startswith("---"):
@@ -113,12 +141,22 @@ def weapon_check(txt):
 
 
 def mod_check(txt):
+    """
+    Check whether a text hunk is a weapon mod.
+    @param txt: [str]: The text hunk to check.
+    @return: bool: True if the hunk is a weapon mod.
+    """
     if len(txt) >= 2 and "Mod" in txt[1]:
         return True
     return False
 
 
 def sys_check(txt):
+    """
+    Check whether a text hunk is a system.
+    @param txt: [str]: The text hunk to check.
+    @return: bool: True if the hunk is a system.
+    """
     result = False
     if "Mod" in txt[1]:
         return False

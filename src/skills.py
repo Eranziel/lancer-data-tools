@@ -36,6 +36,11 @@ class Skill:
         return output
 
     def parse_raw_text(self, raw_text):
+        """
+        Parse the text for a pilot skill.
+        @param raw_text: [str]: The text to parse.
+        @return: None.
+        """
         self.name = raw_text[0].strip()
         self.id = gen_id(Skill.PREFIX, self.name)
         # self.id = "sk_"+self.name.lower().replace(" ", "_")

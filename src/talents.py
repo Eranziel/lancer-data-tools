@@ -43,6 +43,11 @@ class Talent:
         return output
 
     def parse_raw_text(self, raw_text):
+        """
+        Parse the text for a pilot talent.
+        @param raw_text: [str]: The text to parse.
+        @return: None.
+        """
         RANK = [u" (RANK I): ",
                 u" (RANK II): ",
                 u" (RANK III): "]

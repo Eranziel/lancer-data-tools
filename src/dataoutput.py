@@ -9,6 +9,11 @@ class DataOutput:
         self.target = target
 
     def write(self, data):
+        """
+        Write data to self.target.
+        @param data: str: The data to write.
+        @return: None.
+        """
         if self.target is not None and self.target != "stdout":
             try:
                 with open(self.target, 'w') as f:

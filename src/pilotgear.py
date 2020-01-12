@@ -35,10 +35,9 @@ class PilotGear:
         """
         Initializer for Pilot Gear. Can either create a blank instance,
         or initialize a weapon, armor, or gear.
-        @param raw_weapon: 3-tuple for weapon of raw text,
-        threat flag, range flag (str, bool, bool).
-        @param raw_armor: raw text for armor.
-        @param raw_gear: raw text for gear.
+        @param raw_weapon: (str, bool, bool): raw text, threat flag, range flag.
+        @param raw_armor: str: raw text for armor.
+        @param raw_gear: str: raw text for gear.
         """
         self.id = ""
         self.type = ""
@@ -107,11 +106,11 @@ class PilotGear:
 
     def parse_weapon(self, raw_text, w_threat=False, w_range=False):
         """
-        Parses raw weapon text into the object.
-        @param raw_text: Raw text, stored as a list of strings.
-        @param w_threat: Flag for whether the weapon was in a table with a
+        Parse the text for the pilot weapon.
+        @param raw_text: [str]: Text to parse.
+        @param w_threat: bool: Flag for whether the weapon was in a table with a
         Threat column.
-        @param w_range: Flag for whether the weapon was in a table with a
+        @param w_range: bool: Flag for whether the weapon was in a table with a
         Range column.
         @return: None
         """
@@ -167,8 +166,8 @@ class PilotGear:
 
     def parse_armor(self, raw_text):
         """
-        Parses raw armor text into the object.
-        @param raw_text: Raw text as a list of strings
+        Parse the raw text for a pilot armor.
+        @param raw_text: [str]: Text to parse.
         @return: None
         """
         self.type = PilotGear.TYPE_ARMOR
@@ -195,8 +194,8 @@ class PilotGear:
 
     def parse_gear(self, raw_text):
         """
-        Parses raw gear text into the object
-        @param raw_text: Raw text as a list of strings
+        Parse the raw text for a pilot gear.
+        @param raw_text: [str]: Text to parse.
         @return: None
         """
         self.type = PilotGear.TYPE_GEAR
@@ -225,6 +224,11 @@ class PilotGear:
         self.description = new_desc
 
     def parse_tags(self, tagline):
+        """
+        Parse the tags for the pilot gear.
+        @param tagline: str: The line of text containing the tags.
+        @return: None.
+        """
         tags = tagline.split(",")
         for t in tags:
             if t != "-\n":

@@ -36,6 +36,11 @@ class Tag:
         return output
 
     def parse_raw_text(self, raw_text):
+        """
+        Parse the text for a gear tag.
+        @param raw_text: [str]: The text to parse.
+        @return: None.
+        """
         VAL = " X", " {VAL}"
 
         # Strip out the bullet

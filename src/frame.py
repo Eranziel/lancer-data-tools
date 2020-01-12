@@ -6,7 +6,7 @@ from parseutil import *
 
 class Frame:
     """
-    Class for frame data
+    Class for frame data.
     NECESSARY PREP-WORK:
     * Make sure each frame is preceded by an empty line.
     * Make sure there are no empty lines in the frame block - from frame name to
@@ -79,7 +79,7 @@ class Frame:
         """
         Initializer for Frame. Can either create a blank instance, or parse
         text.
-        @param raw_text: raw text for the frame
+        @param raw_text: [str]: raw text for the frame
         """
         self.id = ""
         self.source = ""
@@ -144,6 +144,11 @@ class Frame:
         return output
 
     def parse_frame(self, raw_text):
+        """
+        Parse the raw text for a mech frame.
+        @param raw_text: [str]: The raw text to parse.
+        @return: None.
+        """
         name = raw_text[0].strip()
         spc = name.find(" ")
         # First line is the frame's name, minus the manufacturer acronym.
@@ -316,6 +321,11 @@ class Frame:
                 self.core_system["active_effect"] += "<br>"+line.strip()
 
     def parse_tags(self, tagline):
+        """
+        Parse the tags from the given line of text.
+        @param tagline: str: The line which contains tags.
+        @return: None.
+        """
         tags = tagline.split(",")
         for t in tags:
             if t != "-\n":

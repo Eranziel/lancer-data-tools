@@ -3,6 +3,12 @@
 
 
 def gen_id(prefix, name):
+    """
+    Generate item ID from its name.
+    @param prefix: str: The prefix for this data type.
+    @param name: str: The item's name.
+    @return: str: The generated id. Should only contain lowercase alphanumeric and _.
+    """
     return prefix + name.strip().lower().replace(" ", "_").replace("/", "_").\
         replace("-", "_").replace("-", "_").replace("'", "").replace("\"", "").\
         replace("(", "").replace(")", "")

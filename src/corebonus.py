@@ -46,6 +46,11 @@ class CoreBonus:
         return output
 
     def parse_text(self, raw):
+        """
+        Parse the text for a core bonus.
+        @param raw: str: The text to parse.
+        @return: None.
+        """
         self.source = raw[0].strip()
         text = raw[1]
 
