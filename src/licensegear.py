@@ -174,7 +174,7 @@ class Mod(IMechGear):
         # Find all the weapon types mentioned in the mod's effect.
         for word in applied_list.strip().replace(",", "").split(" "):
             if word in Weapon.TYPES:
-                self.applied_to.append(word.strip())
+                self.applied_to.append(word.strip().lower())
 
         # Create the applied string - user-visible string.
         # Start by checking whether it works on all weapons.
@@ -212,7 +212,7 @@ class Mod(IMechGear):
                         self.applied_string += ", " + a_t
         # If we get to here and applied_to and applied_string are empty, it applies to all.
         if self.applied_string == "" and len(self.applied_to) == 0:
-            self.applied_to = Weapon.TYPES.copy()
+            self.applied_to = [item.lower() for item in Weapon.TYPES]
             self.applied_string = "Any"
 
     def to_dict(self):
