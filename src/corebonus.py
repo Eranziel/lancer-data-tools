@@ -48,7 +48,8 @@ class CoreBonus:
     def parse_text(self, raw):
         """
         Parse the text for a core bonus.
-        @param raw: str: The text to parse.
+        @param raw: (str, [str]): First index is the source manufacturer.
+        Second index is the text to parse.
         @return: None.
         """
         self.source = raw[0].strip()
@@ -56,9 +57,15 @@ class CoreBonus:
 
         self.name = text[0].strip()
         self.id = gen_id(CoreBonus.PREFIX, self.name)
-        # self.id = "cb_" + self.name.lower().replace(" ", "_").replace("-", "_").replace("'", "")
-        self.description = text[1].strip()
-        self.effect = text[2].strip()
+        print(f"{self.name} text len: {len(text)}")
+        for line in text[1:-1]:
+            if line.strip().startswith("- "):
+                line = line.strip().replace("- ", "<li>", 1).strip()
+            if self.description == "":
+                self.description = line.strip()
+            else:
+                self.description += "<br>" + line.strip()
+        self.effect = text[-1].strip()
 
     def to_dict(self):
         return dict([

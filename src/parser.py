@@ -472,11 +472,21 @@ if __name__ == "__main__":
                 frames.append(Frame(raw_text=hunk))
             #   Core Bonuses
             elif CoreBonus.CORE in hunk[0]:
-                text = hunk[1:]
-                for i in range(len(text)):
-                    if text[i].isupper():
-                        raw = (source, text[i:i + 3])
-                        coreBonuses.append(CoreBonus(raw=raw))
+                txt = hunk[1:]
+                cap_lines = []
+                for i in range(len(txt)):
+                    if txt[i].isupper():
+                        cap_lines.append(i)
+                for i in range(len(cap_lines)):
+                    if i < len(cap_lines)-1:
+                        raw = (source, txt[cap_lines[i]:cap_lines[i+1]])
+                    else:
+                        raw = (source, txt[cap_lines[i]:])
+                    coreBonuses.append(CoreBonus(raw=raw))
+                # for i in range(len(text)):
+                #     if text[i].isupper():
+                #         raw = (source, text[i:i + 3])
+                #         coreBonuses.append(CoreBonus(raw=raw))
             #   Weapons
             elif gmsSec == "Weapons":
                 # All GMS weapon entries are 5 lines
