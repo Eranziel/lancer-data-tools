@@ -9,6 +9,7 @@ import json
 from deepmerge import always_merger
 
 from frame import Frame
+from manufacturer import Manufacturer
 from corebonus import CoreBonus
 from licensegear import Mod, System, Weapon
 from talents import Talent
@@ -402,6 +403,7 @@ if __name__ == "__main__":
         rawFrames = rawLines[s:e + 1]
         frameHunks = []
         frames = []
+        manufacturers = []
         coreBonuses = []
         systems = []
         weapons = []
@@ -470,10 +472,16 @@ if __name__ == "__main__":
             #   Frames
             if Frame.CORE_STATS in hunk:
                 frames.append(Frame(raw_text=hunk))
+            #   Manufacturers
+            elif hunk[0] in Manufacturer.TITLES:
+                manufacturers.append(Manufacturer(raw=hunk))
             #   Core Bonuses
             elif CoreBonus.CORE in hunk[0]:
                 txt = hunk[1:]
                 cap_lines = []
+                # Each core bonus is named by a line that is all upper case.
+                # Find those lines and split the text into separate core bonuses
+                # accordingly.
                 for i in range(len(txt)):
                     if txt[i].isupper():
                         cap_lines.append(i)
@@ -483,10 +491,6 @@ if __name__ == "__main__":
                     else:
                         raw = (source, txt[cap_lines[i]:])
                     coreBonuses.append(CoreBonus(raw=raw))
-                # for i in range(len(text)):
-                #     if text[i].isupper():
-                #         raw = (source, text[i:i + 3])
-                #         coreBonuses.append(CoreBonus(raw=raw))
             #   Weapons
             elif gmsSec == "Weapons":
                 # All GMS weapon entries are 5 lines
@@ -520,6 +524,18 @@ if __name__ == "__main__":
             j.append(apply_override(frame.to_dict(), mask))
         add_missing_overrides(j, mask, Frame.PREFIX)
         print(f"Outputting JSON for {len(frames)} frames to {dOut.target}")
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+
+        # Create data output for manufactuers
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(MANUFACTURERS)
+        j = []
+        for mfr in manufacturers:
+            j.append(apply_override(mfr.to_dict(), mask))
+        add_missing_overrides(j, mask, Manufacturer.PREFIX)
+        print(f"Outputting JSON for {len(manufacturers)} manufacturers to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
 
         # Create data output for core bonuses

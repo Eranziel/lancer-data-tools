@@ -809,5 +809,25 @@
     "license_level": 0,
     "effect": "1/turn, when you attack with a MAIN ranged weapon, you may expend charges to apply one of the following effects to your attack at the listed cost:<li>THUMPER (1 charge): The attack gains KNOCKBACK 1 and deals explosive damage.</li><li>SHOCK (1 charge): The attack deals energy damage. Choose one character targeted by your attack; adjacent characters take 1 energy AP, whether the result is a hit or miss.</li><li>MAG (1 charge): The attack gains ARCING and deals kinetic damage.</li><br>You can expend two charges for the following ammo types:<li>HELLFIRE (2 charges): The attack deals energy damage and deals any bonus damage as burn.</li><li>JAGER (2 charges): The attack gains KNOCKBACK 2, deals explosive damage, and one character hit by the attack – your choice – must succeed on a HULL save or be knocked PRONE.</li><li>SABOT (2 charges): The attack gains AP and deals kinetic damage.</li><br>If you perform a critical hit using ammunition from your AMMO CASE, you don’t expend any charges. If your attack has more than one target, this effect only applies to the first attack roll you make.",
     "description": "Gained from the <i>Walking Armory: Rank III</i> pilot talent."
+  },
+  {
+    "id": "mfr_general_massive_systems",
+    "color": "#b30c1d"
+  },
+  {
+    "id": "mfr_ips_northstar",
+    "color": "#1661b8"
+  },
+  {
+    "id": "mfr_smith_shimano_corpro",
+    "color": "#d1920a"
+  },
+  {
+    "id": "mfr_horus",
+    "color": "#00a256"
+  },
+  {
+    "id": "mfr_harrison_armory",
+    "color": "#6e4373"
   }
 ]

@@ -57,7 +57,6 @@ class CoreBonus:
 
         self.name = text[0].strip()
         self.id = gen_id(CoreBonus.PREFIX, self.name)
-        print(f"{self.name} text len: {len(text)}")
         for line in text[1:-1]:
             if line.strip().startswith("- "):
                 line = line.strip().replace("- ", "<li>", 1).strip()
