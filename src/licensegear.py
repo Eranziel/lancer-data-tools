@@ -518,7 +518,25 @@ class Weapon(IMechGear):
         else:
             # Parse the mount, type, and tags on second line
             if "," in raw[1]:
-                type_line, d, tags = raw[1].strip().partition(", ")
+                tag_line = raw[1].strip()
+                if "SP" in tag_line:
+                    tokens = tag_line.split(", ")
+                    # Find and parse the SP
+                    print(f"{tokens}")
+                    for t in tokens:
+                        if "SP" in t:
+                            self.parse_tags(t)
+                            tokens.remove(t)
+                            break
+                    print(f"{tokens}")
+                    tag_line = ""
+                    # Reconstruct the line without SP
+                    for t in tokens:
+                        if tag_line == "":
+                            tag_line = t
+                        else:
+                            tag_line += ", " + t
+                type_line, d, tags = tag_line.strip().partition(", ")
                 self.parse_type(type_line)
                 self.parse_tags(tags)
             else:
