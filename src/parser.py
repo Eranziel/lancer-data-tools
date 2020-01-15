@@ -16,6 +16,7 @@ from talents import Talent
 from tags import Tag
 from pilotgear import PilotGear
 from skills import Skill
+from statuses import Status
 from dataoutput import DataOutput
 
 rawLines = []
@@ -31,6 +32,7 @@ SYSTEMS = "../output/systems.json"
 TAGS = "../output/tags.json"
 TALENTS = "../output/talents.json"
 WEAPONS = "../output/weapons.json"
+STATUSES = "../output/statuses.json"
 
 
 def check_section(start, end):
@@ -180,6 +182,8 @@ if __name__ == "__main__":
                         help="Generate skill trigger JSON.")
     parser.add_argument("-f", "--frames", action="store_true",
                         help="Generate frame, core bonus, and mech gear JSON.")
+    parser.add_argument("-S", "--statuses", action="store_true",
+                        help="Generate status/condition JSON.")
     parser.add_argument("-m", "--mask", nargs=1,
                         help="Specify a mask file with overrides for specific id's.")
     parser.add_argument("raw", help="raw text input file")
@@ -590,4 +594,43 @@ if __name__ == "__main__":
             # print("\n" + str(system))
         add_missing_overrides(j, mask, System.PREFIX)
         print(f"Outputting JSON for {len(systems)} systems to {dOut.target}")
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+    if args.statuses:
+        pass
+        # Create data output
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(STATUSES)
+        inStatuses = False
+
+        # Parse the text
+        s, e = check_section(Status.START, Status.END)
+        print(f"Statuses start: {s}, end: {e}")
+        rawStatuses = rawLines[s:e + 1]
+        statuses = []
+        # Each new status starts with a line in upper case.
+        cap_lines = []
+        stat = False
+        for i in range(len(rawStatuses)):
+            if rawStatuses[i].isupper():
+                cap_lines.append(i)
+        for i in range(len(cap_lines)):
+            idx = cap_lines[i]
+            if rawStatuses[idx] == Status.START[0]:
+                pass
+            elif rawStatuses[idx] == Status.STATUS:
+                stat = True
+            elif rawStatuses[idx] == Status.CONDITION:
+                stat = False
+            else:
+                if i < len(cap_lines) - 1:
+                    statuses.append(Status(rawStatuses[idx:cap_lines[i+1]], stat))
+                else:
+                    statuses.append(Status(rawStatuses[idx:], stat))
+        j = []
+        for s in statuses:
+            j.append(apply_override(s.to_dict(), mask))
+        add_missing_overrides(j, mask, Status.PREFIX)
+        print(f"Outputting JSON for {len(statuses)} statuses to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
