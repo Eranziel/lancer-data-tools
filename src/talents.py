@@ -9,14 +9,16 @@ class Talent:
     Class for talent data
     NECESSARY PREP-WORK:
     * Ensure each talent is preceded and followed by one empty line.
+    * Fix broken newlines - make sure each Rank starts on a new line.
+    * Grease Monkey: Rank 3 is numbered 2.
     """
 
-    START = ["ACE\n",
-             "Every pilot brags about their abilities; ",
-             "Whether you're a talented rookie"]
-    END = ["- SABOT (2 charges): The attack ",
-           "EFFICIENCY (RANK III): If you perform ",
-           "\n"]
+    START = ["Ace\n",
+             "Every pilot brags about their abilities;",
+             "Whether you’re a talented rookie or a grizzled "]
+    END = ["- Sabot (2 charges): The attack gains AP",
+           "Rank 3: Efficiency\n",
+           "If you perform a critical hit using"]
 
     PREFIX = "t_"
 
@@ -32,7 +34,6 @@ class Talent:
 
     def __str__(self):
         output = "\n============== TALENT ===================="
-        output += f"\nrank start: {rank_start}"
         output += f"\nid: {self.id}"
         output += f"\nname: {self.name}"
         output += f"\ndesc: {self.description}\n"
@@ -48,9 +49,9 @@ class Talent:
         @param raw_text: [str]: The text to parse.
         @return: None.
         """
-        RANK = [u" (RANK I): ",
-                u" (RANK II): ",
-                u" (RANK III): "]
+        RANK = ["Rank 1: ",
+                "Rank 2: ",
+                "Rank 3: "]
 
         name_line = -1
         rank_start = [-1, -1, -1]
@@ -58,7 +59,7 @@ class Talent:
             line = raw_text[i].strip()
             # Name is the first non-empty line
             if self.name == "" and line != "":
-                self.name = line
+                self.name = line.upper()
                 self.id = gen_id(Talent.PREFIX, self.name)
                 # self.id = "t_"+self.name.lower().replace(" ", "_")
                 name_line = i
@@ -79,10 +80,9 @@ class Talent:
         # Get ranks text
         for i in range(len(rank_start)):
             line = raw_text[rank_start[i]].strip()
-            r_name_end = line.find(RANK[i])
-            r_desc_start = r_name_end + len(RANK[i])
-            self.ranks[i]["name"] = line[:r_name_end].strip()
-            r_desc = line[r_desc_start:].strip()
+            self.ranks[i]["name"] = line.split(":")[1].strip().upper()
+
+            r_desc = ""
             # Get the line the next rank starts on.
             if i < len(rank_start)-1:
                 next_r = rank_start[i+1]
@@ -92,9 +92,13 @@ class Talent:
             for line in raw_text[rank_start[i]+1:next_r]:
                 # Use html formatting for bullets
                 if line.startswith("- "):
-                    r_desc += "<li>" + line[2:].strip()
+                    line = line.replace("- ", "<li>", 1).strip()
+                if r_desc == "":
+                    r_desc = line.strip()
                 else:
                     r_desc += "<br>" + line.strip()
+            # Get rid of extraneous line breaks.
+            r_desc = r_desc.replace("<br><li>", "<li>")
             self.ranks[i]["description"] = r_desc
 
     def set_id(self, new_id):

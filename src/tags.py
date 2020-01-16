@@ -7,14 +7,14 @@ from parseutil import *
 class Tag:
     """Class for tag data"""
 
-    START = ["HARM TYPE\n",
-             "Weapons deal one of four types of damage - ",
-             "- BURN X: On a hit, this weapon deals X"]
-    END = ["- PERSONAL ARMOR: This gear offers protection in combat, ",
-           "- GEAR: This is a tool, piece of equipment, ",
-           "- SIDEARM: This weapon can be used to FIGHT "]
+    START = ["Harm type\n",
+             "Weapons deal one of four types of damage – ",
+             "Burn X: On a hit, this weapon deals X"]
+    END = ["Personal Armor: This gear offers protection ",
+           "Gear: This is a tool, piece of equipment,",
+           "Sidearm: This weapon can be used to Fight"]
 
-    FILT_IGN = ["PATTERNS\n", "OTHER WEAPON TAGS\n"]
+    FILT_IGN = ["Patterns\n", "Accurate: Attacks"]
 
     PREFIX = "tg_"
 
@@ -41,25 +41,28 @@ class Tag:
         @param raw_text: [str]: The text to parse.
         @return: None.
         """
-        VAL = " X", " {VAL}"
+        VAL = ((" X", " {VAL}"),
+               ("X/", "{VAL}/"))
 
-        # Strip out the bullet
-        parts = raw_text[2:].split(":")
-        self.name = parts[0]
+        parts = raw_text.strip().split(":")
+        self.name = parts[0].upper()
         # Ugly hack of a special case for AP.
         if "(AP)" in self.name:
-            self.id = gen_id(Tag.PREFIX,
-                             "AP")
+            self.id = gen_id(Tag.PREFIX, "AP")
         else:
             self.id = gen_id(Tag.PREFIX, self.name)
+        # Make the tag ID as though it did not have the X at the end.
+        # Is this necessary? Probably not...
         self.id = self.id.replace("_x", "")
-        # self.id = "tg_"+self.name.lower().replace(" ", "_").replace("(", "").replace(")", "").replace("_x", "")
-        if VAL[0] in self.name:
-            # print(f"Replace {VAL[0]} in {self.name} with {VAL[1]}")
-            self.name = self.name.replace(VAL[0], VAL[1])
+
         self.description = parts[1].strip()
-        if VAL[0] in self.description:
-            self.description = self.description.replace(VAL[0], VAL[1])
+        # Check whether this tag has a value.
+        for v_type in VAL:
+            if v_type[0] in self.name:
+                # print(f"Replace {VAL[0]} in {self.name} with {VAL[1]}")
+                self.name = self.name.replace(v_type[0], v_type[1])
+            if v_type[0] in self.description:
+                self.description = self.description.replace(v_type[0], v_type[1])
 
     def set_id(self, new_id):
         self.id = new_id

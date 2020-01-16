@@ -216,9 +216,12 @@ if __name__ == "__main__":
             if rawTalents[i] == "\n":
                 talentHunks.append(rawTalents[prev:i])
                 prev = i + 1
+        # Get the final hunk.
+        talentHunks.append(rawTalents[prev:])
 
         talents = []
         for t in talentHunks:
+            print(f"{t}")
             talents.append(Talent(t))
 
         # Create data output
@@ -243,12 +246,12 @@ if __name__ == "__main__":
         tags = []
         in_ignore = False
         for rt in rawTags:
-            if not in_ignore and rt == Tag.FILT_IGN[0]:
+            if not in_ignore and rt.startswith(Tag.FILT_IGN[0]):
                 in_ignore = True
-            elif in_ignore and rt == Tag.FILT_IGN[1]:
+            elif in_ignore and rt.startswith(Tag.FILT_IGN[1]):
                 in_ignore = False
-            # Only process lines that start with a bullet
-            if rt.startswith("- "):
+            # Only process lines that have a colon near the start
+            if ": " in rt[:40]:
                 tag = Tag(rt.strip())
                 if in_ignore:
                     tag.set_filter(True)
