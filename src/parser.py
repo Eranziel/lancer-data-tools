@@ -311,43 +311,15 @@ if __name__ == "__main__":
                     inGear = True
             # Parse pilot weapons
             if inWeapons:
-                # Weapon profiles are all of length 4
-                if len(g) == 4:
-                    rw = (g, r_threat, r_range)
+                # Weapon profiles are all of length 3
+                if len(g) == 3:
+                    rw = (g)
                     pg.append(PilotGear(raw_weapon=rw))
-                # If it's less than 4 lines, it could be the descriptions.
-                #   Check the start of each line against the name of each weapon
-                #   to see if it is that weapon's description.
-                else:
-                    # Reset the range/threat flags at the next section which
-                    #   isn't a weapon.
-                    r_range = False
-                    r_threat = False
-                    for line in g:
-                        # Check to see whether this line is the threat/range
-                        #   header for a table of weapons.
-                        if line == "Threat\n":
-                            r_range = False
-                            r_threat = True
-                        elif line == "Range\n":
-                            r_range = True
-                            r_threat = False
-                        for p in pg:
-                            # If the line starts with the name of a weapon,
-                            #   it's the description for that weapon.
-                            if (p.type == PilotGear.TYPE_WEAPON and
-                                    line.lower().startswith(p.name.lower())):
-                                desc_start = line.find(":") + 1
-                                if desc_start > 0:
-                                    desc = line[desc_start:].strip()
-                                else:
-                                    desc = line.strip()
-                                p.set_desc(desc)
-                                break
             elif inArmor:
                 # Armor profiles are all of length 7
                 if len(g) == 7:
-                    pg.append(PilotGear(raw_armor=g))
+                    pass
+                    # pg.append(PilotGear(raw_armor=g))
                 else:
                     # Check for an item description
                     for line in g:
@@ -365,7 +337,8 @@ if __name__ == "__main__":
             elif inGear:
                 # Gear profiles are all of length > 1
                 if len(g) > 1:
-                    pg.append(PilotGear(raw_gear=g))
+                    pass
+                    # pg.append(PilotGear(raw_gear=g))
 
         # Create data output
         if args.stdout:

@@ -9,23 +9,21 @@ class PilotGear:
     Class for pilot gear data.
     NECESSARY PREP-WORK:
     * Separate pieces of gear with empty lines.
-    * The weapon descriptions for A/C and signature weapons modified slightly to put
-    each description on its own line.
-    * Change tags on hardsuits to PERSONAL ARMOR (should get fixed in later release)
+    * Heavy Signature weapon - put range/damage on same line as tags
     """
 
-    START = ["PILOT GEAR\n",
+    START = ["Pilot Gear\n",
              "On missions, pilots can take one set",
              "The names and descriptions given for pilot gear"]
-    END = ["WILDERNESS SURVIVAL KIT",
+    END = ["Wilderness Survival Kit\n",
            "Gear",
-           "Contains many essentials for surviving in hostile environments:"]
+           "This kit contains many essentials for surviving in hostile environments:"]
 
     PREFIX = "pg_"
 
-    WEAPONS_SEC = "Archaic melee\n"
+    WEAPONS_SEC = "Archaic Melee\n"
     ARMOR_SEC = "Light Hardsuit\n"
-    GEAR_SEC = "CORRECTIVE\n"
+    GEAR_SEC = "Corrective\n"
 
     TYPE_WEAPON = "weapon"
     TYPE_ARMOR = "armor"
@@ -49,7 +47,7 @@ class PilotGear:
             self.range = []
             self.damage = []
             self.effect = ""
-            self.parse_weapon(raw_weapon[0], raw_weapon[1], raw_weapon[2])
+            self.parse_weapon(raw_weapon)
         elif raw_armor is not None:
             self.speed = 0
             self.armor = 0
@@ -104,65 +102,52 @@ class PilotGear:
 
         return output
 
-    def parse_weapon(self, raw_text, w_threat=False, w_range=False):
+    def parse_weapon(self, raw_text):
         """
         Parse the text for the pilot weapon.
         @param raw_text: [str]: Text to parse.
-        @param w_threat: bool: Flag for whether the weapon was in a table with a
-        Threat column.
-        @param w_range: bool: Flag for whether the weapon was in a table with a
-        Range column.
         @return: None
         """
         self.type = PilotGear.TYPE_WEAPON
         # Parse name and id from first line.
-        self.name = raw_text[0].strip().title()
+        self.name = raw_text[0].strip()
         self.id = gen_id(PilotGear.PREFIX, self.name)
-        # self.id = "pg_"+self.name.lower().replace(" ", "_").replace("/", "")
 
-        # Parse tags on second line.
-        self.parse_tags(raw_text[1])
+        # Parse tags and stats on second line.
+        line = raw_text[1].strip()
+        div = line.find("[")
+        tag_text = line[:div]
+        stat_text = line[div:]
+        self.parse_tags(tag_text)
 
-        # Parse range on third line.
-        self.range = []
-        # If threat/range wasn't specified, look for it.
-        tokens = raw_text[2].split(" ")
-        if not w_threat and not w_range:
-            if tokens[0].strip() == "Threat":
-                w_threat = True
-            elif tokens[0].strip() == "Range":
-                w_range = True
-            else:
-                print("Problem parsing weapon - no threat or range found!")
-                print(f"  Name: {self.name}")
-                print(f"  Range line: {raw_text[2]}")
-        # Set string for threat/range
-        r_type = ""
-        if w_threat:
-            r_type += " Threat"
-        if w_range:
-            r_type += " Range"
-        r_type = r_type.strip()
-        if len(tokens) > 1:
-            r_val = int(tokens[1].strip())
-        else:
-            r_val = int(raw_text[2].strip())
-        self.range.append(dict([("type", r_type),
-                                ("val", r_val)]))
+        # Parse stats - range/threat and damage.
+        stats = stat_text.split("[")
+        for stat in stats:
+            # Remove the other bracket
+            stat = stat.replace("]", "")
+            if stat.lower().startswith("range") or stat.lower().startswith("threat"):
+                parts = stat.lower().split(" ")
+                val = parts[1].strip()
+                if val.isdecimal():
+                    val = int(val)
+                self.range.append(dict([("type", parts[0].strip().title()),
+                                        ("val", val)]))
+            elif stat.lower().endswith("damage"):
+                parts = stat.lower().split(" ")
+                val = parts[0].strip()
+                if val.isdecimal():
+                    val = int(val)
+                if len(parts) == 2:
+                    self.damage.append(dict([("type", "variable"),
+                                             ("val", val)]))
+                    self.effect = "When a signature weapon is acquired, choose its damage type – Explosive, Energy, or Kinetic."
+                elif len(parts) == 3:
+                    self.damage.append(dict([("type", parts[1].strip()),
+                                             ("val", val)]))
+                else:
+                    print(f"Problem parsing pilot weapon damage: {parts}")
 
-        # Parse damage on fourth line.
-        self.damage = []
-        damage_types = raw_text[3].split(",")
-        for d in damage_types:
-            tokens = d.split(" ")
-            if "*" in tokens[1]:
-                d_type = "variable"
-                self.effect = "Player selects damage type at item creation."
-            else:
-                d_type = tokens[1].strip()
-            d_val = int(tokens[0])
-            self.damage.append(dict([("type", d_type),
-                                     ("val", d_val)]))
+        self.description = raw_text[2].strip()
 
     def parse_armor(self, raw_text):
         """
@@ -246,7 +231,7 @@ class PilotGear:
                          "val": int(words[-1])}
                 else:
                     d = {"id": "tg_"+(t.strip().lower().replace(" ", "_"))}
-                if not is_duplicate_tag(d, self.tags):
+                if not is_duplicate_tag(d, self.tags) and d["id"] != "tg_":
                     self.tags.append(d)
 
     def to_dict(self):
