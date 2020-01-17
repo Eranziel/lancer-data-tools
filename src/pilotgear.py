@@ -158,24 +158,31 @@ class PilotGear:
         self.type = PilotGear.TYPE_ARMOR
         # Parse name and id from first line.
         self.name = raw_text[0].strip()
-        self.id = "pg_"+self.name.lower().replace(" ", "_").replace("/", "")
+        self.id = gen_id(PilotGear.PREFIX, self.name)
 
         # Parse tags on 2nd line
-        self.parse_tags(raw_text[1])
+        self.parse_tags(raw_text[1].strip())
 
-        # Parse hp bonus on 3rd line
-        if raw_text[2].startswith("+"):
-            bonus = raw_text[2].split(" ")[0].replace("+", "")
-            self.hp_bonus = int(bonus)
+        # 3rd and 4th lines are the stats
+        stats = raw_text[2].strip() + raw_text[3].strip()
+        stats = stats.split("[")
+        for stat in stats:
+            # Remove the closing bracket
+            stat = stat.replace("]", "")
+            parts = stat.lower().split(" ")
+            if "hp" in parts:
+                self.hp_bonus = int(parts[0].replace("+", ""))
+            elif "armor" in parts:
+                self.armor = int(parts[0])
+            elif "evasion" in parts:
+                self.evasion = int(parts[0])
+            elif "e-defense" in parts:
+                self.edef = int(parts[0])
+            elif "speed" in parts:
+                self.speed = int(parts[0])
 
-        # Parse armor on 4th line
-        self.armor = int(raw_text[3])
-        # Parse Evasion on 5th line
-        self.evasion = int(raw_text[4])
-        # Parse E-Defense on 6th line
-        self.edef = int(raw_text[5])
-        # Parse Speed on 7th line
-        self.speed = int(raw_text[6])
+        # Description is the 5th line
+        self.description = raw_text[4].strip()
 
     def parse_gear(self, raw_text):
         """
@@ -186,10 +193,10 @@ class PilotGear:
         self.type = PilotGear.TYPE_GEAR
         # Parse name and id from first line.
         self.name = raw_text[0].strip()
-        self.id = "pg_"+self.name.lower().replace(" ", "_").replace("/", "")
+        self.id = gen_id(PilotGear.PREFIX, self.name)
 
         # Parse tags from second line.
-        self.parse_tags(raw_text[1])
+        self.parse_tags(raw_text[1].strip())
 
         # Combine remaining lines to create the description.
         self.description = raw_text[2].strip()
@@ -198,6 +205,8 @@ class PilotGear:
                 if line.startswith("- "):
                     line = line.replace("- ", "<li>", 1).strip()
                 self.description += "<br>"+line.strip()
+            # Remove extraneous line breaks.
+            self.description = self.description.replace("<br><li>", "<li>")
 
     def set_id(self, new_id):
         self.id = new_id

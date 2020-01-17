@@ -316,29 +316,13 @@ if __name__ == "__main__":
                     rw = (g)
                     pg.append(PilotGear(raw_weapon=rw))
             elif inArmor:
-                # Armor profiles are all of length 7
-                if len(g) == 7:
-                    pass
-                    # pg.append(PilotGear(raw_armor=g))
-                else:
-                    # Check for an item description
-                    for line in g:
-                        for p in pg:
-                            if (p.type == PilotGear.TYPE_ARMOR and
-                                    line.lower().startswith(p.name.lower())):
-                                desc_start = line.find(":") + 1
-                                if desc_start > 0:
-                                    desc = line[desc_start:].strip()
-                                else:
-                                    desc = line.strip()
-                                p.set_desc(desc)
-                                break
-
+                # Armor profiles are all of length 5
+                if len(g) == 5:
+                    pg.append(PilotGear(raw_armor=g))
             elif inGear:
                 # Gear profiles are all of length > 1
                 if len(g) > 1:
-                    pass
-                    # pg.append(PilotGear(raw_gear=g))
+                    pg.append(PilotGear(raw_gear=g))
 
         # Create data output
         if args.stdout:
