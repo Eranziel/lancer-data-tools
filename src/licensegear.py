@@ -248,9 +248,9 @@ class System(IMechGear):
       Systems which do not have this line are assumed to not have a description.
     """
 
-    GMS_SYSTEMS = "GMS GENERAL MARKET SYSTEMS\n"
-    GMS_FLIGHT = "GMS FLIGHT SYSTEMS\n"
-    GMS_SYS_END = "You can fly when you BOOST or make a standard move; however"
+    GMS_SYSTEMS = "GMS General Market Systems\n"
+    GMS_FLIGHT = "GMS Flight Systems\n"
+    GMS_SYS_END = "You can fly when you Boost or make a standard move;"
 
     PREFIX = "ms_"
 
@@ -408,12 +408,18 @@ class Weapon(IMechGear):
     Class for mech weapons.
     NECESSARY PREP WORK:
     * Each weapon must be preceded and followed by an empty line.
+    * Ensure each damage stat has "damage" inside the square brackets.
+    * Each damage stat with multiple types must have each type separated by " + ".
+    * HMG typo: 1d6+4 damage should be 2d6+4.
+    * Nanocarbon Sword: add spaces between numbers and threat/damage.
+    * Gavity Gun: fix blast and damage stats.
+    * Displacer: separate range and blast into their own brackets.
     """
 
     PREFIX = "mw_"
 
-    GMS_WEP_TABLE = "GMS MECH WEAPONS\n"
-    GMS_WEP_END = "GMS GENERAL MARKET SYSTEMS\n"
+    GMS_WEP_TABLE = "GMS Mech Weapons\n"
+    GMS_WEP_END = "GMS General Market Systems\n"
     GMS_TYPES = ["Type-I (T-1)", "Type-II (T-2)", "Type-III (T-3)"]
     GMS_T2_THERMAL = "GMS's T-2 energy weapons,"
     GMS_TYPE_LIST = [
@@ -442,9 +448,8 @@ class Weapon(IMechGear):
 
     TYPES = ["MELEE", "CQB", "RIFLE", "LAUNCHER", "CANNON", "NEXUS"]
     MOUNTS = ["Auxiliary", "Main", "Heavy", "Superheavy"]
-    RANGE = "R: "
-    THREAT = "T: "
-    DAMAGE = "D: "
+    RANGE = ["range", "threat", "burst", "blast", "cone", "line"]
+    DAMAGE = ["damage", "heat", "burn"]
 
     def __init__(self, raw_text=None, gms=None, src="", lic_table=[]):
         self.id = ""
@@ -502,15 +507,17 @@ class Weapon(IMechGear):
         @return: None.
         """
         self.source = src
-        self.name = raw[0].strip()
+        self.name = raw[0].strip().upper()
         self.id = gen_id(Weapon.PREFIX, self.name)
-        # self.id = gen_id("mw_", self.name)
 
         if gms is not None:
-            self.parse_type(raw[1])
-            self.parse_tags(raw[2].strip())
-            self.parse_stats(raw[3], gms=True)
-            self.parse_damage(raw[4])
+            w_type, d, tags = raw[1].strip().partition(",")
+            self.parse_type(w_type)
+            self.parse_tags(tags)
+            self.parse_stats(raw[2])
+            # Parse second stat line if it's present.
+            if len(raw) > 3:
+                self.parse_stats(raw[3])
             for i in range(len(Weapon.GMS_TYPE_LIST)):
                 gms_type = Weapon.GMS_TYPE_LIST[i]
                 if self.name.lower() in gms_type:
@@ -522,13 +529,11 @@ class Weapon(IMechGear):
                 if "SP" in tag_line:
                     tokens = tag_line.split(", ")
                     # Find and parse the SP
-                    print(f"{tokens}")
                     for t in tokens:
                         if "SP" in t:
                             self.parse_tags(t)
                             tokens.remove(t)
                             break
-                    print(f"{tokens}")
                     tag_line = ""
                     # Reconstruct the line without SP
                     for t in tokens:
@@ -542,31 +547,49 @@ class Weapon(IMechGear):
             else:
                 self.parse_type(raw[1].strip())
 
-            # Find the spec line
-            spec_line = 0
+            # Stats are on 3rd line
+            self.parse_stats(raw[2].strip())
+
+            # Find effect/description split
+            splits = []
             for i in range(len(raw)):
-                if raw[i].startswith(Weapon.RANGE) or \
-                        raw[i].startswith(Weapon.THREAT) or \
-                        raw[i].startswith(Weapon.DAMAGE):
-                    spec_line = i
-                    break
-            self.parse_stats(raw[spec_line])
-            # Description is from 3rd line until spec line
-            for line in raw[2:spec_line]:
-                if line.startswith("- "):
-                    line = line.replace("- ", "<li>", 1).strip()
-                if self.description == "":
-                    self.description = line.strip()
-                else:
-                    self.description += line.strip()
-            # Effects are everything after spec line
-            for line in raw[spec_line+1:]:
+                if raw[i] == "---\n":
+                    splits.append(i)
+
+            raw_effect = []
+            raw_desc = []
+            # Effects are from spec line to description
+            if len(splits) > 0:
+                raw_effect += raw[3:splits[0]]
+            # No splits - everything after stats is description
+            else:
+                raw_desc += raw[3:]
+            # More than one split
+            if len(splits) > 1:
+                # Description is between the two splits
+                raw_desc += raw[splits[0]+1:splits[1]]
+                # Add everything after 2nd split to the effect
+                raw_effect += raw[splits[1]+1:]
+            # 1 or 0 splits, description follows effect
+            else:
+                raw_desc += raw[splits[0]+1:]
+
+            for line in raw_effect:
                 if line.startswith("- "):
                     line = line.replace("- ", "<li>", 1).strip()
                 if self.effect == "":
                     self.effect = line.strip()
                 else:
-                    self.effect += line.strip()
+                    self.effect += "<br>" + line.strip()
+                self.effect = self.effect.replace("<br><li>", "<li>")
+            for line in raw_desc:
+                if line.startswith("- "):
+                    line = line.replace("- ", "<li>", 1).strip()
+                if self.description == "":
+                    self.description = line.strip()
+                else:
+                    self.description += "<br>" + line.strip()
+                self.description = self.description.replace("<br><li>", "<li>")
 
     def parse_type(self, type_line):
         """
@@ -578,124 +601,81 @@ class Weapon(IMechGear):
         self.mount = words[0].strip()
         self.type = words[1].strip()
 
-    def parse_stats(self, line, gms=False):
+    def parse_stats(self, line):
         """
         Parse the range and damage spec line.
         @param line: str: The line with range and damage.
         @param gms: bool: If True, use GMS table parsing.
         @return: None.
         """
-        if gms:
-            line = line.strip()
-            if "/" in line:
-                ranges = line.split("/")
-            else:
-                ranges = [line]
-            for r in ranges:
-                # If the range spec is only a number, it is range
-                if r.isnumeric():
+        parts = line.strip().split("]")
+        parts.remove("")
+        for part in parts:
+            # Remove the other square bracket
+            part = part.replace("[", "").strip()
+            words = part.split(" ")
+
+            # Mimic gun special case
+            if "???" in words:
+                if "range" in words:
                     d = dict([
+                        ("override", True),
                         ("type", "Range"),
-                        ("val", int(r))
+                        ("val", "???")
                     ])
                     self.range.append(d)
-                else:
-                    words = r.split(" ")
+                elif "damage" in words:
                     d = dict([
-                        ("type", words[0]),
-                        ("val", int(words[1]))
+                        ("override", True),
+                        ("val", "??? kinetic")
                     ])
-                    self.range.append(d)
-        else:
-            parts = line.strip().split("\t")
-            for part in parts:
-                # Parse range spec
-                if part.startswith(Weapon.RANGE):
-                    part = part.replace(Weapon.RANGE, "")
-                    if "," in part:
-                        subs = part.split(",")
-                    elif " or " in part:
-                        subs = part.partition(" or ")
-                        subs = [subs[0], subs[2]]
-                    else:
-                        subs = [part]
-                    for r in subs:
-                        r = r.strip()
-                        if r.isnumeric():
-                            d = dict([
-                                ("type", "Range"),
-                                ("val", int(r))
-                            ])
-                            self.range.append(d)
-                        else:
-                            words = r.split(" ")
-                            if "???" in words:
-                                d = dict([
-                                    ("override", True),
-                                    ("type", "Range"),
-                                    ("val", "???")
-                                ])
-                            else:
-                                d = dict([
-                                    ("type", words[0].strip().title()),
-                                    ("val", int(words[1].strip()))
-                                ])
-                            self.range.append(d)
-                # Parse threat spec
-                elif part.startswith(Weapon.THREAT):
-                    part = part.replace(Weapon.THREAT, "")
-                    if part.isnumeric():
-                        d = dict([
-                            ("type", "Threat"),
-                            ("val", int(part))
-                        ])
-                        self.range.append(d)
-                # Parse damage spec
-                elif part.startswith(Weapon.DAMAGE):
-                    self.parse_damage(part.replace(Weapon.DAMAGE, ""))
+                    self.damage.append(d)
+            # Parse range stat
+            elif words[0] in Weapon.RANGE:
+                if " or " in part:
+                    parts.append(part[part.rfind(" or ")+4:])
 
-    def parse_damage(self, dam_str):
-        """
-        Parse the damage string.
-        @param dam_str: str: Damage string.
-        @return: None.
-        """
-        dam_str = dam_str.strip().replace(".", "")
-        delim = " + "
-        types = []
-        if delim in dam_str:
-            sub = dam_str
-            while delim in sub:
-                parts = sub.partition(delim)
-                types.append(parts[0])
-                sub = parts[2]
-            types.append(sub)
-        else:
-            types.append(dam_str)
-
-        for t in types:
-            tokens = t.split(" ")
-            # If the damage has an "or" in it, it's variable.
-            if " or " in t:
-                dam = dict([
-                    ("type", "variable"),
-                    ("val", tokens[0])
+                r_type = words[0].strip().title()
+                val = words[1].strip()
+                if val.isdecimal():
+                    val = int(val)
+                d = dict([
+                    ("type", r_type),
+                    ("val", val)
                 ])
-            # Damage amount of "???" is special
-            elif tokens[0] == "???":
-                dam = dict([
-                    ("override", True),
-                    ("val", "??? kinetic")
-                ])
-            elif tokens[0] == "Special":
-                return
+                self.range.append(d)
             else:
-                dam = dict([
-                    ("type", tokens[1]),
-                    ("val", tokens[0])
-                ])
-            self.damage.append(dam)
+                # Check whether this part is a damage stat
+                dmg = False
+                for harm in Weapon.DAMAGE:
+                    if harm in part:
+                        dmg = True
+                        break
+                # Parse damage stat
+                if dmg:
+                    d_type = ""
+                    val = ""
+                    # If the damage stat has "or" in it, it's variable
+                    if " or " in part:
+                        d_type = "variable"
+                    for word in words:
+                        word = word.strip()
 
+                        if word.isdecimal():
+                            val = int(word)
+                        elif is_die_roll(word):
+                            val = word
+                        elif word != "damage" and word != "+":
+                            d_type = word
+
+                        if val != "" and d_type != "":
+                            d = dict([
+                                ("type", d_type),
+                                ("val", val)
+                            ])
+                            self.damage.append(d)
+                            d_type = val = ""
+    
     def to_dict(self):
         d = dict([
             ("id", self.id),

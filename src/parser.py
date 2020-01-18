@@ -136,10 +136,12 @@ def weapon_check(txt):
     """
     result = False
     for line in txt:
-        if line.startswith("---"):
-            return False
-        if line.startswith(Weapon.RANGE) or line.startswith(Weapon.THREAT) or line.startswith(Weapon.DAMAGE):
-            result = True
+        for rng in Weapon.RANGE:
+            if "[" in line and "]" in line and rng in line:
+                return True
+        for dmg in Weapon.DAMAGE:
+            if "[" in line and "]" in line and dmg in line:
+                return True
     return result
 
 
@@ -160,13 +162,7 @@ def sys_check(txt):
     @param txt: [str]: The text hunk to check.
     @return: bool: True if the hunk is a system.
     """
-    result = False
-    if "Mod" in txt[1]:
-        return False
-    for line in txt:
-        if line.startswith("---"):
-            return True
-    return result
+    return not mod_check(txt) and not weapon_check(txt)
 
 
 if __name__ == "__main__":
@@ -413,13 +409,13 @@ if __name__ == "__main__":
                 for line in hunk[1:]:
                     # GMS Type-I description
                     if Weapon.GMS_TYPES[0] in line:
-                        gmsWepDesc[0] = hunk[1] + "<br>" + line.strip()
+                        gmsWepDesc[0] = hunk[1].strip() + "<br>" + line.strip()
                     # GMS Type-II descriptions
                     elif Weapon.GMS_TYPES[1] in line:
                         line = line.strip()
                         # Both descriptions start with the first sentence.
                         period = line.find(".")
-                        charged = thermal = hunk[1] + "<br>" + line[:period+1]
+                        charged = thermal = hunk[1].strip() + "<br>" + line[:period+1]
                         # Find the division between charged blades and thermal guns.
                         div = line.find(Weapon.GMS_T2_THERMAL)
                         # Finish charged blades string.
@@ -430,7 +426,7 @@ if __name__ == "__main__":
                         gmsWepDesc[2] = thermal
                     # GMS Type-III description
                     elif Weapon.GMS_TYPES[2] in line:
-                        gmsWepDesc[3] = hunk[1] + "<br>" + line.strip()
+                        gmsWepDesc[3] = hunk[1].strip() + "<br>" + line.strip()
 
             # Determine what kind of data this hunk is for.
             #   Frames
@@ -458,7 +454,7 @@ if __name__ == "__main__":
             #   Weapons
             elif gmsSec == "Weapons":
                 # All GMS weapon entries are 5 lines
-                if len(hunk) == 5:
+                if 3 <= len(hunk) <= 4:
                     weapons.append(Weapon(raw_text=hunk, gms=gmsWepDesc, src=source))
             elif weapon_check(hunk):
                 weapons.append(Weapon(raw_text=hunk, gms=None, src=source,

@@ -61,6 +61,8 @@ def is_die_roll(check_str):
             flat_bonus = check_str[p_ind+1:]
         else:
             size_dice = check_str[d_ind+1:]
+    if flat_bonus == "":
+        flat_bonus = "0"
 
     return num_dice.isdecimal() and size_dice.isdecimal() and flat_bonus.isdecimal()
 

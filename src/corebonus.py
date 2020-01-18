@@ -20,11 +20,11 @@ class CoreBonus:
     PREFIX = "cb_"
 
     CORE = "CORE BONUSES\n"
-    GMS = "GENERAL MASSIVE SYSTEMS\n"
-    IPSN = "IPS-NORTHSTAR\n"
-    SSC = "SMITH-SHIMANO CORPRO\n"
+    GMS = "General Massive Systems\n"
+    IPSN = "IPS-Northstar\n"
+    SSC = "Smith-Shimano Corpro\n"
     HORUS = "HORUS\n"
-    HA = "HARRISON ARMORY\n"
+    HA = "Harrison Armory\n"
 
     def __init__(self, raw=None):
         self.id = ""
@@ -55,7 +55,7 @@ class CoreBonus:
         self.source = raw[0].strip()
         text = raw[1]
 
-        self.name = text[0].strip()
+        self.name = text[0].strip().upper()
         self.id = gen_id(CoreBonus.PREFIX, self.name)
         for line in text[1:-1]:
             if line.strip().startswith("- "):
