@@ -2,6 +2,7 @@
 # -*- utf-8 -*-
 
 from parseutil import *
+from licensegear import Weapon
 
 
 class Frame:
@@ -10,55 +11,35 @@ class Frame:
     NECESSARY PREP-WORK:
     * Make sure each frame is preceded by an empty line.
     * Make sure there are no empty lines in the frame block - from frame name to
-      the first licensed gear must be continuous.
+      the end of the license table must be continuous.
     * Make sure there is an empty line between the frame block and the first
       licensed gear.
-    * In the following frames, replace the line immediately preceding the stats
-      with "CORE STATS\n": (this should be fixed in next release)
-      * LANCASTER
-      * VLAD
-      * DEATH'S HEAD
-      * METALMARK
-      * MONARCH
-      * MOURNING CLOAK
-      * SWALLOWTAIL
-      * PEGASUS
-    * In NELSON license table, change "Thermal Charges" to "Thermal Charge"
-    * In VLAD, remove the ":" after "MOUNTS".
-    * In BALOR, fix rank 3 number in the license table.
+    * Add a line containing "---\n" to CORE systems between:
+      * Description and passive name, if applicable.
+    * In BLACKBEARD, reformat license table to match other frames.
+    * In MOURNING CLOAK, the Exposed Singularity reaction is missing.
+    * BARBAROSSA is missing the Pressure Plating trait.
     * In BARBAROSSA, add this line after the name line of Siege Cannon:
-        D: 3d6 explosive
-    * In GENGHIS, switch "Protocol" and "Limited 1" after "AGNI Protocol" (fixed in next release)
-    * In SHERMAN, move "Protocol" to end of line after "ASURA Protocol" (fixed in next release)
-    * In TOKUGAWA, move "Protocol" to end of line after "AMATERASU Protocol" (fixed in next release)
-
-    NECESSARY POST-WORK:
-    * y_pos and aptitude values need to be manually entered.
-    * MANTICORE core system needs to be adjusted after parsing - parser misinterprets
-      the description as the passive name.
-    * Add <code></code> tags to RA text:
-      * HYDRA's OROCHI Disarticulation description.
-      * MANTICORE's Charged Exoskeleton description.
-      * MINOTAUR's Metafold Maze description.
+        [3d6 explosive damage]
     """
 
-    START = ["GENERAL MASSIVE SYSTEMS\n",
-             "From Cradle to the stars, GMS: assured",
-             "General Massive Systems - GMS for short - is the"]
-    END = ["This system can only be used in the DANGER ZONE",
-           "Expend a charge and choose a character adjacent to you",
-           "\n"]
+    START = ["General Massive Systems\n",
+             "From Cradle to the stars, GMS:\n",
+             "assured quality, universal licensing,"]
+    END = ["Expend a charge and choose a character adjacent",
+           "---\n",
+           "This studded gauntlet draws on a core reactor"]
 
     PREFIX = "mf_"
 
-    LICENSE = ("License:\n", "I. ", "II. ", "III. ")
+    LICENSE = ("License", "License I: ", "License II: ", "License III: ")
     CORE_STATS = "CORE STATS\n"
     TRAITS = "TRAITS\n"
-    SP = "SYSTEM POINTS:"
+    # SP = "SYSTEM POINTS:"
     MOUNTS = "MOUNTS\n"
     CORE = "CORE SYSTEM\n"
     CORE_ACTIVE = "Active (1CP)"
-    INTEGRATED = "Integrated Mount:"
+    INTEGRATED = "Integrated Mount: "
 
     STATS = dict([
         ("size", "size"),
@@ -72,7 +53,8 @@ class Frame:
         ("tech attack", "tech_attack"),
         ("save target", "save"),
         ("speed", "speed"),
-        ("system points", "sp")
+        ("system points", "sp"),
+        ("sp", "sp")
     ])
 
     def __init__(self, raw_text=None):
@@ -106,8 +88,6 @@ class Frame:
         self.core_system = dict([
             ("name", ""),
             ("description", ""),
-            # ("passive_name", ""),
-            # ("passive_effect", ""),
             ("active_name", ""),
             ("active_effect", ""),
             ("tags", [])
@@ -118,7 +98,8 @@ class Frame:
         self.license = [[] for i in range(3)]
 
         if raw_text is not None:
-            self.parse_frame(raw_text)
+            # print(f"Frame from hunk:\n{raw_text}")
+            self.parse_text(raw_text)
 
     def __str__(self):
         output = "\n============== FRAME ===================="
@@ -143,39 +124,35 @@ class Frame:
         output += f"\naptitude: {self.aptitude}"
         return output
 
-    def parse_frame(self, raw_text):
+    def parse_text(self, raw_text):
         """
         Parse the raw text for a mech frame.
         @param raw_text: [str]: The raw text to parse.
         @return: None.
         """
-        name = raw_text[0].strip()
-        spc = name.find(" ")
-        # First line is the frame's name, minus the manufacturer acronym.
-        self.name = name[spc:].strip()
-        # Manufacturer acronym goes in source.
-        self.source = name[:spc].strip()
+        self.source = raw_text[0].strip().upper()
+        self.name = raw_text[1].strip()
         # Generate the id from the name
         self.id = gen_id(Frame.PREFIX, self.name)
-        # self.id = "mf_"+self.name.strip().lower().replace(" ", "_").replace("\"", "").replace("'", "")
 
         # Raw text indices for subsections
-        desc = lic = stats = traits = sp = mounts = core = 0
-        if len(raw_text[1].split(" ")) == 1:
-            desc = 2
-        else:
-            desc = 1
+        desc = lic = stats = traits = mounts = core = 0
 
+        # If the line after the name is only one word, it's the role
+        if len(raw_text[2].split(" ")) == 1:
+            desc = 3
+        else:
+            desc = 2
         # Find the start of each subsection.
         for i in range(len(raw_text)):
-            if lic == 0 and raw_text[i] == Frame.LICENSE[0]:
+            if lic == 0 and raw_text[i].startswith(Frame.LICENSE[0]):
                 lic = i
             elif stats == 0 and raw_text[i] == Frame.CORE_STATS:
                 stats = i
             elif traits == 0 and raw_text[i] == Frame.TRAITS:
                 traits = i
-            elif sp == 0 and raw_text[i].startswith(Frame.SP):
-                sp = i
+            # elif sp == 0 and raw_text[i].startswith(Frame.SP):
+            #     sp = i
             elif mounts == 0 and raw_text[i] == Frame.MOUNTS:
                 mounts = i
             elif core == 0 and raw_text[i] == Frame.CORE:
@@ -185,17 +162,14 @@ class Frame:
             self.license = []
 
         # If no role was found, its role is "Balanced"
-        if desc == 1:
+        if desc == 2:
             self.mechtype.append("Balanced")
         else:
-            for t in raw_text[1].split("/"):
+            for t in raw_text[2].split("/"):
                 self.mechtype.append(t.strip())
 
-        # Description starts after the role and goes to either LICENSE or CORE_STATS.
-        if lic == 0:
-            description = raw_text[desc:stats]
-        else:
-            description = raw_text[desc:lic]
+        # Description starts after the role and goes to CORE_STATS.
+        description = raw_text[desc:stats]
         for line in description:
             if line.startswith("- "):
                 line = line.replace("- ", "<li>", 1).strip()
@@ -203,9 +177,130 @@ class Frame:
                 self.description = line.strip()
             else:
                 self.description += "<br>"+line.strip()
+        # Remove extraneous line breaks.
+        self.description = self.description.replace("<br><li>", "<li>")
+
+        # Stats go until traits
+        for stat in raw_text[stats+1:traits]:
+            tokens = stat.split(":")
+            key = Frame.STATS[tokens[0].strip().lower()]
+            val = tokens[1].strip()
+            if val == "1/2":
+                self.stats[key] = 0.5
+            else:
+                self.stats[key] = int(val)
+
+        # Traits go until Mounts
+        traits_lines = raw_text[traits+1:mounts]
+        i = 0
+        while i < len(traits_lines):
+            # Each trait is a dict with two keys: name and description.
+            curr_trait = dict([
+                ("name", ""),
+                ("description", "")
+            ])
+            curr_trait["name"] = traits_lines[i].strip()
+            curr_trait["description"] = traits_lines[i+1].strip()
+            self.traits.append(curr_trait)
+            i += 2
+
+        # System points
+        # tokens = raw_text[sp].split(":")
+        # key = Frame.STATS[tokens[0].strip().lower()]
+        # val = tokens[1].strip()
+        # self.stats[key] = int(val)
+
+        # Mounts go until core system
+        for mount in raw_text[mounts+1:core]:
+            mount = mount.strip().replace("- ", "")
+            end = mount.lower().find(" mount")
+            if end != -1:
+                self.mounts.append(mount[:end].title())
+            else:
+                self.mounts.append(mount.title())
+        for i in range(len(self.mounts)):
+            if self.mounts[i] == "Flexible":
+                self.mounts[i] = "Flex"
+
+        # Core system goes until the end
+        # Find all of the lines that are all caps - these are the passive
+        #   and active names.
+        if lic != 0:
+            core_lines = raw_text[core+1:lic]
+        else:
+            core_lines = raw_text[core+1:]
+        act_start = -1
+        pass_start = -1
+        integrated_start = -1
+        # Find the section for the CORE active.
+        for i in range(len(core_lines)):
+            if core_lines[i].startswith(Frame.CORE_ACTIVE):
+                act_start = i-1
+            if core_lines[i] == "---\n":
+                pass_start = i+1
+        act_sec = core_lines[act_start:]
+        if pass_start != -1:
+            pass_sec = core_lines[pass_start:act_start]
+        else:
+            pass_sec = []
+        # First line is always the name of the core system
+        self.core_system["name"] = core_lines[0].strip()
+        # If the next line isn't a passive/active effect name, then the core
+        #   system has a description.
+        if pass_start != 1 and act_start != 1:
+            if pass_start != -1:
+                desc_sec = core_lines[1:pass_start]
+            else:
+                desc_sec = core_lines[1:act_start]
+            desc = ""
+            for desc_line in desc_sec:
+                if desc_line.startswith(Frame.INTEGRATED):
+                    integrated_start = desc_sec.index(desc_line)
+                    break
+                if desc_line.startswith("- "):
+                    desc_line = desc_line.replace("- ", "<li>", 1).strip()
+                if desc == "":
+                    desc = desc_line.strip()
+                else:
+                    desc += "<br>"+desc_line.strip()
+            # Eliminate extraneous line breaks.
+            self.core_system["description"] = desc.replace("<br><li>", "<li>")
+        # If the core system has a passive effect, parse it.
+        if pass_start != -1:
+            self.core_system["passive_name"] = pass_sec[0].strip()
+            self.core_system["passive_effect"] = ""
+            pass_eff = ""
+            for line in pass_sec[1:]:
+                if line.startswith("- "):
+                    line = line.replace("- ", "<li>", 1).strip()
+                if pass_eff == "":
+                    pass_eff = line.strip()
+                else:
+                    pass_eff += "<br>" + line.strip()
+            # Eliminate extraneous line breaks.
+            self.core_system["passive_effect"] = pass_eff.replace("<br><li>", "<li>")
+        # If the core system has an integrated mount, parse it.
+        if integrated_start != -1:
+            int_mech_name = gen_id(Weapon.PREFIX, self.name) + "_integrated"
+            self.core_system["integrated"] = {"id": int_mech_name}
+        # Parse the active name and effect
+        self.core_system["active_name"] = act_sec[0].strip()
+        # Line after the active name is the tags for the active effect
+        self.parse_tags(act_sec[1].strip())
+        # Lines after the tags is the active effect
+        act_eff = ""
+        for line in act_sec[2:]:
+            if line.startswith("- "):
+                line = line.replace("- ", "<li>", 1).strip()
+            if act_eff == "":
+                act_eff = line.strip()
+            else:
+                act_eff += "<br>"+line.strip()
+        # Eliminate extraneous line breaks.
+        self.core_system["active_effect"] = act_eff.replace("<br><li>", "<li>")
 
         # Sort licensed gear by license level
-        for line in raw_text[lic:lic+4]:
+        for line in raw_text[lic:lic+2]:
             if line.startswith(Frame.LICENSE[1]):
                 # Remove the rank identifier from the start of the line
                 line = line[len(Frame.LICENSE[1]):]
@@ -221,104 +316,6 @@ class Frame:
                 line = line[len(Frame.LICENSE[3]):]
                 license_gear = [t.strip().lower() for t in line.split(",")]
                 self.license[2] = license_gear
-
-        # Stats go until traits
-        for stat in raw_text[stats+1:traits]:
-            tokens = stat.split(":")
-            key = Frame.STATS[tokens[0].strip().lower()]
-            val = tokens[1].strip()
-            if val == "1/2":
-                self.stats[key] = 0.5
-            else:
-                self.stats[key] = int(val)
-
-        # Traits go until SP
-        traits_lines = raw_text[traits+1:sp]
-        i = 0
-        while i < len(traits_lines):
-            # Each trait is a dict with two keys: name and description.
-            curr_trait = dict([
-                ("name", ""),
-                ("description", "")
-            ])
-            curr_trait["name"] = traits_lines[i].strip()
-            curr_trait["description"] = traits_lines[i+1].strip()
-            self.traits.append(curr_trait)
-            i += 2
-
-        # System points
-        tokens = raw_text[sp].split(":")
-        key = Frame.STATS[tokens[0].strip().lower()]
-        val = tokens[1].strip()
-        self.stats[key] = int(val)
-
-        # Mounts go until core system
-        for mount in raw_text[mounts+1:core]:
-            end = mount.find(" MOUNT")
-            self.mounts.append(mount[:end].title())
-        for i in range(len(self.mounts)):
-            if self.mounts[i] == "Flexible":
-                self.mounts[i] = "Flex"
-
-        # Core system goes until the end
-        # Find all of the lines that are all caps - these are the passive
-        #   and active names.
-        core_lines = raw_text[core+1:]
-        cap_lines = []
-        act_name = 0
-        # print("Core text:")
-        for i in range(len(core_lines)):
-            core_lines[i] = core_lines[i].strip()
-            # print(f"   {i}: {core_lines[i]}")
-            if i > 0 and core_lines[i].isupper():
-                cap_lines.append(i)
-            if core_lines[i].startswith(Frame.CORE_ACTIVE):
-                act_name = i-1
-        # print(f"cap_lines: {cap_lines}; act_name: {act_name}")
-        # First line is always the name of the core system
-        self.core_system["name"] = core_lines[0]
-        # If the next line isn't a passive/active effect name, then the core
-        #   system has a description.
-        if cap_lines[0] != 1:
-            for desc_line in core_lines[1:cap_lines[0]]:
-                if not desc_line.startswith(Frame.INTEGRATED):
-                    if desc_line.startswith("- "):
-                        desc_line = desc_line.replace("- ", "<li>", 1).strip()
-                    if self.core_system["description"] == "":
-                        self.core_system["description"] = desc_line.strip()
-                    else:
-                        self.core_system["description"] += "<br>"+desc_line.strip()
-        # If the core system has a passive effect, then the first capital line
-        #   is not the same line as the core active name.
-        if cap_lines[0] != act_name:
-            # Check to see if it's an integrated mount.
-            if core_lines[cap_lines[0]-1].startswith(Frame.INTEGRATED):
-                int_mech_name = "mw_" + self.id[self.id.find("_")+1:] + "_integrated"
-                self.core_system["integrated"] = {"id": int_mech_name}
-            else:
-                self.core_system["passive_name"] = core_lines[cap_lines[0]]
-                pass_effect = core_lines[cap_lines[0]+1:act_name]
-                self.core_system["passive_effect"] = ""
-                for line in pass_effect:
-                    if line.startswith("- "):
-                        line = line.replace("- ", "<li>", 1).strip()
-                    if self.core_system["passive_effect"] == "":
-                        self.core_system["passive_effect"] = line.strip()
-                    else:
-                        self.core_system["passive_effect"] += "<br>"+line.strip()
-        # Active name is on the line preceded by "Active (1 CP)"
-        self.core_system["active_name"] = core_lines[act_name]
-        # Line after the active name is the tags for the active effect
-        self.parse_tags(core_lines[act_name+1])
-        # Line after the tags is the active effect
-        act_effect = core_lines[act_name+2:]
-        for line in act_effect:
-            if line.startswith("- "):
-                line = line.replace("- ", "<li>", 1).strip()
-            if self.core_system["active_effect"] == "":
-                self.core_system["active_effect"] = line.strip()
-            else:
-                self.core_system["active_effect"] += "<br>"+line.strip()
 
     def parse_tags(self, tagline):
         """

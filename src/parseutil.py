@@ -10,8 +10,8 @@ def gen_id(prefix, name):
     @return: str: The generated id. Should only contain lowercase alphanumeric and _.
     """
     return prefix + name.strip().lower().replace(" ", "_").replace("/", "_").\
-        replace("-", "_").replace("-", "_").replace("'", "").replace("\"", "").\
-        replace("(", "").replace(")", "")
+        replace("-", "_").replace("-", "_").replace("'", "").replace("\u2019", "").\
+        replace("\"", "").replace("(", "").replace(")", "")
 
 
 def is_duplicate_tag(tag, tags):
