@@ -110,7 +110,7 @@ class PilotGear:
         """
         self.type = PilotGear.TYPE_WEAPON
         # Parse name and id from first line.
-        self.name = raw_text[0].strip()
+        self.name = raw_text[0].strip().upper()
         self.id = gen_id(PilotGear.PREFIX, self.name)
 
         # Parse tags and stats on second line.
@@ -157,7 +157,7 @@ class PilotGear:
         """
         self.type = PilotGear.TYPE_ARMOR
         # Parse name and id from first line.
-        self.name = raw_text[0].strip()
+        self.name = raw_text[0].strip().upper()
         self.id = gen_id(PilotGear.PREFIX, self.name)
 
         # Parse tags on 2nd line
@@ -192,7 +192,7 @@ class PilotGear:
         """
         self.type = PilotGear.TYPE_GEAR
         # Parse name and id from first line.
-        self.name = raw_text[0].strip()
+        self.name = raw_text[0].strip().upper()
         self.id = gen_id(PilotGear.PREFIX, self.name)
 
         # Parse tags from second line.

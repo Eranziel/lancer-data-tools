@@ -17,6 +17,7 @@ class Frame:
     * Add a line containing "---\n" to CORE systems between:
       * Description and passive name, if applicable.
     * In BLACKBEARD, reformat license table to match other frames.
+    * In LANCASTER, plasma torch missing from license table.
     * In MOURNING CLOAK, the Exposed Singularity reaction is missing.
     * BARBAROSSA is missing the Pressure Plating trait.
     * In BARBAROSSA, add this line after the name line of Siege Cannon:
@@ -131,7 +132,7 @@ class Frame:
         @return: None.
         """
         self.source = raw_text[0].strip().upper()
-        self.name = raw_text[1].strip()
+        self.name = raw_text[1].strip().upper()
         # Generate the id from the name
         self.id = gen_id(Frame.PREFIX, self.name)
 
@@ -203,12 +204,6 @@ class Frame:
             curr_trait["description"] = traits_lines[i+1].strip()
             self.traits.append(curr_trait)
             i += 2
-
-        # System points
-        # tokens = raw_text[sp].split(":")
-        # key = Frame.STATS[tokens[0].strip().lower()]
-        # val = tokens[1].strip()
-        # self.stats[key] = int(val)
 
         # Mounts go until core system
         for mount in raw_text[mounts+1:core]:
@@ -300,7 +295,7 @@ class Frame:
         self.core_system["active_effect"] = act_eff.replace("<br><li>", "<li>")
 
         # Sort licensed gear by license level
-        for line in raw_text[lic:lic+2]:
+        for line in raw_text[lic:]:
             if line.startswith(Frame.LICENSE[1]):
                 # Remove the rank identifier from the start of the line
                 line = line[len(Frame.LICENSE[1]):]
