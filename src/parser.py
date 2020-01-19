@@ -17,6 +17,7 @@ from tags import Tag
 from pilotgear import PilotGear
 from skills import Skill
 from statuses import Status
+from glossary import GlossaryItem
 from dataoutput import DataOutput
 
 rawLines = []
@@ -33,6 +34,7 @@ TAGS = "../output/tags.json"
 TALENTS = "../output/talents.json"
 WEAPONS = "../output/weapons.json"
 STATUSES = "../output/statuses.json"
+GLOSSARY = "../output/glossary.json"
 
 
 def check_section(start, end):
@@ -184,6 +186,8 @@ if __name__ == "__main__":
                         help="Generate frame, core bonus, and mech gear JSON.")
     parser.add_argument("-S", "--statuses", action="store_true",
                         help="Generate status/condition JSON.")
+    parser.add_argument("-g", "--glossary", action="store_true",
+                        help="Generate combat glossary JSON.")
     parser.add_argument("-m", "--mask", nargs=1,
                         help="Specify a mask file with overrides for specific id's.")
     parser.add_argument("raw", help="raw text input file")
@@ -591,4 +595,24 @@ if __name__ == "__main__":
             j.append(apply_override(s.to_dict(), mask))
         # add_missing_overrides(j, mask, Status.PREFIX)
         print(f"Outputting JSON for {len(statuses)} statuses to {dOut.target}")
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+    if args.glossary:
+        # Create data output
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(GLOSSARY)
+        inGlossary = False
+
+        # Parse the text
+        s, e = check_section(GlossaryItem.START, GlossaryItem.END)
+        print(f"Glossary start: {s}, end: {e}")
+        rawGlossary = rawLines[s:e + 1]
+        glossary = []
+        for line in rawGlossary[1:]:
+            glossary.append(GlossaryItem(line))
+        j = []
+        for g in glossary:
+            j.append(apply_override(g.to_dict(), mask))
+        print(f"Outputting JSON for {len(glossary)} glossary items to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
