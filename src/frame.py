@@ -36,7 +36,6 @@ class Frame:
     LICENSE = ("License", "License I: ", "License II: ", "License III: ")
     CORE_STATS = "CORE STATS\n"
     TRAITS = "TRAITS\n"
-    # SP = "SYSTEM POINTS:"
     MOUNTS = "MOUNTS\n"
     CORE = "CORE SYSTEM\n"
     CORE_ACTIVE = "Active (1CP)"
@@ -170,16 +169,7 @@ class Frame:
                 self.mechtype.append(t.strip())
 
         # Description starts after the role and goes to CORE_STATS.
-        description = raw_text[desc:stats]
-        for line in description:
-            if line.startswith("- "):
-                line = line.replace("- ", "<li>", 1).strip()
-            if self.description == "":
-                self.description = line.strip()
-            else:
-                self.description += "<br>"+line.strip()
-        # Remove extraneous line breaks.
-        self.description = self.description.replace("<br><li>", "<li>")
+        self.description = combine_lines(raw_text[desc:stats], check_horus=True)
 
         # Stats go until traits
         for stat in raw_text[stats+1:traits]:
@@ -233,6 +223,8 @@ class Frame:
                 act_start = i-1
             if core_lines[i] == "---\n":
                 pass_start = i+1
+            if core_lines[i].startswith(Frame.INTEGRATED):
+                integrated_start = i
         act_sec = core_lines[act_start:]
         if pass_start != -1:
             pass_sec = core_lines[pass_start:act_start]
@@ -245,36 +237,17 @@ class Frame:
         if pass_start != 1 and act_start != 1:
             if pass_start != -1:
                 desc_sec = core_lines[1:pass_start]
+            elif integrated_start != -1:
+                desc_sec = core_lines[1:integrated_start]
             else:
                 desc_sec = core_lines[1:act_start]
-            desc = ""
-            for desc_line in desc_sec:
-                if desc_line.startswith(Frame.INTEGRATED):
-                    integrated_start = desc_sec.index(desc_line)
-                    break
-                if desc_line.startswith("- "):
-                    desc_line = desc_line.replace("- ", "<li>", 1).strip()
-                if desc == "":
-                    desc = desc_line.strip()
-                else:
-                    desc += "<br>"+desc_line.strip()
-            # Eliminate extraneous line breaks.
-            self.core_system["description"] = desc.replace("<br><li>", "<li>")
+            self.core_system["description"] = combine_lines(desc_sec)
         # If the core system has a passive effect, parse it.
         if pass_start != -1:
             self.core_system["passive_name"] = pass_sec[0].strip()
             self.core_system["passive_effect"] = ""
-            pass_eff = ""
-            for line in pass_sec[1:]:
-                if line.startswith("- "):
-                    line = line.replace("- ", "<li>", 1).strip()
-                if pass_eff == "":
-                    pass_eff = line.strip()
-                else:
-                    pass_eff += "<br>" + line.strip()
-            # Eliminate extraneous line breaks.
-            self.core_system["passive_effect"] = pass_eff.replace("<br><li>", "<li>")
-        # If the core system has an integrated mount, parse it.
+            self.core_system["passive_effect"] = combine_lines(pass_sec[1:])
+        # If the core system has an integrated mount, add it.
         if integrated_start != -1:
             int_mech_name = gen_id(Weapon.PREFIX, self.name) + "_integrated"
             self.core_system["integrated"] = {"id": int_mech_name}
@@ -283,16 +256,7 @@ class Frame:
         # Line after the active name is the tags for the active effect
         self.parse_tags(act_sec[1].strip())
         # Lines after the tags is the active effect
-        act_eff = ""
-        for line in act_sec[2:]:
-            if line.startswith("- "):
-                line = line.replace("- ", "<li>", 1).strip()
-            if act_eff == "":
-                act_eff = line.strip()
-            else:
-                act_eff += "<br>"+line.strip()
-        # Eliminate extraneous line breaks.
-        self.core_system["active_effect"] = act_eff.replace("<br><li>", "<li>")
+        self.core_system["active_effect"] = combine_lines(act_sec[2:])
 
         # Sort licensed gear by license level
         for line in raw_text[lic:]:

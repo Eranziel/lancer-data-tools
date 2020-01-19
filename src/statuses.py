@@ -40,10 +40,7 @@ class Status:
         self.id = gen_id(Status.PREFIX, self.name)
 
         # Get the effect
-        for line in raw[1:]:
-            if line.strip().startswith("- "):
-                line = line.strip().replace("- ", "<li>", 1).strip()
-            self.effect.append(line.strip())
+        self.effect = combine_lines(raw[1:])
 
     def to_dict(self):
         return {"id": self.id,

@@ -70,13 +70,7 @@ class Talent:
                     if RANK[j] in line:
                         rank_start[j] = i
         # Description starts line after name, and ends at line before rank 1.
-        for line in raw_text[name_line+1:rank_start[0]]:
-            if line.startswith("- "):
-                line = line.replace("- ", "<li>", 1).strip()
-            if self.description == "":
-                self.description = line.strip()
-            else:
-                self.description += "<br>" + line.strip()
+        self.description = combine_lines(raw_text[name_line+1:rank_start[0]])
         # Get ranks text
         for i in range(len(rank_start)):
             line = raw_text[rank_start[i]].strip()
@@ -89,17 +83,7 @@ class Talent:
             # Last rank ends at the end of the raw text.
             else:
                 next_r = len(raw_text)
-            for line in raw_text[rank_start[i]+1:next_r]:
-                # Use html formatting for bullets
-                if line.startswith("- "):
-                    line = line.replace("- ", "<li>", 1).strip()
-                if r_desc == "":
-                    r_desc = line.strip()
-                else:
-                    r_desc += "<br>" + line.strip()
-            # Get rid of extraneous line breaks.
-            r_desc = r_desc.replace("<br><li>", "<li>")
-            self.ranks[i]["description"] = r_desc
+            self.ranks[i]["description"] = combine_lines(raw_text[rank_start[i]+1:next_r])
 
     def set_id(self, new_id):
         self.id = new_id
@@ -116,6 +100,6 @@ class Talent:
 
     def to_dict(self):
         return {"id": self.id,
-             "name": self.name,
-             "description": self.description,
-             "ranks": self.ranks}
+                "name": self.name,
+                "description": self.description,
+                "ranks": self.ranks}

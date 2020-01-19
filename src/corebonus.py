@@ -57,13 +57,7 @@ class CoreBonus:
 
         self.name = text[0].strip().upper()
         self.id = gen_id(CoreBonus.PREFIX, self.name)
-        for line in text[1:-1]:
-            if line.strip().startswith("- "):
-                line = line.strip().replace("- ", "<li>", 1).strip()
-            if self.description == "":
-                self.description = line.strip()
-            else:
-                self.description += "<br>" + line.strip()
+        self.description = combine_lines(text[1:-1])
         self.effect = text[-1].strip()
 
     def to_dict(self):

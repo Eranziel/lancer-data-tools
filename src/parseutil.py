@@ -15,6 +15,34 @@ def gen_id(prefix, name):
         replace(")", "")
 
 
+def combine_lines(lines, check_horus=False):
+    """
+    Combine the given lines into one string. Converts newlines to <br> tags,
+    and adds <li> tags to the start of lines that start with a "- ".
+    @param lines: [str]: The lines to combine.
+    @param check_horus: bool: Flag for whether to check for Horus text (encloded in
+    square brackets) and wrap it in appropriate tags.
+    @return: str: The combined lines.
+    """
+    result = ""
+    for line in lines:
+        line = line.strip()
+        if line.startswith("- "):
+            line = line.replace("- ", "<li>", 1)
+        elif line.startswith("– "):
+            line = line.replace("– ", "<li>", 1)
+
+        if check_horus and line.startswith("[") and line.endswith("]"):
+            line = "<span class='ra-quiet'>"+line+"</span>"
+
+        if result == "":
+            result = line.strip()
+        else:
+            result += "<br>"+line.strip()
+    result = result.replace("<br><li>", "<li>").strip()
+    return result
+
+
 def is_duplicate_tag(tag, tags):
     """
     Check whether a tag is already in a list of tags. Only checks the "id" key of
