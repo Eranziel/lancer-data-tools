@@ -162,7 +162,11 @@ def sys_check(txt):
     @param txt: [str]: The text hunk to check.
     @return: bool: True if the hunk is a system.
     """
-    return not mod_check(txt) and not weapon_check(txt)
+    result = False
+    for line in txt:
+        if line == "---\n":
+            result = True
+    return result and not mod_check(txt) and not weapon_check(txt)
 
 
 if __name__ == "__main__":
@@ -585,6 +589,6 @@ if __name__ == "__main__":
         j = []
         for s in statuses:
             j.append(apply_override(s.to_dict(), mask))
-        add_missing_overrides(j, mask, Status.PREFIX)
+        # add_missing_overrides(j, mask, Status.PREFIX)
         print(f"Outputting JSON for {len(statuses)} statuses to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))

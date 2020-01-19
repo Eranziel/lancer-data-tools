@@ -21,20 +21,29 @@ class IMechGear:
             tagline = tagline.partition(",")[2]
 
         tags = tagline.split(",")
-        # print(f"tag line: {tags}")
         for t in tags:
             if t != "-":
-                words = t.strip().split(" ")
-                # If the tag contains a number, parse it as 'val'.
-                val = None
-                t_text = ""
-                for word in words:
-                    if word.isdecimal():
-                        val = int(word)
-                    elif is_die_roll(word):
-                        val = word
+                if "/" in t:
+                    num, slash, t_text = t.strip().partition("/")
+                    # If there is a number before the slash, parse it as 'val'.
+                    val = None
+                    if num.isdecimal():
+                        val = int(num)
+                    # If it wasn't a number, parse the whole text as a regular tag.
                     else:
-                        t_text += " "+word
+                        t_text = t
+                else:
+                    words = t.strip().split(" ")
+                    # If the tag contains a number, parse it as 'val'.
+                    val = None
+                    t_text = ""
+                    for word in words:
+                        if word.isdecimal():
+                            val = int(word)
+                        elif is_die_roll(word):
+                            val = word
+                        else:
+                            t_text += " "+word
                 t_text.strip()
                 d = {"id": gen_id("tg_", t_text)}
                 if val is not None:
@@ -119,48 +128,45 @@ class Mod(IMechGear):
         output += f"\ndata_type: {self.data_type}"
         return output
 
-    def parse_text(self, raw_text, src):
+    def parse_text(self, raw, src):
         """
         Parse the raw text for the weapon mod.
-        @param raw_text: [str]: The text to parse.
+        @param raw: [str]: The text to parse.
         @param src: str: The source manufacturer.
         @return: None.
         """
         self.source = src
-        self.name = raw_text[0].strip()
+        self.name = raw[0].strip().upper()
         self.id = gen_id(Mod.PREFIX, self.name)
 
-        self.parse_tags(raw_text[1].strip())
+        self.parse_tags(raw[1].strip())
 
-        # Find the split between description and effect
-        split = -1
-        for i in range(len(raw_text)):
-            if raw_text[i] == "---\n":
-                split = i
-                break
-        if split > 0:
-            # Description
-            for line in raw_text[2:split]:
-                if line.startswith("- "):
-                    line = line.replace("- ", "<li>", 1).strip()
-                if self.description == "":
-                    self.description = line.strip()
-                else:
-                    self.description += "<br>"+line.strip()
-            # Effect
-            for line in raw_text[split+1:]:
-                if line.startswith("- "):
-                    line = line.replace("- ", "<li>", 1).strip()
-                if self.effect == "":
-                    self.effect = line.strip()
-                else:
-                    self.effect += "<br>"+line.strip()
-        else:  # No split means there is no description.
-            for line in raw_text[2:]:
-                if self.effect == "":
-                    self.effect = line.strip()
-                else:
-                    self.effect += "<br>"+line.strip()
+        # Find effect/description split
+        splits = []
+        for i in range(len(raw)):
+            if raw[i] == "---\n":
+                splits.append(i)
+
+        raw_effect = []
+        raw_desc = []
+        # Effects are from tag line to description
+        if len(splits) > 0:
+            raw_effect += raw[2:splits[0]]
+        # No splits - everything after tags is effects
+        else:
+            raw_effect += raw[2:]
+        # More than one split
+        if len(splits) > 1:
+            # Description is between the two splits
+            raw_desc += raw[splits[0] + 1:splits[1]]
+            # Add everything after 2nd split to the effect
+            raw_effect += raw[splits[1] + 1:]
+        # 1 split, description follows effect
+        elif len(splits) > 0:
+            raw_desc += raw[splits[0] + 1:]
+
+        self.description = combine_lines(raw_desc, check_horus=True)
+        self.effect = combine_lines(raw_effect)
 
         self.parse_applied()
 
@@ -173,7 +179,7 @@ class Mod(IMechGear):
 
         # Find all the weapon types mentioned in the mod's effect.
         for word in applied_list.strip().replace(",", "").split(" "):
-            if word in Weapon.TYPES:
+            if word.upper() in Weapon.TYPES:
                 self.applied_to.append(word.strip().lower())
 
         # Create the applied string - user-visible string.
@@ -246,6 +252,7 @@ class System(IMechGear):
     * Each system must be preceded and followed by an empty line.
     * Add a line containing "---" between the description and effect of each system.
       Systems which do not have this line are assumed to not have a description.
+    * Gorgon license table missing hyphen in "SCYLLA-Class NHP".
     """
 
     GMS_SYSTEMS = "GMS General Market Systems\n"
@@ -296,55 +303,45 @@ class System(IMechGear):
         output += f"\naptitude: {self.aptitude}"
         return output
 
-    def parse_text(self, raw_text, src):
+    def parse_text(self, raw, src):
         """
         Parse the text for the mech system.
-        @param raw_text: [str]: The raw text.
+        @param raw: [str]: The raw text.
         @param src: str: The source manufacturer.
         @return: None.
         """
         self.source = src
-        self.name = raw_text[0].strip()
+        self.name = raw[0].strip().upper()
         self.id = gen_id(System.PREFIX, self.name)
 
-        self.parse_tags(raw_text[1].strip())
+        self.parse_tags(raw[1].strip())
 
-        # Find the split between description and effect
-        split = -1
-        for i in range(len(raw_text)):
-            if raw_text[i] == "---\n":
-                split = i
-                break
-        if split > 0:
-            # Description
-            for line in raw_text[2:split]:
-                if line.startswith("- "):
-                    line = line.replace("- ", "<li>", 1).strip()
-                if line.startswith("[") and line.endswith("]"):
-                    line = "<span class='ra-quiet'>"+line+"</span>"
-                if self.description == "":
-                    self.description = line.strip()
-                else:
-                    self.description += "<br>"+line.strip()
-            # Effect
-            raw_effect = raw_text[split+1:]
-            for line in raw_effect:
-                if line.startswith("- "):
-                    line = line.replace("- ", "<li>", 1).strip()
-                if self.effect == "":
-                    self.effect = line.strip()
-                else:
-                    self.effect += "<br>"+line.strip()
-        else:  # No split means there is no description.
-            raw_effect = raw_text[2:]
-            for line in raw_effect:
-                if line.startswith("- "):
-                    line = line.replace("- ", "<li>", 1).strip()
-                if self.effect == "":
-                    self.effect = line.strip()
-                else:
-                    self.effect += "<br>"+line.strip()
+        # Find effect/description split
+        splits = []
+        for i in range(len(raw)):
+            if raw[i] == "---\n":
+                splits.append(i)
 
+        raw_effect = []
+        raw_desc = []
+        # Effects are from tag line to description
+        if len(splits) > 0:
+            raw_effect += raw[2:splits[0]]
+        # No splits - everything after tags is effects
+        else:
+            raw_effect += raw[2:]
+        # More than one split
+        if len(splits) > 1:
+            # Description is between the two splits
+            raw_desc += raw[splits[0] + 1:splits[1]]
+            # Add everything after 2nd split to the effect
+            raw_effect += raw[splits[1] + 1:]
+        # 1 split, description follows effect
+        elif len(splits) > 0:
+            raw_desc += raw[splits[0] + 1:]
+
+        self.description = combine_lines(raw_desc, check_horus=True)
+        self.effect = combine_lines(raw_effect)
         # Inherit tags from the effect action, if any.
         if "mech gains the AI" in raw_effect[0]:
             for line in raw_effect:
@@ -353,7 +350,7 @@ class System(IMechGear):
                 else:
                     check_line = line.strip()
                 if (check_line.startswith("Protocol") or
-                        check_line.endswith("Protocol") or
+                        check_line.endswith(", Protocol") or
                         check_line.startswith("Quick Action") or
                         check_line.startswith("Full Action") or
                         check_line.startswith("Quick Tech") or
@@ -379,10 +376,10 @@ class System(IMechGear):
                 self.type = "Tech"
                 break
         # Set system type based on effect
-        if ("DEPLOYABLE" in self.effect
+        if ("Deployable" in self.effect
                 or ("(Mine" in self.effect and "(Grenade" in self.effect)):
             self.type = "Deployable"
-        elif ("DRONE" in self.effect):
+        elif ("Drone" in self.effect):
             self.type = "Drone"
         elif ("tech action" in self.effect.lower() or
               "tech attack" in self.effect.lower()):
@@ -570,26 +567,12 @@ class Weapon(IMechGear):
                 raw_desc += raw[splits[0]+1:splits[1]]
                 # Add everything after 2nd split to the effect
                 raw_effect += raw[splits[1]+1:]
-            # 1 or 0 splits, description follows effect
-            else:
+            # 1 split, description follows effect
+            elif len(splits) > 0:
                 raw_desc += raw[splits[0]+1:]
 
-            for line in raw_effect:
-                if line.startswith("- "):
-                    line = line.replace("- ", "<li>", 1).strip()
-                if self.effect == "":
-                    self.effect = line.strip()
-                else:
-                    self.effect += "<br>" + line.strip()
-                self.effect = self.effect.replace("<br><li>", "<li>")
-            for line in raw_desc:
-                if line.startswith("- "):
-                    line = line.replace("- ", "<li>", 1).strip()
-                if self.description == "":
-                    self.description = line.strip()
-                else:
-                    self.description += "<br>" + line.strip()
-                self.description = self.description.replace("<br><li>", "<li>")
+            self.description = combine_lines(raw_desc, check_horus=True)
+            self.effect = combine_lines(raw_effect)
 
     def parse_type(self, type_line):
         """
@@ -675,7 +658,7 @@ class Weapon(IMechGear):
                             ])
                             self.damage.append(d)
                             d_type = val = ""
-    
+
     def to_dict(self):
         d = dict([
             ("id", self.id),
