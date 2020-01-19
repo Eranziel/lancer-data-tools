@@ -217,7 +217,6 @@ if __name__ == "__main__":
 
         talents = []
         for t in talentHunks:
-            print(f"{t}")
             talents.append(Talent(t))
 
         # Create data output
@@ -382,22 +381,21 @@ if __name__ == "__main__":
         gmsSec = "NONE"
         gmsWepDesc = ["" for i in range(4)]
         for hunk in frameHunks:
-            # print(f"\nHunk:\n{hunk}")
             # Keep track of which subsection we're in.
-            if hunk[0] == CoreBonus.GMS:
-                source = "GMS"
+            if hunk[0] == Manufacturer.GMS[0]:
+                source = Manufacturer.GMS[2]
                 gmsSec = "NONE"
-            elif hunk[0] == CoreBonus.IPSN:
-                source = "IPS-N"
+            elif hunk[0] == Manufacturer.IPSN[0]:
+                source = Manufacturer.IPSN[2]
                 gmsSec = "NONE"
-            elif hunk[0] == CoreBonus.SSC:
-                source = "SSC"
+            elif hunk[0] == Manufacturer.SSC[0]:
+                source = Manufacturer.SSC[2]
                 gmsSec = "NONE"
-            elif hunk[0] == CoreBonus.HORUS:
-                source = "HORUS"
+            elif hunk[0] == Manufacturer.HORUS[0]:
+                source = Manufacturer.HORUS[2]
                 gmsSec = "NONE"
-            elif hunk[0] == CoreBonus.HA:
-                source = "HA"
+            elif hunk[0] == Manufacturer.HA[0]:
+                source = Manufacturer.HA[2]
                 gmsSec = "NONE"
             elif hunk[0] == System.GMS_SYSTEMS:
                 gmsSec = "Systems"

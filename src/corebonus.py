@@ -8,23 +8,13 @@ class CoreBonus:
     """
     Class for core bonus data.
     NECESSARY PRE-WORK:
+    * Ensure the name of each core bonus is in upper case.
     * Ensure the paragraph of core bonuses is preceded and followed by empty lines.
-
-    NECESSARY POST-WORK:
-    * Add the "mounted_effect" fields to:
-      * cb_auto_stabilizing_hardpoints
-      * cb_overpower_caliber
-      * cb_mount_retrofitting
     """
 
     PREFIX = "cb_"
 
     CORE = "CORE BONUSES\n"
-    GMS = "General Massive Systems\n"
-    IPSN = "IPS-Northstar\n"
-    SSC = "Smith-Shimano Corpro\n"
-    HORUS = "HORUS\n"
-    HA = "Harrison Armory\n"
 
     def __init__(self, raw=None):
         self.id = ""

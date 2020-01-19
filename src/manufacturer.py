@@ -13,11 +13,11 @@ class Manufacturer:
 
     PREFIX = "mfr_"
 
-    GMS = ("GENERAL MASSIVE SYSTEMS\n", "General Massive Systems - GMS for short - is the galactic-standard supplier", "gms")
-    IPSN = ("IPS-NORTHSTAR\n", "IPS-Northstar (IPS-N) was created ", "ips-n")
-    SSC = ("SMITH-SHIMANO CORPRO\n", "Smith-Shimano Corpro (SSC) is the second-oldest ", "ssc")
-    HORUS = ("HORUS\n", "HORUS is an oddity among the various pan-galactic", "horus")
-    HA = ("HARRISON ARMORY\n", "Harrison Armory enjoys a galaxy-wide reputation for the quality", "ha")
+    GMS = ("General Massive Systems\n", "General Massive Systems – GMS for short –", "GMS")
+    IPSN = ("IPS-Northstar\n", "IPS-Northstar (IPS-N) was created ", "IPS-N")
+    SSC = ("Smith-Shimano Corpro\n", "Smith-Shimano Corpro (SSC) is the second-oldest ", "SSC")
+    HORUS = ("HORUS\n", "HORUS is an oddity among the various pan-galactic", "HORUS")
+    HA = ("Harrison Armory\n", "Harrison Armory enjoys a galaxy-wide reputation for the quality", "HA")
     TITLES = [GMS[0], IPSN[0], SSC[0], HORUS[0], HA[0]]
 
     def __init__(self, raw=""):
@@ -32,24 +32,26 @@ class Manufacturer:
             self.parse_text(raw)
 
     def parse_text(self, raw):
-        self.name = raw[0].strip()
-        self.id = gen_id(Manufacturer.PREFIX, self.name)
+        self.name = raw[0].strip().upper()
+        # self.id = gen_id(Manufacturer.PREFIX, self.name)
 
         if raw[0] == Manufacturer.GMS[0]:
             desc_start = Manufacturer.GMS[1]
-            self.logo = Manufacturer.GMS[2]
+            self.id = Manufacturer.GMS[2]
         elif raw[0] == Manufacturer.IPSN[0]:
             desc_start = Manufacturer.IPSN[1]
-            self.logo = Manufacturer.IPSN[2]
+            self.id = Manufacturer.IPSN[2]
         elif raw[0] == Manufacturer.SSC[0]:
             desc_start = Manufacturer.SSC[1]
-            self.logo = Manufacturer.SSC[2]
+            self.id = Manufacturer.SSC[2]
         elif raw[0] == Manufacturer.HORUS[0]:
             desc_start = Manufacturer.HORUS[1]
-            self.logo = Manufacturer.HORUS[2]
+            self.id = Manufacturer.HORUS[2]
         elif raw[0] == Manufacturer.HA[0]:
             desc_start = Manufacturer.HA[1]
-            self.logo = Manufacturer.HA[2]
+            self.id = Manufacturer.HA[2]
+
+        self.logo = self.id.lower()
 
         # Find the start of the description.
         desc = 0
@@ -65,7 +67,11 @@ class Manufacturer:
             else:
                 self.quote += "<br>" + line.strip()
         self.quote += "</i>"
+        if self.quote.startswith("<i>[") and self.quote.endswith("]</i>"):
+            self.quote = self.quote.replace("<i>", "<code class='horus'>").\
+                replace("</i>", "</code>")
         # Get the description
+        # self.description = combine_lines(raw[desc:])
         for line in raw[desc:]:
             if self.description == "":
                 self.description = line.strip()
