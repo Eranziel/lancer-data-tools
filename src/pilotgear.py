@@ -162,6 +162,9 @@ class PilotGear:
 
         # Parse tags on 2nd line
         self.parse_tags(raw_text[1].strip())
+        for tag in self.tags:
+            if tag["id"] == "tg_flight" or tag["id"] == "tg_invisibility":
+                self.tags.remove(tag)
 
         # 3rd and 4th lines are the stats
         stats = raw_text[2].strip() + raw_text[3].strip()

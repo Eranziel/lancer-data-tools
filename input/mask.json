@@ -1,5 +1,10 @@
 [
   {
+    "id": "tg_invade",
+    "name": "Invade",
+    "description": "This system provides additional options for the Invade Quick Tech Action."
+  },
+  {
     "id": "tg_quick_tech",
     "name": "Quick Tech",
     "description": "This tech can be used as a Quick Tech Action"
@@ -811,23 +816,24 @@
     "description": "Gained from the <i>Walking Armory: Rank III</i> pilot talent."
   },
   {
-    "id": "mfr_general_massive_systems",
+    "id": "GMS",
     "color": "#b30c1d"
   },
   {
-    "id": "mfr_ips_northstar",
+    "id": "IPS-N",
     "color": "#1661b8"
   },
   {
-    "id": "mfr_smith_shimano_corpro",
+    "id": "SSC",
     "color": "#d1920a"
   },
   {
-    "id": "mfr_horus",
+    "id": "HORUS",
+    "quote": "<code class='horus'>[CONGRATULATIONS, PILOT.<br>\t\tYOU HAVE BEEN CHOSEN.<br>\tACCESS IS YOURS,<br>\t  AS LONG AS YOU CAN KEEP IT.]</code>",
     "color": "#00a256"
   },
   {
-    "id": "mfr_harrison_armory",
+    "id": "HA",
     "color": "#6e4373"
   }
 ]
