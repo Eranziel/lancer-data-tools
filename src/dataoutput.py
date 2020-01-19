@@ -16,11 +16,11 @@ class DataOutput:
         """
         if self.target is not None and self.target != "stdout":
             try:
-                with open(self.target, 'w') as f:
+                with open(self.target, 'w', encoding='utf-8') as f:
                     for line in data:
                         f.write(line)
-            except:
-                print("Error opening file {}".format(self.target))
+            except Exception as e:
+                print(f"Error ({e}) opening file {self.target}")
                 exit(1)
         else:
             for line in data:

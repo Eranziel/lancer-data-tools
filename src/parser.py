@@ -231,7 +231,7 @@ if __name__ == "__main__":
             j.append(apply_override(t.to_dict(), mask))
         add_missing_overrides(j, mask, Talent.PREFIX)
         print(f"Outputting JSON for {len(talents)} talents to {dOut.target}")
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
     if args.tags:
         inTags = False
 
@@ -263,7 +263,7 @@ if __name__ == "__main__":
             j.append(apply_override(t.to_dict(), mask))
         add_missing_overrides(j, mask, Tag.PREFIX)
         print(f"Outputting JSON for {len(tags)} tags to {dOut.target}")
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
     if args.pilot_gear:
         inPilotGear = False
 
@@ -331,7 +331,7 @@ if __name__ == "__main__":
             j.append(apply_override(p.to_dict(), mask))
         add_missing_overrides(j, mask, PilotGear.PREFIX)
         print(f"Outputting JSON for {len(pg)} pieces of pilot gear to {dOut.target}")
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
     if args.skills:
         # Create data output
         if args.stdout:
@@ -353,7 +353,7 @@ if __name__ == "__main__":
             j.append(apply_override(s.to_dict(), mask))
         add_missing_overrides(j, mask, Skill.PREFIX)
         print(f"Outputting JSON for {len(skills)} skills to {dOut.target}")
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
     if args.frames:
         inFrames = False
 
@@ -484,7 +484,7 @@ if __name__ == "__main__":
             j.append(apply_override(frame.to_dict(), mask))
         add_missing_overrides(j, mask, Frame.PREFIX)
         print(f"Outputting JSON for {len(frames)} frames to {dOut.target}")
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
 
         # Create data output for manufactuers
         if args.stdout:
@@ -496,7 +496,7 @@ if __name__ == "__main__":
             j.append(apply_override(mfr.to_dict(), mask))
         add_missing_overrides(j, mask, Manufacturer.PREFIX)
         print(f"Outputting JSON for {len(manufacturers)} manufacturers to {dOut.target}")
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
 
         # Create data output for core bonuses
         if args.stdout:
@@ -508,7 +508,7 @@ if __name__ == "__main__":
             j.append(apply_override(cb.to_dict(), mask))
         add_missing_overrides(j, mask, CoreBonus.PREFIX)
         print(f"Outputting JSON for {len(coreBonuses)} core bonuses to {dOut.target}")
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
 
         # Create data output for weapons
         if args.stdout:
@@ -522,7 +522,7 @@ if __name__ == "__main__":
             # print("\n" + str(weapon))
         add_missing_overrides(j, mask, Weapon.PREFIX)
         print(f"Outputting JSON for {len(weapons)} weapons to {dOut.target}")
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
 
         # Create data output for mods
         if args.stdout:
@@ -536,7 +536,7 @@ if __name__ == "__main__":
             # print("\n" + str(mod))
         add_missing_overrides(j, mask, Mod.PREFIX)
         print(f"Outputting JSON for {len(mods)} mods to {dOut.target}")
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
 
         # Create data output for systems
         if args.stdout:
@@ -550,7 +550,7 @@ if __name__ == "__main__":
             # print("\n" + str(system))
         add_missing_overrides(j, mask, System.PREFIX)
         print(f"Outputting JSON for {len(systems)} systems to {dOut.target}")
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
     if args.statuses:
         pass
         # Create data output
@@ -589,4 +589,4 @@ if __name__ == "__main__":
             j.append(apply_override(s.to_dict(), mask))
         add_missing_overrides(j, mask, Status.PREFIX)
         print(f"Outputting JSON for {len(statuses)} statuses to {dOut.target}")
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': ')))
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
