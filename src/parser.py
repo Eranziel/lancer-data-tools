@@ -18,6 +18,7 @@ from pilotgear import PilotGear
 from skills import Skill
 from statuses import Status
 from glossary import GlossaryItem
+from backgrounds import Background
 from dataoutput import DataOutput
 
 rawLines = []
@@ -35,6 +36,7 @@ TALENTS = "../output/talents.json"
 WEAPONS = "../output/weapons.json"
 STATUSES = "../output/statuses.json"
 GLOSSARY = "../output/glossary.json"
+BACKGROUNDS = "../output/backgrounds.json"
 
 
 def check_section(start, end):
@@ -188,6 +190,8 @@ if __name__ == "__main__":
                         help="Generate status/condition JSON.")
     parser.add_argument("-g", "--glossary", action="store_true",
                         help="Generate combat glossary JSON.")
+    parser.add_argument("-b", "--backgrounds", action="store_true",
+                        help="Generate pilot background JSON.")
     parser.add_argument("-m", "--mask", nargs=1,
                         help="Specify a mask file with overrides for specific id's.")
     parser.add_argument("raw", help="raw text input file")
@@ -615,4 +619,34 @@ if __name__ == "__main__":
         for g in glossary:
             j.append(apply_override(g.to_dict(), mask))
         print(f"Outputting JSON for {len(glossary)} glossary items to {dOut.target}")
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+    if args.backgrounds:
+        # Create data output
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(BACKGROUNDS)
+        inBackgrounds = False
+
+        # Parse the text
+        s, e = check_section(Background.START, Background.END)
+        print(f"Backgrounds start: {s}, end: {e}")
+        rawBackgrounds = rawLines[s:e + 1]
+        bgHunks = []
+        prev = 0
+        for i in range(len(rawBackgrounds)):
+            if rawBackgrounds[i] == "\n":
+                bgHunks.append(rawBackgrounds[prev:i])
+                prev = i + 1
+        # Get the final hunk.
+        bgHunks.append(rawBackgrounds[prev:])
+
+        backgrounds = []
+        for b in bgHunks:
+            backgrounds.append(Background(b))
+
+        j = []
+        for b in backgrounds:
+            j.append(apply_override(b.to_dict(), mask))
+        print(f"Outputting JSON for {len(backgrounds)} pilot backgrounds to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))

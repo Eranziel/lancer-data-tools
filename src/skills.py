@@ -43,7 +43,6 @@ class Skill:
         """
         self.name = raw_text[0].strip()
         self.id = gen_id(Skill.PREFIX, self.name)
-        # self.id = "sk_"+self.name.lower().replace(" ", "_")
         self.description = raw_text[1].strip()
 
     def set_id(self, new_id):
