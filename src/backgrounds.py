@@ -45,7 +45,19 @@ class Background:
         self.id = gen_id(Background.PREFIX, self.name)
 
         self.triggers = raw[1].strip()
-        self.description = combine_lines(raw[2:])
+        raw_desc = []
+        for line in raw[2:]:
+            line = line.strip()
+            if ":" in line:
+                ital_start = max(line.rfind("."), line.rfind(":"))
+            elif "." in line:
+                ital_start = line.rfind(".")
+            else:
+                ital_start = -2
+            print(f"{self.name}, ital_start: {ital_start}")
+            line = line[:ital_start + 2] + "<i>" + line[ital_start + 2:] + "</i>"
+            raw_desc.append(line)
+        self.description = combine_lines(raw_desc)
 
     def to_dict(self):
         return {"id": self.id,
