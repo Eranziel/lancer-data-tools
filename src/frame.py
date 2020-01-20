@@ -236,7 +236,7 @@ class Frame:
         #   system has a description.
         if pass_start != 1 and act_start != 1:
             if pass_start != -1:
-                desc_sec = core_lines[1:pass_start]
+                desc_sec = core_lines[1:pass_start-1]
             elif integrated_start != -1:
                 desc_sec = core_lines[1:integrated_start]
             else:
