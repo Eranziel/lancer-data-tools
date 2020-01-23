@@ -5,6 +5,7 @@
 
 import argparse
 import json
+import time
 # import asyncio
 from deepmerge import always_merger
 
@@ -57,7 +58,7 @@ def check_section(start, end):
                 s_found = s_found and rawLines[i + j].startswith(start[j])
             if end_idx < 0:
                 e_found = e_found and rawLines[i + j].startswith((end[j]))
-            # Stop if a line doesn't match either the start or end delimeters.
+            # Stop if a line doesn't match either the start or end delimiters.
             if not s_found and not e_found:
                 break
 
@@ -174,6 +175,7 @@ def sys_check(txt):
 
 
 if __name__ == "__main__":
+    startTime = time.time()
     parser = argparse.ArgumentParser()
     parser.add_argument("--stdout", help="Output to stdout instead of file.")
     parser.add_argument("-t", "--talents", action="store_true",
@@ -212,8 +214,7 @@ if __name__ == "__main__":
         mask = []
 
     if args.talents:
-        inTalents = False
-
+        talentTime = time.time()
         # Parse the text
         s, e = check_section(Talent.START, Talent.END)
         print(f"Talents start: {s}, end: {e}")
@@ -243,9 +244,9 @@ if __name__ == "__main__":
         add_missing_overrides(j, mask, Talent.PREFIX)
         print(f"Outputting JSON for {len(talents)} talents to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+        print(f"Talents done in {time.time() - talentTime:.3f} seconds")
     if args.tags:
-        inTags = False
-
+        tagsTime = time.time()
         # Parse the text
         s, e = check_section(Tag.START, Tag.END)
         print(f"Tags start: {s}, end: {e}")
@@ -275,9 +276,9 @@ if __name__ == "__main__":
         add_missing_overrides(j, mask, Tag.PREFIX)
         print(f"Outputting JSON for {len(tags)} tags to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+        print(f"Tags done in {time.time() - tagsTime:.3f} seconds")
     if args.pilot_gear:
-        inPilotGear = False
-
+        pgTime = time.time()
         # Parse the text
         s, e = check_section(PilotGear.START, PilotGear.END)
         print(f"Pilot Gear start: {s}, end: {e}")
@@ -343,14 +344,14 @@ if __name__ == "__main__":
         add_missing_overrides(j, mask, PilotGear.PREFIX)
         print(f"Outputting JSON for {len(pg)} pieces of pilot gear to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+        print(f"Pilot gear done in {time.time() - pgTime:.3f} seconds")
     if args.skills:
+        skillsTime = time.time()
         # Create data output
         if args.stdout:
             dOut = DataOutput("stdout")
         else:
             dOut = DataOutput(SKILLS)
-        inSkills = False
-
         # Parse the text
         s, e = check_section(Skill.START, Skill.END)
         print(f"Skills start: {s}, end: {e}")
@@ -365,9 +366,9 @@ if __name__ == "__main__":
         add_missing_overrides(j, mask, Skill.PREFIX)
         print(f"Outputting JSON for {len(skills)} skills to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+        print(f"Skills done in {time.time() - skillsTime:.3f} seconds")
     if args.frames:
-        inFrames = False
-
+        framesTime = time.time()
         # Parse the text
         s, e = check_section(Frame.START, Frame.END)
         print(f"Frames start: {s}, end: {e}")
@@ -561,15 +562,9 @@ if __name__ == "__main__":
         add_missing_overrides(j, mask, System.PREFIX)
         print(f"Outputting JSON for {len(systems)} systems to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+        print(f"Frames done in {time.time() - framesTime:.3f} seconds")
     if args.statuses:
-        pass
-        # Create data output
-        if args.stdout:
-            dOut = DataOutput("stdout")
-        else:
-            dOut = DataOutput(STATUSES)
-        inStatuses = False
-
+        statusTime = time.time()
         # Parse the text
         s, e = check_section(Status.START, Status.END)
         print(f"Statuses start: {s}, end: {e}")
@@ -594,20 +589,21 @@ if __name__ == "__main__":
                     statuses.append(Status(rawStatuses[idx:cap_lines[i+1]], stat))
                 else:
                     statuses.append(Status(rawStatuses[idx:], stat))
+
+        # Create data output
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(STATUSES)
         j = []
         for s in statuses:
             j.append(apply_override(s.to_dict(), mask))
         # add_missing_overrides(j, mask, Status.PREFIX)
         print(f"Outputting JSON for {len(statuses)} statuses to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+        print(f"Statuses done in {time.time() - statusTime:.3f} seconds")
     if args.glossary:
-        # Create data output
-        if args.stdout:
-            dOut = DataOutput("stdout")
-        else:
-            dOut = DataOutput(GLOSSARY)
-        inGlossary = False
-
+        glossaryTime = time.time()
         # Parse the text
         s, e = check_section(GlossaryItem.START, GlossaryItem.END)
         print(f"Glossary start: {s}, end: {e}")
@@ -615,19 +611,20 @@ if __name__ == "__main__":
         glossary = []
         for line in rawGlossary[1:]:
             glossary.append(GlossaryItem(line))
+
+        # Create data output
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(GLOSSARY)
         j = []
         for g in glossary:
             j.append(apply_override(g.to_dict(), mask))
         print(f"Outputting JSON for {len(glossary)} glossary items to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+        print(f"Glossary done in {time.time() - glossaryTime:.3f} seconds")
     if args.backgrounds:
-        # Create data output
-        if args.stdout:
-            dOut = DataOutput("stdout")
-        else:
-            dOut = DataOutput(BACKGROUNDS)
-        inBackgrounds = False
-
+        bgTime = time.time()
         # Parse the text
         s, e = check_section(Background.START, Background.END)
         print(f"Backgrounds start: {s}, end: {e}")
@@ -645,8 +642,15 @@ if __name__ == "__main__":
         for b in bgHunks:
             backgrounds.append(Background(b))
 
+        # Create data output
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(BACKGROUNDS)
         j = []
         for b in backgrounds:
             j.append(apply_override(b.to_dict(), mask))
         print(f"Outputting JSON for {len(backgrounds)} pilot backgrounds to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+        print(f"Backgrounds done in {time.time() - bgTime:.3f} seconds")
+    print(f"Total run time: {time.time() - startTime:.3f} seconds")
