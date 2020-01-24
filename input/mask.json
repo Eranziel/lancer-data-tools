@@ -841,7 +841,7 @@
   },
   {
     "id": "GMS",
-    "color": "#b30c1d"
+    "color": "#991E2A"
   },
   {
     "id": "IPS-N",
@@ -859,5 +859,157 @@
   {
     "id": "HA",
     "color": "#6e4373"
+  },
+  {
+    "id": "act_move",
+    "description": "Move your character up to its speed in any direction."
+  },
+  {
+    "id": "act_overcharge",
+    "description": "Mechs can overcharge to make an additional quick action on a turn as a free action, at the cost of heat."
+  },
+  {
+    "id": "act_skirmish",
+    "description": "Attack with one weapon."
+  },
+  {
+    "id": "act_boost",
+    "description": "Move your speed."
+  },
+  {
+    "id": "act_ram",
+    "description": "Attempt to knock down or knock back your target."
+  },
+  {
+    "id": "act_grapple",
+    "description": "Attempt to grab on your target, potentially immobilizing it or riding it."
+  },
+  {
+    "id": "act_quick_tech",
+    "description": "Perform quick electronic warfare or systems-boosting activities."
+  },
+  {
+    "id": "act_hide",
+    "description": "Attempt to hide."
+  },
+  {
+    "id": "act_search",
+    "description": "Look for a hidden target."
+  },
+  {
+    "id": "act_activate_quick",
+    "description": "Activate a system or piece of gear that uses a quick action."
+  },
+  {
+    "id": "act_shut_down",
+    "description": "Shut down your mech as a desperate measure, to end system attacks, regain control of AI, and cool your mech."
+  },
+  {
+    "id": "act_self_destruct",
+    "description": "As a last ditch measure, set your reactor to go critical and explode."
+  },
+  {
+    "id": "act_mount_dismount_and_eject",
+    "description": "Get in or out of your mech."
+  },
+  {
+    "id": "act_prepare",
+    "description": "Hold a quick action for a specified trigger."
+  },
+  {
+    "id": "act_barrage",
+    "description": "Attack with two weapons, or attack with a single superheavy weapon."
+  },
+  {
+    "id": "act_full_tech",
+    "description": "Choose and perform two options from the tech list, or perform a full tech action."
+  },
+  {
+    "id": "act_improvised_attack",
+    "description": "Attack with a fist, rifle butt, or improvised weapon in melee."
+  },
+  {
+    "id": "act_stabilize",
+    "description": "Heal and cool down your mech, reload, or attempt to end conditions affecting it."
+  },
+  {
+    "id": "act_disengage",
+    "description": "Move safely, avoiding reactions and engagement."
+  },
+  {
+    "id": "act_activate_full",
+    "description": "Activate a system or piece of gear that uses a full action."
+  },
+  {
+    "id": "act_boot_up",
+    "description": "Fire up your mech from Shut Down."
+  },
+  {
+    "id": "act_mount",
+    "description": "Get in or out of your mech."
+  },
+  {
+    "id": "act_skill_check",
+    "description": "Perform an activity with a clear goal that would take a skill check."
+  },
+  {
+    "id": "act_fight",
+    "description": "Attack with one weapon as a pilot."
+  },
+  {
+    "id": "act_reload",
+    "description": "Reload one weapon as a pilot."
+  },
+  {
+    "id": "act_jockey",
+    "description": "Attempt to attack a mech on foot as a pilot."
+  },
+  {
+    "id": "act_brace",
+    "description": "Brace your mech for impact, reducing damage at the cost of your next turn’s actions."
+  },
+  {
+    "id": "act_overwatch",
+    "description": "Attack a close-by target attempting to move."
+  },
+  {
+    "id": "act_free_action",
+    "description": "Characters may perform any number of Free Actions on their turn."
+  },
+  {
+    "id": "act_power_at_a_cost",
+    "description": "Gain rewards, opportunities, or additional resources (such as reserves)."
+  },
+  {
+    "id": "act_buy_some_time",
+    "description": "Try and stave off some reckoning, extend your window of opportunity, or merely buy more time and breathing room for you and your group to act."
+  },
+  {
+    "id": "act_get_a_damn_drink",
+    "description": "Blow off some steam, carouse, and generally get into trouble."
+  },
+  {
+    "id": "act_get_creative",
+    "description": "Tweak something or attempt to make something new, either a physical project, or a piece of software."
+  },
+  {
+    "id": "act_get_focused",
+    "description": "Practice, learn, meditate, or call on a teacher."
+  },
+  {
+    "id": "act_get_organized",
+    "description": "Start, run, or improve an organization, business, or other venture."
+  },
+  {
+    "id": "act_gather_information",
+    "description": "Investigate, do research, follow up on a mystery, track a target, or keep an eye on something."
+  },
+  {
+    "id": "act_get_connected",
+    "description": "Make connections, call upon favors, ask for help, or drum up support for a particular course of action."
+  },
+  {
+    "id": "act_scrounge_and_barter",
+    "description": "Try and get your hands on some gear or asset for your group."
   }
 ]

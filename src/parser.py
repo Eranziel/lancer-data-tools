@@ -20,6 +20,7 @@ from skills import Skill
 from statuses import Status
 from glossary import GlossaryItem
 from backgrounds import Background
+from actions import Action
 from dataoutput import DataOutput
 
 rawLines = []
@@ -38,6 +39,7 @@ WEAPONS = "../output/weapons.json"
 STATUSES = "../output/statuses.json"
 GLOSSARY = "../output/glossary.json"
 BACKGROUNDS = "../output/backgrounds.json"
+ACTIONS = "../output/actions.json"
 
 
 def check_section(start, end):
@@ -194,6 +196,8 @@ if __name__ == "__main__":
                         help="Generate combat glossary JSON.")
     parser.add_argument("-b", "--backgrounds", action="store_true",
                         help="Generate pilot background JSON.")
+    parser.add_argument("-a", "--actions", action="store_true",
+                        help="Generate player action JSON.")
     parser.add_argument("-m", "--mask", nargs=1,
                         help="Specify a mask file with overrides for specific id's.")
     parser.add_argument("raw", help="raw text input file")
@@ -653,4 +657,68 @@ if __name__ == "__main__":
         print(f"Outputting JSON for {len(backgrounds)} pilot backgrounds to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
         print(f"Backgrounds done in {time.time() - bgTime:.3f} seconds")
+    if args.actions:
+        actTime = time.time()
+        # Find the text
+        s, e = check_section(Action.START, Action.END)
+        print(f"Actions start: {s}, end: {e}")
+        rawActions = rawLines[s:e + 1]
+        actHunks = []
+        prev = 0
+        for i in range(len(rawActions)):
+            if rawActions[i] == "\n":
+                actHunks.append(rawActions[prev:i])
+                prev = i + 1
+        # Get the final hunk.
+        actHunks.append(rawActions[prev:])
+
+        # Parse the text
+        actions = []
+        for a in actHunks:
+            a_type = ""
+            pilot = False
+            if a[0].strip() == Action.DOWNTIME[0]:
+                a_type = Action.DOWNTIME[1]
+                pilot = False
+            elif a[0].strip() == Action.QUICK[0]:
+                a_type = Action.QUICK[1]
+                pilot = False
+            elif a[0].strip() == Action.FULL[0]:
+                a_type = Action.FULL[1]
+                pilot = False
+            elif a[0].strip() == Action.OTHER[0]:
+                a_type = Action.OTHER[1]
+                pilot = False
+            elif a[0].strip() == Action.REACTIONS[0]:
+                a_type = Action.REACTIONS[1]
+                pilot = False
+            elif a[0].strip() == Action.PILOT[0]:
+                a_type = Action.PILOT[1]
+                pilot = True
+
+            cap_lines = []
+            for i in range(len(a)):
+                if i == 0:
+                    continue
+                line = a[i]
+                if line.strip().isupper():
+                    cap_lines.append(i)
+            for i in range(len(cap_lines)):
+                idx = cap_lines[i]
+                if i < len(cap_lines) - 1:
+                    actions.append(Action(a[idx:cap_lines[i + 1]], a_type, pilot))
+                else:
+                    actions.append(Action(a[idx:], a_type, pilot))
+
+        # Create data output
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(ACTIONS)
+        j = []
+        for a in actions:
+            j.append(apply_override(a.to_dict(), mask))
+        print(f"Outputting JSON for {len(actions)} player actions to {dOut.target}")
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+        print(f"Actions done in {time.time() - actTime:.3f} seconds")
     print(f"Total run time: {time.time() - startTime:.3f} seconds")
