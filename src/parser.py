@@ -112,7 +112,7 @@ def apply_override(original, mask):
     return result
 
 
-def add_missing_overrides(js_list, mask, prefix):
+def add_missing_overrides(js_list, mask, prefix, front=False):
     """
     Adds elements from the mask which aren't present in the parsed data.
     @param js_list: [dict]: The parsed data.
@@ -132,7 +132,10 @@ def add_missing_overrides(js_list, mask, prefix):
                     present = True
                     break
             if not present:
-                js_list.append(m)
+                if front:
+                    js_list.insert(0, m)
+                else:
+                    js_list.append(m)
 
 
 def weapon_check(txt):
@@ -602,7 +605,6 @@ if __name__ == "__main__":
         j = []
         for s in statuses:
             j.append(apply_override(s.to_dict(), mask))
-        # add_missing_overrides(j, mask, Status.PREFIX)
         print(f"Outputting JSON for {len(statuses)} statuses to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
         print(f"Statuses done in {time.time() - statusTime:.3f} seconds")
@@ -654,6 +656,7 @@ if __name__ == "__main__":
         j = []
         for b in backgrounds:
             j.append(apply_override(b.to_dict(), mask))
+        add_missing_overrides(j, mask, Background.PREFIX)
         print(f"Outputting JSON for {len(backgrounds)} pilot backgrounds to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
         print(f"Backgrounds done in {time.time() - bgTime:.3f} seconds")
@@ -705,10 +708,35 @@ if __name__ == "__main__":
                     cap_lines.append(i)
             for i in range(len(cap_lines)):
                 idx = cap_lines[i]
+                a_raw = []
                 if i < len(cap_lines) - 1:
-                    actions.append(Action(a[idx:cap_lines[i + 1]], a_type, pilot))
+                    a_raw = a[idx:cap_lines[i + 1]]
                 else:
-                    actions.append(Action(a[idx:], a_type, pilot))
+                    a_raw = a[idx:]
+                check = a_raw[0].strip().lower()
+                # Check whether this action can be a quick and full
+                if "(" in check and "full" in check and "quick" in check:
+                    # Special case for Mount, Dismount, and Eject
+                    if "eject" in a_raw[0].lower():
+                        eject_start = 0
+                        for j in range(len(a_raw)):
+                            if a_raw[j].startswith(Action.EJECT_START):
+                                eject_start = j
+                                break
+                        mount_raw = a_raw[:eject_start]
+                        mount_raw[0] = "MOUNT/DISMOUNT"
+                        eject_raw = a_raw[eject_start:]
+                        eject_raw.insert(0, "EJECT")
+                        actions.append(Action(mount_raw, Action.FULL[1], pilot))
+                        actions.append(Action(eject_raw, Action.QUICK[1], pilot))
+                    else:
+                        a_raw[0] = a_raw[0][:a_raw[0].find(" ")]
+                        actions.append(Action(a_raw, Action.QUICK[1], pilot))
+                        actions[-1].id += "_quick"
+                        actions.append(Action(a_raw, Action.FULL[1], pilot))
+                        actions[-1].id += "_full"
+                else:
+                    actions.append(Action(a_raw, a_type, pilot))
 
         # Create data output
         if args.stdout:
@@ -716,8 +744,10 @@ if __name__ == "__main__":
         else:
             dOut = DataOutput(ACTIONS)
         j = []
+        actions.sort()
         for a in actions:
             j.append(apply_override(a.to_dict(), mask))
+        add_missing_overrides(j, mask, Action.PREFIX, front=True)
         print(f"Outputting JSON for {len(actions)} player actions to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
         print(f"Actions done in {time.time() - actTime:.3f} seconds")

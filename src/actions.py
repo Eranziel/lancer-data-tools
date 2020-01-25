@@ -28,6 +28,14 @@ class Action:
     REACTIONS = ("REACTIONS", "reaction")
     PILOT = ("PILOT ACTIONS", "")
 
+    EJECT_START = "You can also EJECT"
+
+    SORTING = {
+        "type": ["move", "overcharge", "quick", "full", "reaction", "free", "downtime"],
+        "quick": ["skirmish", "boost", "ram", "grapple", "quick tech", "hide"],
+        "full": ["barrage", "full tech", "stabilize"]
+    }
+
     def __init__(self, raw_text=None, action="", pilot=False, reserve=False):
         self.id = ""
         self.name = ""
@@ -51,9 +59,9 @@ class Action:
     def parse_text(self, raw):
         if self.action_type == "":
             if "(" in raw[0]:
-                name, delim, action = raw[0].partition("(")
+                name, delim, action = raw[0].strip().partition("(")
                 self.name = name.strip().upper()
-                self.action_type = action.replace(")", "").strip().lower()
+                self.action_type = action[:action.find(" ")].strip().lower().replace(")", "")
             else:
                 self.name = raw[0].strip().upper()
         else:
@@ -77,3 +85,43 @@ class Action:
         if self.reserve:
             d["reserve"] = self.reserve
         return d
+
+    def __eq__(self, other):
+        if not isinstance(other, Action):
+            return NotImplemented
+        return (self.action_type == other.action_type and
+                self.pilot == other.pilot and
+                self.reserve == other.reserve and
+                self.name == other.name)
+
+    def __lt__(self, other):
+        if not isinstance(other, Action):
+            return NotImplemented
+        # Action types match, sort by name
+        if (self.action_type == other.action_type and
+                self.reserve == other.reserve and
+                self.pilot == other.pilot):
+            # Prioritize sorting certain actions
+            if self.action_type in Action.SORTING.keys():
+                key = self.action_type
+                if self.name.lower() in Action.SORTING[key]:
+                    if other.name.lower() in Action.SORTING[key]:
+                        return (Action.SORTING[key].index(self.name.lower()) <
+                                Action.SORTING[key].index(other.name.lower()))
+                    # self's name is prioritized but not other's, so self is less
+                    else:
+                        return True
+                # other's name is prioritized but not self's, so other is less
+                elif other.name in Action.SORTING[key]:
+                    return False
+            else:
+                return self.name < other.name
+        # Action type matches, sort pilot > reserve > rest
+        elif self.action_type == other.action_type:
+            if not self.reserve and other.reserve:
+                return True
+            elif not self.pilot and other.pilot:
+                return True
+        # Sort by action type
+        return (Action.SORTING['type'].index(self.action_type) <
+                Action.SORTING['type'].index(other.action_type))
