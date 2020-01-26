@@ -21,6 +21,7 @@ from statuses import Status
 from glossary import GlossaryItem
 from backgrounds import Background
 from actions import Action
+from reserves import Reserve
 from dataoutput import DataOutput
 
 rawLines = []
@@ -40,6 +41,7 @@ STATUSES = "../output/statuses.json"
 GLOSSARY = "../output/glossary.json"
 BACKGROUNDS = "../output/backgrounds.json"
 ACTIONS = "../output/actions.json"
+RESERVES = "../output/reserves.json"
 
 
 def check_section(start, end):
@@ -201,6 +203,8 @@ if __name__ == "__main__":
                         help="Generate pilot background JSON.")
     parser.add_argument("-a", "--actions", action="store_true",
                         help="Generate player action JSON.")
+    parser.add_argument("-r", "--reserves", action="store_true",
+                        help="Generate reserves JSON.")
     parser.add_argument("-m", "--mask", nargs=1,
                         help="Specify a mask file with overrides for specific id's.")
     parser.add_argument("raw", help="raw text input file")
@@ -751,4 +755,32 @@ if __name__ == "__main__":
         print(f"Outputting JSON for {len(actions)} player actions to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
         print(f"Actions done in {time.time() - actTime:.3f} seconds")
+    if args.reserves:
+        reservesTime = time.time()
+        # Create data output
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(RESERVES)
+        # Parse the text
+        s, e = check_section(Reserve.START, Reserve.END)
+        print(f"Reserves start: {s}, end: {e}")
+        rawReserves = rawLines[s:e + 1]
+        r_type = ""
+        reserves = []
+        for i in range(len(rawReserves)):
+            line = rawReserves[i]
+            if line.isupper():
+                r_type = line[:line.find(" ")].strip().title()
+            else:
+                first, delim, rest = line.partition(" ")
+                if first[:first.find("-")].isdecimal():
+                    reserves.append(Reserve(rawReserves[i:i+2], r_type))
+        j = []
+        for r in reserves:
+            j.append(apply_override(r.to_dict(), mask))
+        add_missing_overrides(j, mask, Reserve.PREFIX, front=True)
+        print(f"Outputting JSON for {len(reserves)} reserves to {dOut.target}")
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+        print(f"Reserves done in {time.time() - reservesTime:.3f} seconds")
     print(f"Total run time: {time.time() - startTime:.3f} seconds")
