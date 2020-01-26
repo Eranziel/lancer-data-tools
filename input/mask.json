@@ -446,7 +446,10 @@
     ],
     "source": "",
     "license": "",
-    "license_level": "",
+    "license_level": 0,
+    "talent_item": true,
+    "talent_id": "t_nuclear_cavalier",
+    "talent_rank": 3,
     "effect": "On Attack: Clear 4 heat.",
     "description": "Gained from the \"Nuclear Cavalier\" Rank 3 Talent",
     "data_type": "weapon",
@@ -481,15 +484,21 @@
         "val": "1d6+2"
       },
       {
+        "id": "tg_overkill"
+      },
+      {
         "id": "tg_set_max_uses"
       },
       {
-        "id": "tg_overkill"
+        "id": "tg_set_damage_type"
       }
     ],
     "source": "",
-    "license": " ",
-    "license_level": "",
+    "license": "",
+    "license_level": 0,
+    "talent_item": true,
+    "talent_id": "t_engineer",
+    "talent_rank": 1,
     "effect": "This weapon is an experimental prototype, customized according to your specific requirements.<br>When you install it, or during a Full Repair, you may choose a new weapon type, damage type, and either Threat 1 (melee) or Range 10 (all other types). Additionally, each time you perform a Full Repair, reroll 1d6+2 to determine this weapon’s Limited uses.",
     "description": "Gained from the \"Engineer\" Rank 1 Talent",
     "data_type": "weapon",
@@ -525,15 +534,21 @@
         "val": "1d6+2"
       },
       {
+        "id": "tg_overkill"
+      },
+      {
         "id": "tg_set_max_uses"
       },
       {
-        "id": "tg_overkill"
+        "id": "tg_set_damage_type"
       }
     ],
     "source": "",
-    "license": " ",
-    "license_level": "",
+    "license": "",
+    "license_level": 0,
+    "talent_item": true,
+    "talent_id": "t_engineer",
+    "talent_rank": 2,
     "effect": "This weapon is an experimental prototype, customized according to your specific requirements.<br>When you install it, or during a Full Repair, you may choose a new weapon type, damage type, and either Threat 1 (melee) or Range 10 (all other types). Additionally, each time you perform a Full Repair, reroll 1d6+2 to determine this weapon’s Limited uses and choose two:<ul><li>Tweaked Optics: Your prototype weapon always gains +1 Accuracy on attacks.</li><li>Tweaked Computer: Your prototype weapon is Smart.</li><li>Stripped reactor shielding: Each time you attack with your prototype weapon, you may choose – at the cost of 2 Heat – to attack with one of the following options, depending on its weapon type:</li><ul><li>Ranged weapon: Cone 3, Line 5, or [Blast 1, Range 10].</li><li>Melee weapon: Burst 1.</li></ul></ul>",
     "description": "Gained from the \"Engineer\" Rank 2 Talent",
     "data_type": "weapon",
@@ -569,15 +584,21 @@
         "val": "2d6"
       },
       {
+        "id": "tg_overkill"
+      },
+      {
         "id": "tg_set_max_uses"
       },
       {
-        "id": "tg_overkill"
+        "id": "tg_set_damage_type"
       }
     ],
     "source": "",
-    "license": " ",
-    "license_level": "",
+    "license": "",
+    "license_level": 0,
+    "talent_item": true,
+    "talent_id": "t_engineer",
+    "talent_rank": 3,
     "effect": "This weapon is an experimental prototype, customized according to your specific requirements.<br>When you install it, or during a Full Repair, you may choose a new weapon type, damage type, and either Threat 1 (melee) or Range 10 (all other types). Additionally, each time you perform a Full Repair, reroll 1d6+2 to determine this weapon’s Limited uses and choose two:<ul><li>Tweaked Optics: Your prototype weapon always gains +1 Accuracy on attacks.</li><li>Tweaked Computer: Your prototype weapon is Smart.</li><li>Stripped reactor shielding: Each time you attack with your prototype weapon, you may choose – at the cost of 2 Heat – to attack with one of the following options, depending on its weapon type:</li><ul><li>Ranged weapon: Cone 3, Line 5, or [Blast 1, Range 10].</li><li>Melee weapon: Burst 1.</li></ul></ul>",
     "description": "Gained from the \"Engineer\" Rank 3 Talent",
     "data_type": "weapon",
@@ -1024,15 +1045,15 @@
     "detail": "<p><strong>Tactical Reserve: Orbital Bombardment</strong><br>Full Action, range 30 within line of sight, blast 2, 3d6 explosive damage.</p><p>This may only be used once per mission, and the reserve is consumed after use.</p>"
   },
   {
-    "id": "act_deployableshield",
+    "id": "act_deployable_shield",
     "name": "Reserve: Deployable Shield",
     "reserve": true,
     "action_type": "free",
     "description": "Deploy a single-use shield generator.",
-    "detail": "<p><strong>Mech Reserve: Deployable Shield</strong><br>Free Action, deploy a size 1 generator that grants all allied actors in a burst 2 radius around it soft cover.</p><p>This may only be used once per mission, and the reserve is consumed after use.</p>"
+    "detail": "<p><strong>Mech Reserve: Deployable Shield</strong><br>Free Action, deploy a a SIZE 1 deployable that grants soft cover to all friendly characters in a BURST 2 radius.</p><p>This may only be used once per mission, and the reserve is consumed after use.</p>"
   },
   {
-    "id": "act_redundantrepair",
+    "id": "act_redundant_repair",
     "name": "Reserve: Redundant Repair",
     "reserve": true,
     "action_type": "free",
@@ -1040,11 +1061,138 @@
     "detail": "<p><strong>Mech Reserve: Redundant Repair</strong><br>Stabilize as a Free Action.</p><p>This may only be used once per mission, and the reserve is consumed after use.</p>"
   },
   {
-    "id": "act_corebattery",
+    "id": "act_core_battery",
     "name": "Reserve: CORE Battery",
     "reserve": true,
     "action_type": "free",
     "description": "Recharge CORE Power.",
     "detail": "<p><strong>Mech Reserve: CORE Battery</strong><br>Consume this to gain CORE power on your mech, allowing it to use its most powerful ability again (you can’t get more than 1 CORE power at a time).</p><p>This may only be used once per mission, and the reserve is consumed after use.</p>"
+  },
+  {
+    "id": "reserve_skill",
+    "name": "Skill",
+    "type": "RESOURCES",
+    "label": "Resource",
+    "description": "Gain or improve a skill, typically as part of the \"Get Focused\" Downtime Action."
+  },
+  {
+    "id": "reserve_access",
+    "label": "Resource"
+  },
+  {
+    "id": "reserve_backing",
+    "label": "Contact"
+  },
+  {
+    "id": "reserve_supplies",
+    "label": "Resource"
+  },
+  {
+    "id": "reserve_disguise",
+    "label": "Identity"
+  },
+  {
+    "id": "reserve_diversion",
+    "label": "Diversion"
+  },
+  {
+    "id": "reserve_blackmail",
+    "label": "Target"
+  },
+  {
+    "id": "reserve_reputation",
+    "label": "Status"
+  },
+  {
+    "id": "reserve_safe_harbor",
+    "label": "Location"
+  },
+  {
+    "id": "reserve_tracking",
+    "label": "Target"
+  },
+  {
+    "id": "reserve_knowledge",
+    "label": "Subject"
+  },
+  {
+    "id": "reserve_ammo",
+    "label": "Ammo"
+  },
+  {
+    "id": "reserve_rented_gear",
+    "label": "Gear"
+  },
+  {
+    "id": "reserve_extra_repairs",
+    "label": "Resource"
+  },
+  {
+    "id": "reserve_core_battery",
+    "label": "Battery"
+  },
+  {
+    "id": "reserve_deployable_shield",
+    "label": "Shield"
+  },
+  {
+    "id": "reserve_redundant_repair",
+    "label": "Resource"
+  },
+  {
+    "id": "reserve_systems_reinforcement",
+    "label": "Resource"
+  },
+  {
+    "id": "reserve_smart_ammo",
+    "label": "Ammo"
+  },
+  {
+    "id": "reserve_boosted_servos",
+    "label": "Resource"
+  },
+  {
+    "id": "reserve_jump_jets",
+    "label": "Resource"
+  },
+  {
+    "id": "reserve_scouting",
+    "label": "Location"
+  },
+  {
+    "id": "reserve_vehicle",
+    "label": "Designation"
+  },
+  {
+    "id": "reserve_reinforcements",
+    "label": "Designation"
+  },
+  {
+    "id": "reserve_environmental_shielding",
+    "label": "Environment"
+  },
+  {
+    "id": "reserve_accuracy",
+    "label": "Skill/Action"
+  },
+  {
+    "id": "reserve_bombardment",
+    "label": "Resource"
+  },
+  {
+    "id": "reserve_extended_harness",
+    "label": "Resource"
+  },
+  {
+    "id": "reserve_ambush",
+    "label": "Location"
+  },
+  {
+    "id": "reserve_orbital_drop",
+    "label": "Location"
+  },
+  {
+    "id": "reserve_nhp_assistant",
+    "label": "Designation"
   }
 ]
