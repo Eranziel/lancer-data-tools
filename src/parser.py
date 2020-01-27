@@ -22,6 +22,9 @@ from glossary import GlossaryItem
 from backgrounds import Background
 from actions import Action
 from reserves import Reserve
+from npcclass import NPCClass
+from npcfeatures import NPCFeature
+from npctemplates import NPCTemplate
 from dataoutput import DataOutput
 
 rawLines = []
@@ -42,6 +45,9 @@ GLOSSARY = "../output/glossary.json"
 BACKGROUNDS = "../output/backgrounds.json"
 ACTIONS = "../output/actions.json"
 RESERVES = "../output/reserves.json"
+NPC_CLASSES = "../output/npc_classes_v2.json"
+NPC_FEATURES = "../output/npc_features_v2.json"
+NPC_TEMPLATES = "../output/npc_templates_v2.json"
 
 
 def check_section(start, end):
@@ -205,6 +211,8 @@ if __name__ == "__main__":
                         help="Generate player action JSON.")
     parser.add_argument("-r", "--reserves", action="store_true",
                         help="Generate reserves JSON.")
+    parser.add_argument("-N", "--NPCClasses", action="store_true",
+                        help="Generate NPC class JSON.")
     parser.add_argument("-m", "--mask", nargs=1,
                         help="Specify a mask file with overrides for specific id's.")
     parser.add_argument("raw", help="raw text input file")
@@ -783,4 +791,41 @@ if __name__ == "__main__":
         print(f"Outputting JSON for {len(reserves)} reserves to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
         print(f"Reserves done in {time.time() - reservesTime:.3f} seconds")
+    ##################################
+    #          NPC DATA              #
+    ##################################
+    if args.NPCClasses:
+        npcTime = time.time()
+        # Parse the text
+        s, e = check_section(NPCClass.START, NPCClass.END)
+        print(f"NPC classes start: {s}, end: {e}")
+        rawNPCs = rawLines[s:e + 1]
+        npcHunks = []
+        npcs = []
+        prev = 0
+        for i in range(len(rawNPCs)):
+            if rawNPCs[i] == "\n":
+                npcHunks.append(rawNPCs[prev:i])
+                prev = i + 1
+        # Catch the last hunk
+        npcHunks.append(rawNPCs[prev:])
+        # Strip out any empty hunks
+        while [] in npcHunks:
+            npcHunks.remove([])
+        for hunk in npcHunks:
+            if len(hunk) > 10:
+                npcs.append(NPCClass(hunk))
+
+        # Create data output
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(NPC_CLASSES)
+        j = []
+        for n in npcs:
+            j.append(apply_override(n.to_dict(), mask))
+        add_missing_overrides(j, mask, Reserve.PREFIX, front=True)
+        print(f"Outputting JSON for {len(npcs)} NPC classes to {dOut.target}")
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+        print(f"NPCs done in {time.time() - npcTime:.3f} seconds")
     print(f"Total run time: {time.time() - startTime:.3f} seconds")
