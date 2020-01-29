@@ -21,6 +21,13 @@ class NPCClass:
 
     PREFIX = "npcc_"
 
+    ROLES = ["striker\n",
+             "controller\n",
+             "artillery\n",
+             "defender\n",
+             "support\n",
+             "biological\n"]
+
     TACTICS_TITLE = "Tactics\n"
     STAT_TITLE = "Stats\n"
     TIER = ("Tier 1\n", "Tier 2\n", "Tier 3\n")
@@ -33,7 +40,7 @@ class NPCClass:
         ("speed", "speed"),
         ("sensors", "sensor"),
         ("save target", "save"),
-        ("hull", "save"),
+        ("hull", "hull"),
         ("agility", "agility"),
         ("systems", "systems"),
         ("engineering", "engineering"),
@@ -81,14 +88,14 @@ class NPCClass:
         output += f"\nflavor: {self.info['flavor']}"
         output += f"\ntactics: {self.info['tactics']}"
         output += f"\nstats:"
-        for stat in self.stats:
+        for stat in self.stats.keys():
             output += f"\n   {stat}: {self.stats[stat]}"
         output += f"\nbase features:"
         for feat in self.base_feat:
-            output += f"\n   {feat}: {self.base_feat[feat]}"
+            output += f"\n   {feat}"
         output += f"\noptional features:"
         for feat in self.opt_feat:
-            output += f"\n   {feat}: {self.opt_feat[feat]}"
+            output += f"\n   {feat}"
         output += f"\npower: {self.power}"
         return output
 
@@ -102,15 +109,18 @@ class NPCClass:
         self.id = gen_id(NPCClass.PREFIX, self.name)
         self.role = raw[1].strip().lower()
 
-        tactics = 0
-        stats = 0
+        tactics = -1
+        stats = -1
         for i in range(len(raw)):
             if raw[i] == NPCClass.TACTICS_TITLE:
                 tactics = i
             if raw[i] == NPCClass.STAT_TITLE:
                 stats = i
+        if tactics == -1:
+            tactics = stats
         self.info["flavor"] = combine_lines(raw[2:tactics])
-        self.info["tactics"] = combine_lines((raw[tactics:stats]))
+        if tactics != stats:
+            self.info["tactics"] = combine_lines((raw[tactics+1:stats]))
 
         # Parse stats
         tier = -1
@@ -122,7 +132,39 @@ class NPCClass:
                     break
             if ":" in line:
                 parts = line.split(":")
-                self.stats[NPCClass.STATS[parts[0].strip().lower()]][tier] = parts[1].strip()
+                key = NPCClass.STATS[parts[0].strip().lower()]
+                val = parts[1].strip()
+                # Size is special, stored as a 2D array.
+                if key == "size":
+                    parts = [val]
+                    if " or " in val:
+                        p1, d, p2 = val.partition(" or ")
+                        parts = [p1, p2]
+                        for p in parts:
+                            if "," in p:
+                                p1, d, p2 = p.partition(",")
+                                parts.insert(parts.index(p), p1)
+                                parts.insert(parts.index(p), p2)
+                                parts.remove(p)
+                    val = []
+                    for p in parts:
+                        p = p.strip()
+                        if p.isdecimal():
+                            val.append(int(p))
+                        elif p == "1/2":
+                            val.append(0.5)
+                        else:
+                            val.append(p)
+                    self.stats[key][tier] = val
+                else:
+                    val = val.strip().replace("+", "").replace("–", "-")
+                    if val.replace("-", "").isdecimal():
+                        self.stats[key][tier] = int(val)
+                    elif val.replace("-", "").isnumeric():
+                        self.stats[key][tier] = float(val)
+                    else:
+                        print(f"NPC {self.name}, stat {key}: {val}")
+                        self.stats[key][tier] = val
 
     def to_dict(self):
         return {"id": self.id,

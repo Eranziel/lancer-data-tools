@@ -22,9 +22,9 @@ from glossary import GlossaryItem
 from backgrounds import Background
 from actions import Action
 from reserves import Reserve
-from npcclass import NPCClass
-from npcfeatures import NPCFeature
-from npctemplates import NPCTemplate
+from npcclass import *
+from npcfeatures import *
+from npctemplates import *
 from dataoutput import DataOutput
 
 rawLines = []
@@ -796,12 +796,16 @@ if __name__ == "__main__":
     ##################################
     if args.NPCClasses:
         npcTime = time.time()
-        # Parse the text
-        s, e = check_section(NPCClass.START, NPCClass.END)
-        print(f"NPC classes start: {s}, end: {e}")
-        rawNPCs = rawLines[s:e + 1]
+        # Find the relevant text
+        npc_s, npc_e = check_section(NPCClass.START, NPCClass.END)
+        print(f"NPC classes start: {npc_s}, end: {npc_e}")
+        temp_s, temp_e = check_section(NPCTemplate.START, NPCTemplate.END)
+        print(f"NPC templates start: {temp_s}, end: {temp_e}")
+        rawNPCs = rawLines[min(npc_s, temp_s):max(npc_e, temp_e) + 1]
         npcHunks = []
-        npcs = []
+        npcc = []
+        npct = []
+        npcf = []
         prev = 0
         for i in range(len(rawNPCs)):
             if rawNPCs[i] == "\n":
@@ -812,20 +816,92 @@ if __name__ == "__main__":
         # Strip out any empty hunks
         while [] in npcHunks:
             npcHunks.remove([])
-        for hunk in npcHunks:
-            if len(hunk) > 10:
-                npcs.append(NPCClass(hunk))
 
-        # Create data output
+        # Parse the text
+        base_sys = False
+        opt_sys = False
+        templates = False
+        for hunk in npcHunks:
+            done = False
+            # Look through the hunk to see what kind it is
+            for line in hunk:
+                # NPC classes all have a role
+                if line.lower() in NPCClass.ROLES:
+                    npcc.append(NPCClass(hunk))
+                    done = True
+                    base_sys = True
+                    opt_sys = False
+                    break
+                # Templates all have a "Template Features" line
+                elif line.lower() == NPCTemplate.TEMP_FEAT:
+                    npct.append(NPCTemplate(hunk))
+                    templates = True
+                    done = True
+                    base_sys = True
+                    opt_sys = False
+                # Check if we've reached the optional systems for the class/template
+                elif line.lower() == NPCFeature.OPT_SYS:
+                    opt_sys = True
+                    base_sys = False
+                    break
+            # If this wasn't a class or template, parse it as a feature
+            if not done and len(hunk) >= 3:
+                feat = new_npc_feature(hunk)
+                npcf.append(feat)
+                if base_sys:
+                    if not templates:
+                        feat.set_origin("Class", npcc[-1].name, True)
+                        npcc[-1].base_feat.append(feat.id)
+                    else:
+                        feat.set_origin("Template", npct[-1].name, True)
+                        npct[-1].base_feat.append(feat.id)
+                elif opt_sys:
+                    if not templates:
+                        feat.set_origin("Class", npcc[-1].name, False)
+                        npcc[-1].opt_feat.append(feat.id)
+                    else:
+                        feat.set_origin("Template", npct[-1].name, False)
+                        npct[-1].opt_feat.append(feat.id)
+
+        # Create NPC Classes data output
         if args.stdout:
             dOut = DataOutput("stdout")
         else:
             dOut = DataOutput(NPC_CLASSES)
         j = []
-        for n in npcs:
-            j.append(apply_override(n.to_dict(), mask))
+        for n in npcc:
+            j.append(n.to_dict())
+            # j.append(apply_override(n.to_dict(), mask))
+            # print(f"\n\n{n}")
         add_missing_overrides(j, mask, Reserve.PREFIX, front=True)
-        print(f"Outputting JSON for {len(npcs)} NPC classes to {dOut.target}")
+        print(f"Outputting JSON for {len(npcc)} NPC classes to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+
+        # Create NPC Templates data output
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(NPC_TEMPLATES)
+        j = []
+        for n in npct:
+            j.append(n.to_dict())
+            # j.append(apply_override(n.to_dict(), mask))
+        add_missing_overrides(j, mask, Reserve.PREFIX, front=True)
+        print(f"Outputting JSON for {len(npct)} NPC templates to {dOut.target}")
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+
+        # Create NPC Features data output
+        if args.stdout:
+            dOut = DataOutput("stdout")
+        else:
+            dOut = DataOutput(NPC_FEATURES)
+        j = []
+        for n in npcf:
+            j.append(n.to_dict())
+            # j.append(apply_override(n.to_dict(), mask))
+        add_missing_overrides(j, mask, Reserve.PREFIX, front=True)
+        print(f"Outputting JSON for {len(npcf)} NPC features to {dOut.target}")
+        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+
         print(f"NPCs done in {time.time() - npcTime:.3f} seconds")
     print(f"Total run time: {time.time() - startTime:.3f} seconds")

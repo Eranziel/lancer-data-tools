@@ -12,7 +12,7 @@ def gen_id(prefix, name):
     return prefix + name.strip().lower().replace(" ", "_").replace("/", "_").\
         replace("-", "_").replace("-", "_").replace("'", "").replace("’", "").\
         replace("“", "").replace("”", "").replace("\"", "").replace("(", "").\
-        replace(")", "").replace(",", "")
+        replace(")", "").replace(",", "").replace("!", "")
 
 
 def combine_lines(lines, check_horus=False):
