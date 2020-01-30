@@ -24,12 +24,12 @@ class Frame:
         [3d6 explosive damage]
     """
 
-    START = ["General Massive Systems\n",
-             "From Cradle to the stars, GMS:\n",
-             "assured quality, universal licensing,"]
-    END = ["Expend a charge and choose a character adjacent",
+    START = ["SSC\n",
+             "ATLAS\n",
+             "Striker\n"]
+    END = ["Wind Stance: This weapon gains reliable 2, threat 2",
            "---\n",
-           "This studded gauntlet draws on a core reactor"]
+           "Forged in the fire of a dying star and perfectly balanced"]
 
     PREFIX = "mf_"
 
