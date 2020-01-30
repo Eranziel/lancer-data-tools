@@ -505,83 +505,89 @@ if __name__ == "__main__":
                                       lic_table=frames[-1].license))
 
         # Create data output for frames
-        if args.stdout:
-            dOut = DataOutput("stdout")
-        else:
-            dOut = DataOutput(FRAMES)
-        j = []
-        for frame in frames:
-            j.append(apply_override(frame.to_dict(), mask))
-        add_missing_overrides(j, mask, Frame.PREFIX)
-        print(f"Outputting JSON for {len(frames)} frames to {dOut.target}")
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+        if len(frames) > 0:
+            if args.stdout:
+                dOut = DataOutput("stdout")
+            else:
+                dOut = DataOutput(FRAMES)
+            j = []
+            for frame in frames:
+                j.append(apply_override(frame.to_dict(), mask))
+            add_missing_overrides(j, mask, Frame.PREFIX)
+            print(f"Outputting JSON for {len(frames)} frames to {dOut.target}")
+            dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
 
         # Create data output for manufactuers
-        if args.stdout:
-            dOut = DataOutput("stdout")
-        else:
-            dOut = DataOutput(MANUFACTURERS)
-        j = []
-        for mfr in manufacturers:
-            j.append(apply_override(mfr.to_dict(), mask))
-        add_missing_overrides(j, mask, Manufacturer.PREFIX)
-        print(f"Outputting JSON for {len(manufacturers)} manufacturers to {dOut.target}")
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+        if len(manufacturers) > 0:
+            if args.stdout:
+                dOut = DataOutput("stdout")
+            else:
+                dOut = DataOutput(MANUFACTURERS)
+            j = []
+            for mfr in manufacturers:
+                j.append(apply_override(mfr.to_dict(), mask))
+            add_missing_overrides(j, mask, Manufacturer.PREFIX)
+            print(f"Outputting JSON for {len(manufacturers)} manufacturers to {dOut.target}")
+            dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
 
         # Create data output for core bonuses
-        if args.stdout:
-            dOut = DataOutput("stdout")
-        else:
-            dOut = DataOutput(CORE_BONUSES)
-        j = []
-        for cb in coreBonuses:
-            j.append(apply_override(cb.to_dict(), mask))
-        add_missing_overrides(j, mask, CoreBonus.PREFIX)
-        print(f"Outputting JSON for {len(coreBonuses)} core bonuses to {dOut.target}")
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+        if len(coreBonuses) > 0:
+            if args.stdout:
+                dOut = DataOutput("stdout")
+            else:
+                dOut = DataOutput(CORE_BONUSES)
+            j = []
+            for cb in coreBonuses:
+                j.append(apply_override(cb.to_dict(), mask))
+            add_missing_overrides(j, mask, CoreBonus.PREFIX)
+            print(f"Outputting JSON for {len(coreBonuses)} core bonuses to {dOut.target}")
+            dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
 
         # Create data output for weapons
-        if args.stdout:
-            dOut = DataOutput("stdout")
-        else:
-            dOut = DataOutput(WEAPONS)
-        j = []
-        for weapon in weapons:
-            j.append(apply_override(weapon.to_dict(), mask))
-            # Debugging printout
-            # print("\n" + str(weapon))
-        add_missing_overrides(j, mask, Weapon.PREFIX)
-        print(f"Outputting JSON for {len(weapons)} weapons to {dOut.target}")
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+        if len(weapons) > 0:
+            if args.stdout:
+                dOut = DataOutput("stdout")
+            else:
+                dOut = DataOutput(WEAPONS)
+            j = []
+            for weapon in weapons:
+                j.append(apply_override(weapon.to_dict(), mask))
+                # Debugging printout
+                # print("\n" + str(weapon))
+            add_missing_overrides(j, mask, Weapon.PREFIX)
+            print(f"Outputting JSON for {len(weapons)} weapons to {dOut.target}")
+            dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
 
         # Create data output for mods
-        if args.stdout:
-            dOut = DataOutput("stdout")
-        else:
-            dOut = DataOutput(MODS)
-        j = []
-        for mod in mods:
-            j.append(apply_override(mod.to_dict(), mask))
-            # Debugging printout
-            # print("\n" + str(mod))
-        add_missing_overrides(j, mask, Mod.PREFIX)
-        print(f"Outputting JSON for {len(mods)} mods to {dOut.target}")
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+        if len(mods) > 0:
+            if args.stdout:
+                dOut = DataOutput("stdout")
+            else:
+                dOut = DataOutput(MODS)
+            j = []
+            for mod in mods:
+                j.append(apply_override(mod.to_dict(), mask))
+                # Debugging printout
+                # print("\n" + str(mod))
+            add_missing_overrides(j, mask, Mod.PREFIX)
+            print(f"Outputting JSON for {len(mods)} mods to {dOut.target}")
+            dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
 
         # Create data output for systems
-        if args.stdout:
-            dOut = DataOutput("stdout")
-        else:
-            dOut = DataOutput(SYSTEMS)
-        j = []
-        for system in systems:
-            j.append(apply_override(system.to_dict(), mask))
-            # Debugging printout
-            # print("\n" + str(system))
-        add_missing_overrides(j, mask, System.PREFIX)
-        print(f"Outputting JSON for {len(systems)} systems to {dOut.target}")
-        dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
-        print(f"Frames done in {time.time() - framesTime:.3f} seconds")
+        if len(systems) > 0:
+            if args.stdout:
+                dOut = DataOutput("stdout")
+            else:
+                dOut = DataOutput(SYSTEMS)
+            j = []
+            for system in systems:
+                j.append(apply_override(system.to_dict(), mask))
+                # Debugging printout
+                # print("\n" + str(system))
+            add_missing_overrides(j, mask, System.PREFIX)
+            print(f"Outputting JSON for {len(systems)} systems to {dOut.target}")
+            dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
+            print(f"Frames done in {time.time() - framesTime:.3f} seconds")
     if args.statuses:
         statusTime = time.time()
         # Parse the text
