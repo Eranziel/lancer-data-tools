@@ -40,6 +40,8 @@ class NPCClass:
         ("speed", "speed"),
         ("sensors", "sensor"),
         ("save target", "save"),
+        ("structure", "structure"),
+        ("stress", "stress"),
         ("hull", "hull"),
         ("agility", "agility"),
         ("systems", "systems"),

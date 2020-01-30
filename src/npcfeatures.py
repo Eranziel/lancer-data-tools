@@ -3,6 +3,7 @@
 
 from parseutil import *
 from licensegear import Weapon
+from npcclass import NPCClass
 
 
 def new_npc_feature(raw):
@@ -123,13 +124,13 @@ class NPCWeapon(NPCFeature):
 
     def __init__(self, raw_text=None):
         super().__init__()
+        self.type = "Weapon"
         self.w_type = ""
         self.attack_bonus = [0 for i in range(3)]
         self.accuracy = [0 for i in range(3)]
         self.damage = []
         self.range = []
         self.on_hit = ""
-        self.type = "Weapon"
 
         if raw_text:
             self.parse_text(raw_text)
@@ -287,10 +288,10 @@ class NPCTech(NPCFeature):
 
     def __init__(self, raw_text=None):
         super().__init__()
+        self.type = "Tech"
         self.t_type = ""
         self.attack_bonus = []
         self.accuracy = []
-        self.type = "Tech"
 
         if raw_text:
             self.parse_text(raw_text)
@@ -379,8 +380,8 @@ class NPCTrait(NPCFeature):
 
     def __init__(self, raw_text=None):
         super().__init__()
-        self.bonus = dict([])
         self.type = "Trait"
+        self.bonus = dict([])
 
         if raw_text:
             self.parse_text(raw_text)
@@ -401,19 +402,70 @@ class NPCTrait(NPCFeature):
             output += f"\n   {tag}"
         return output
 
+    def parse_text(self, raw):
+        super().parse_text(raw)
+        self.parse_tags(raw[1])
+        self.effect = combine_lines(raw[2:])
+        words = self.effect.replace("<br>", " ").replace("<li>", " ").split(" ")
+        idx = val = 0
+        stat = ""
+        for idx in range(len(words)):
+            neg = False
+            word = words[idx]
+            word = word.replace("–", "-")
+            if word.startswith("+") or word.startswith("-"):
+                if word.startswith("-"):
+                    neg = True
+                if idx < len(words) - 1:
+                    if word.startswith("+"):
+                        word_v = word.replace("+", "", 1)
+                    elif word.startswith("-"):
+                        word_v = word.replace("-", "", 1)
+                    else:
+                        word_v = word
+                    word_v = word_v.replace(",", "").replace(".", "").strip()
+                    if word_v == "":
+                        continue
+                    if word_v.isdecimal():
+                        val = int(word_v)
+                        if neg:
+                            val = -val
+                    elif word_v.isnumeric():
+                        val = float(word_v)
+                        if neg:
+                            val = -val
+                    else:
+                        val = word_v
+                    stat = words[idx+1].lower().replace(",", "").replace(".", "")
+                    if stat in NPCClass.STATS.keys():
+                        self.bonus[NPCClass.STATS[stat]] = val
 
-class NPCSystem(NPCFeature):
+    def parse_tags(self, tag_line):
+        tags = tag_line.split(",")
+        try:
+            tags.remove("System")
+            tags.remove("Trait")
+            tags.remove("Template Feature")
+        except ValueError:
+            pass  # If the above items aren't in tags, we'll get a ValueError.
+        for t in tags:
+            self.parse_tag(t)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if len(self.bonus.keys()) > 0:
+            d["bonus"] = self.bonus
+        return d
+
+
+class NPCSystem(NPCTrait):
     """
     Class for NPC systems.
     """
 
     def __init__(self, raw_text=None):
-        super().__init__()
-        self.bonus = dict([])
+        super().__init__(raw_text)
         self.type = "System"
-
-        if raw_text:
-            self.parse_text(raw_text)
 
     def __str__(self):
         output = "\n============== NPC SYSTEM ===================="
@@ -431,22 +483,6 @@ class NPCSystem(NPCFeature):
             output += f"\n   {tag}"
         return output
 
-    def parse_text(self, raw):
-        super().parse_text(raw)
-        self.parse_tags(raw[1])
-        self.effect = combine_lines(raw[2:])
-
-    def parse_tags(self, tag_line):
-        tags = tag_line.split(",")
-        try:
-            tags.remove("System")
-            tags.remove("Trait")
-            tags.remove("Template Feature")
-        except ValueError:
-            pass  # If the above items aren't in tags, we'll get a ValueError.
-        for t in tags:
-            self.parse_tag(t)
-
 
 class NPCReaction(NPCFeature):
     """
@@ -455,8 +491,8 @@ class NPCReaction(NPCFeature):
 
     def __init__(self, raw_text=None):
         super().__init__()
-        self.trigger = ""
         self.type = "Reaction"
+        self.trigger = ""
 
         if raw_text:
             self.parse_text(raw_text)
@@ -475,3 +511,29 @@ class NPCReaction(NPCFeature):
             output += f"\n   {tag}"
         return output
 
+    def parse_text(self, raw):
+        super().parse_text(raw)
+        self.parse_tags(raw[1])
+        eff = []
+        for line in raw[2:]:
+            if line.lower().startswith("trigger:"):
+                self.trigger = line[line.find(":")+1:].strip()
+            else:
+                eff.append(line)
+        self.effect = combine_lines(eff)
+
+    def parse_tags(self, tag_line):
+        tags = tag_line.split(",")
+        try:
+            tags.remove("System")
+            tags.remove("Trait")
+            tags.remove("Template Feature")
+        except ValueError:
+            pass  # If the above items aren't in tags, we'll get a ValueError.
+        for t in tags:
+            self.parse_tag(t)
+
+    def to_dict(self):
+        d = super().to_dict()
+        d["trigger"] = self.trigger
+        return d
