@@ -45,9 +45,9 @@ GLOSSARY = "../output/glossary.json"
 BACKGROUNDS = "../output/backgrounds.json"
 ACTIONS = "../output/actions.json"
 RESERVES = "../output/reserves.json"
-NPC_CLASSES = "../output/npc_classes_v2.json"
-NPC_FEATURES = "../output/npc_features_v2.json"
-NPC_TEMPLATES = "../output/npc_templates_v2.json"
+NPC_CLASSES = "../output/npc_classes.json"
+NPC_FEATURES = "../output/npc_features.json"
+NPC_TEMPLATES = "../output/npc_templates.json"
 
 
 def check_section(start, end):

@@ -43,6 +43,7 @@ class NPCFeature:
             ("name", ""),
             ("base", True)
         ])
+        self.locked = False
         self.type = ""
         self.effect = ""
         self.tags = []
@@ -73,6 +74,7 @@ class NPCFeature:
         return {"id": self.id,
                 "name": self.name,
                 "origin": self.origin,
+                "locked": self.locked,
                 "type": self.type,
                 "effect": self.effect,
                 "tags": self.tags}
