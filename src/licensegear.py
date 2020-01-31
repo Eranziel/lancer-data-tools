@@ -592,7 +592,8 @@ class Weapon(IMechGear):
         @return: None.
         """
         parts = line.strip().split("]")
-        parts.remove("")
+        if "" in parts:
+            parts.remove("")
         for part in parts:
             # Remove the other square bracket
             part = part.replace("[", "").strip()
