@@ -592,7 +592,8 @@ class Weapon(IMechGear):
         @return: None.
         """
         parts = line.strip().split("]")
-        parts.remove("")
+        if "" in parts:
+            parts.remove("")
         for part in parts:
             # Remove the other square bracket
             part = part.replace("[", "").strip()
@@ -647,6 +648,8 @@ class Weapon(IMechGear):
                         if word.isdecimal():
                             val = int(word)
                         elif is_die_roll(word):
+                            val = word
+                        elif word[0].isdecimal() and word[-1].isdecimal():
                             val = word
                         elif word != "damage" and word != "+":
                             d_type = word

@@ -27,9 +27,9 @@ class Frame:
     START = ["SSC\n",
              "ATLAS\n",
              "Striker\n"]
-    END = ["Wind Stance: This weapon gains reliable 2, threat 2",
+    END = ["After hitting with this weapon, you lose this charging state",
            "---\n",
-           "Forged in the fire of a dying star and perfectly balanced"]
+           "The Xiaoli devastator/demolition weapon is legendary for"]
 
     PREFIX = "mf_"
 

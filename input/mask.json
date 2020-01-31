@@ -1,3 +1,51 @@
 [
-
+  {
+    "id": "mf_zheng",
+    "counters": [
+      {
+        "id": "ctr_xiaoli_type_cqb_suite",
+        "name": "XIAOLI DIE",
+        "default_value": 6,
+        "min": 0,
+        "max": 6
+      }
+    ]
+  },
+  {
+    "id": "mw_xiaoli_combat_sheathe",
+    "effect": "You may attack one or two targets in threat. You may use this weapon even while jammed."
+  },
+  {
+    "id": "mw_caliban_integrated",
+    "name": "HHS-075 “Flayer” Shotgun",
+    "mount": "Main",
+    "type": "CQB",
+    "range": [
+      {
+        "type": "Range",
+        "val": 3
+      },
+      {
+        "type": "Threat",
+        "val": 3
+      }
+    ],
+    "damage": [
+      {
+        "type": "kinetic",
+        "val": "1d6+1"
+      }
+    ],
+    "effect": "When the Caliban fires the flayer shotgun as part of any action, it can use a powered fist, weapon butt, or other strike to smack an adjacent character after the action resolves, dealing that character 1 kinetic damage and knocking them back 1 space.",
+    "description": "",
+    "tags": [
+      {
+        "id": "tg_inaccurate"
+      },
+      {
+        "id": "tg_knockback",
+        "val": 2
+      }
+    ]
+  }
 ]
