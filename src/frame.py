@@ -25,11 +25,11 @@ class Frame:
     """
 
     START = ["SSC\n",
-             "ATLAS\n",
-             "Striker\n"]
-    END = ["After hitting with this weapon, you lose this charging state",
-           "---\n",
-           "The Xiaoli devastator/demolition weapon is legendary for"]
+             "White Witch\n",
+             "Defender\n"]
+    END = ["4 SP, full tech, overshield",
+           "An allied character in sensor range and line",
+           "---\n"]
 
     PREFIX = "mf_"
 

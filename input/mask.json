@@ -1,50 +1,47 @@
 [
   {
-    "id": "mf_zheng",
+    "id": "mf_white_witch",
     "counters": [
       {
-        "id": "ctr_xiaoli_type_cqb_suite",
-        "name": "XIAOLI DIE",
-        "default_value": 6,
+        "id": "ctr_ferroreactive_armor",
+        "name": "FERROREACTIVE ARMOR",
+        "default_value": 0,
         "min": 0,
-        "max": 6
+        "max": 12
       }
     ]
   },
   {
-    "id": "mw_xiaoli_combat_sheathe",
-    "effect": "You may attack one or two targets in threat. You may use this weapon even while jammed."
+    "id": "mw_retort_loop",
+    "damage": [
+      {
+        "type": "kinetic",
+        "val": "3 + [charge x 1d6]"
+      }
+    ]
   },
   {
-    "id": "mw_caliban_integrated",
-    "name": "HHS-075 “Flayer” Shotgun",
+    "id": "mw_emperor_integrated",
+    "name": "Arc Bow",
     "mount": "Main",
-    "type": "CQB",
+    "type": "Launcher",
     "range": [
       {
-        "type": "Range",
-        "val": 3
-      },
-      {
-        "type": "Threat",
-        "val": 3
+        "type": "line",
+        "val": 20
       }
     ],
     "damage": [
       {
-        "type": "kinetic",
-        "val": "1d6+1"
+        "type": "energy",
+        "val": 2
       }
     ],
-    "effect": "When the Caliban fires the flayer shotgun as part of any action, it can use a powered fist, weapon butt, or other strike to smack an adjacent character after the action resolves, dealing that character 1 kinetic damage and knocking them back 1 space.",
+    "effect": "Allied characters caught in the area are not attacked, but instead gain overshield 2. If they already have overshield, increase their overshield by +2, but this weapon can’t increase overshield past 10.",
     "description": "",
     "tags": [
       {
-        "id": "tg_inaccurate"
-      },
-      {
-        "id": "tg_knockback",
-        "val": 2
+        "id": "tg_ordnance"
       }
     ]
   }
