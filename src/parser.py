@@ -414,22 +414,7 @@ if __name__ == "__main__":
         gmsWepDesc = ["" for i in range(4)]
         for hunk in frameHunks:
             # Keep track of which subsection we're in.
-            if hunk[0] == Manufacturer.GMS[0]:
-                source = Manufacturer.GMS[2]
-                gmsSec = "NONE"
-            elif hunk[0] == Manufacturer.IPSN[0]:
-                source = Manufacturer.IPSN[2]
-                gmsSec = "NONE"
-            elif hunk[0] == Manufacturer.SSC[0]:
-                source = Manufacturer.SSC[2]
-                gmsSec = "NONE"
-            elif hunk[0] == Manufacturer.HORUS[0]:
-                source = Manufacturer.HORUS[2]
-                gmsSec = "NONE"
-            elif hunk[0] == Manufacturer.HA[0]:
-                source = Manufacturer.HA[2]
-                gmsSec = "NONE"
-            elif hunk[0] == System.GMS_SYSTEMS:
+            if hunk[0] == System.GMS_SYSTEMS:
                 gmsSec = "Systems"
             elif hunk[0] == System.GMS_FLIGHT:
                 gmsSec = "Flight"
@@ -462,9 +447,25 @@ if __name__ == "__main__":
             #   Frames
             if Frame.CORE_STATS in hunk:
                 frames.append(Frame(raw_text=hunk))
+                source = frames[-1].source
             #   Manufacturers
             elif hunk[0] in Manufacturer.TITLES:
                 manufacturers.append(Manufacturer(raw=hunk))
+                if hunk[0] == Manufacturer.GMS[0]:
+                    source = Manufacturer.GMS[2]
+                    gmsSec = "NONE"
+                elif hunk[0] == Manufacturer.IPSN[0]:
+                    source = Manufacturer.IPSN[2]
+                    gmsSec = "NONE"
+                elif hunk[0] == Manufacturer.SSC[0]:
+                    source = Manufacturer.SSC[2]
+                    gmsSec = "NONE"
+                elif hunk[0] == Manufacturer.HORUS[0]:
+                    source = Manufacturer.HORUS[2]
+                    gmsSec = "NONE"
+                elif hunk[0] == Manufacturer.HA[0]:
+                    source = Manufacturer.HA[2]
+                    gmsSec = "NONE"
             #   Core Bonuses
             elif CoreBonus.CORE in hunk[0]:
                 txt = hunk[1:]
