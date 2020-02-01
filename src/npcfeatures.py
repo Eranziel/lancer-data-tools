@@ -4,6 +4,7 @@
 from parseutil import *
 from licensegear import Weapon
 from npcclass import NPCClass
+import re
 
 
 def new_npc_feature(raw):
@@ -35,6 +36,11 @@ class NPCFeature:
     BASE_SYS = "base systems\n"
     OPT_SYS = "optional systems\n"
 
+    IGNORE_TAGS = ["system",
+                   "reaction",
+                   "trait",
+                   "-"]
+
     def __init__(self, raw_text=None):
         self.id = ""
         self.name = ""
@@ -65,6 +71,7 @@ class NPCFeature:
         self.origin["type"] = o_type
         self.origin["name"] = name
         self.origin["base"] = base
+        self.id += "_" + gen_id("", name)
 
     def parse_text(self, raw):
         self.name = raw[0].strip().upper()
@@ -85,38 +92,60 @@ class NPCFeature:
         @param tag_text: str: The text for the tag.
         @return: None.
         """
-        t = tag_text.strip()
-        if t != "-":
-            # 1 slash is x/turn or x/round
-            if t.count("/") == 1:
-                num, slash, t_text = t.strip().partition("/")
-                # If there is a number before the slash, parse it as 'val'.
-                val = None
-                if num.isdecimal():
-                    val = int(num)
-                # If it wasn't a number, parse the whole text as a regular tag.
-                else:
-                    t_text = t
+        t = tag_text.strip().lower()
+        if t in NPCFeature.IGNORE_TAGS:
+            return
+        # 1 slash is x/turn or x/round
+        if t.count("/") == 1:
+            num, slash, t_text = t.strip().partition("/")
+            # If there is a number before the slash, parse it as 'val'.
+            val = None
+            if num.isdecimal():
+                val = int(num)
+            # If it wasn't a number, parse the whole text as a regular tag.
             else:
-                # If the tag contains a number, parse it as 'val'.
-                val = None
-                t_text = ""
-                for word in t.strip().split(" "):
-                    if "+" in word:
-                        word = word.replace("+", "")
-                    if word.isdecimal():
-                        val = int(word)
-                    elif is_die_roll(word) or "/" in word:
-                        val = word
-                    else:
-                        t_text += " "+word
-            t_text.strip()
-            d = {"id": gen_id("tg_", t_text)}
-            if val is not None:
-                d["val"] = val
-            # Don't add non-existent tags
-            if d["id"] != "tg_" and not is_duplicate_tag(d, self.tags):
-                self.tags.append(d)
+                t_text = t
+        else:
+            # If the tag contains a number, parse it as 'val'.
+            val = None
+            t_text = ""
+            for word in t.strip().split(" "):
+                if "+" in word:
+                    word = word.replace("+", "")
+                if word.isdecimal():
+                    val = int(word)
+                elif is_die_roll(word):
+                    val = word
+                elif "/" in word:
+                    val = "{"+word+"}"
+                else:
+                    t_text += " "+word
+        t_text.strip()
+        d = {"id": gen_id("tg_", t_text)}
+        if val is not None:
+            d["val"] = val
+        # Don't add non-existent tags
+        if d["id"] != "tg_" and not is_duplicate_tag(d, self.tags):
+            self.tags.append(d)
+
+    def wrap_tier_effects(self):
+        pattern = re.compile(r'\+?\d*/\+?\d*/\+?\d*')
+        eff_parts = []
+        prev = 0
+        for match in re.finditer(pattern, self.effect):
+            # print(match)
+            eff_parts.append(self.effect[prev:match.start()])
+            if "+" in self.effect[match.start():match.end()]:
+                eff_parts.append("+{")
+                eff_parts.append(self.effect[match.start():match.end()].replace("+", ""))
+            else:
+                eff_parts.append("{")
+                eff_parts.append(self.effect[match.start():match.end()])
+            eff_parts.append("}")
+            prev = match.end()
+        # Catch the end of the original string
+        eff_parts.append(self.effect[prev:])
+        self.effect = "".join(eff_parts)
 
 
 class NPCWeapon(NPCFeature):
@@ -170,6 +199,7 @@ class NPCWeapon(NPCFeature):
                     self.effect = combine_lines(raw[4:])
             else:
                 self.effect = combine_lines(raw[3:])
+        self.wrap_tier_effects()
 
     def parse_tags(self, tag_line):
         tags = [t.strip() for t in tag_line.split(",")]
@@ -317,6 +347,7 @@ class NPCTech(NPCFeature):
         super().parse_text(raw)
         self.parse_tags(raw[1])
         self.effect = combine_lines(raw[2:])
+        self.wrap_tier_effects()
 
     def parse_tags(self, tag_line):
         tags = [t.strip() for t in tag_line.split(",")]
@@ -441,6 +472,7 @@ class NPCTrait(NPCFeature):
                     stat = words[idx+1].lower().replace(",", "").replace(".", "")
                     if stat in NPCClass.STATS.keys():
                         self.bonus[NPCClass.STATS[stat]] = val
+        self.wrap_tier_effects()
 
     def parse_tags(self, tag_line):
         tags = tag_line.split(",")
@@ -523,6 +555,7 @@ class NPCReaction(NPCFeature):
             else:
                 eff.append(line)
         self.effect = combine_lines(eff)
+        self.wrap_tier_effects()
 
     def parse_tags(self, tag_line):
         tags = tag_line.split(",")
