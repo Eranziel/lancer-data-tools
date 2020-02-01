@@ -3,6 +3,7 @@
 
 from parseutil import *
 from licensegear import Weapon
+from manufacturer import Manufacturer
 
 
 class Frame:
@@ -169,7 +170,7 @@ class Frame:
                 self.mechtype.append(t.strip())
 
         # Description starts after the role and goes to CORE_STATS.
-        self.description = combine_lines(raw_text[desc:stats], check_horus=True)
+        self.description = combine_lines(raw_text[desc:stats], check_horus=self.source == "HORUS")
 
         # Stats go until traits
         for stat in raw_text[stats+1:traits]:

@@ -165,7 +165,7 @@ class Mod(IMechGear):
         elif len(splits) > 0:
             raw_desc += raw[splits[0] + 1:]
 
-        self.description = combine_lines(raw_desc, check_horus=True)
+        self.description = combine_lines(raw_desc, check_horus=self.source == "HORUS")
         self.effect = combine_lines(raw_effect)
 
         self.parse_applied()
