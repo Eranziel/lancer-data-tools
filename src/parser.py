@@ -877,10 +877,8 @@ if __name__ == "__main__":
             dOut = DataOutput(NPC_CLASSES)
         j = []
         for n in npcc:
-            j.append(n.to_dict())
-            # j.append(apply_override(n.to_dict(), mask))
-            # print(f"\n\n{n}")
-        add_missing_overrides(j, mask, Reserve.PREFIX, front=True)
+            j.append(apply_override(n.to_dict(), mask))
+        add_missing_overrides(j, mask, NPCClass.PREFIX, front=True)
         print(f"Outputting JSON for {len(npcc)} NPC classes to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
 
@@ -891,9 +889,8 @@ if __name__ == "__main__":
             dOut = DataOutput(NPC_TEMPLATES)
         j = []
         for n in npct:
-            j.append(n.to_dict())
-            # j.append(apply_override(n.to_dict(), mask))
-        add_missing_overrides(j, mask, Reserve.PREFIX, front=True)
+            j.append(apply_override(n.to_dict(), mask))
+        add_missing_overrides(j, mask, NPCTemplate.PREFIX, front=True)
         print(f"Outputting JSON for {len(npct)} NPC templates to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
 
@@ -904,9 +901,8 @@ if __name__ == "__main__":
             dOut = DataOutput(NPC_FEATURES)
         j = []
         for n in npcf:
-            j.append(n.to_dict())
-            # j.append(apply_override(n.to_dict(), mask))
-        add_missing_overrides(j, mask, Reserve.PREFIX, front=True)
+            j.append(apply_override(n.to_dict(), mask))
+        add_missing_overrides(j, mask, NPCFeature.PREFIX, front=True)
         print(f"Outputting JSON for {len(npcf)} NPC features to {dOut.target}")
         dOut.write(json.dumps(j, indent=2, separators=(',', ': '), ensure_ascii=False))
 

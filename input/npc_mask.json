@@ -1,0 +1,14 @@
+[
+  {
+    "id": "npcf_ready_and_waiting_elite",
+    "bonus": {
+      "activations": 1
+    }
+  },
+  {
+    "id": "npcf_shock_and_awe_ultra",
+    "bonus": {
+      "activations": 3
+    }
+  }
+]
