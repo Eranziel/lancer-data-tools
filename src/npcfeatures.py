@@ -128,6 +128,11 @@ class NPCFeature:
         if d["id"] != "tg_" and not is_duplicate_tag(d, self.tags):
             self.tags.append(d)
 
+    def filter_tags(self):
+        for t in self.tags:
+            if t["id"] == "tg_system" or t["id"] == "tg_trait" or t["id"] == "tg_template_feature":
+                self.tags.remove(t)
+
     def wrap_tier_effects(self):
         pattern = re.compile(r'\+?\d*/\+?\d*/\+?\d*')
         eff_parts = []
@@ -215,6 +220,7 @@ class NPCWeapon(NPCFeature):
                 self.parse_atk_bonus(t)
             else:
                 self.parse_tag(t)
+        self.filter_tags()
 
     def parse_atk_bonus(self, t):
         val = t.replace("+", "").strip()
@@ -369,6 +375,7 @@ class NPCTech(NPCFeature):
             if t['id'] == "tg_full_tech":
                 self.t_type = "Full"
                 break
+        self.filter_tags()
 
     def parse_atk_bonus(self, t):
         val = t.replace("+", "").strip()
@@ -475,15 +482,10 @@ class NPCTrait(NPCFeature):
         self.wrap_tier_effects()
 
     def parse_tags(self, tag_line):
-        tags = tag_line.split(",")
-        try:
-            tags.remove("System")
-            tags.remove("Trait")
-            tags.remove("Template Feature")
-        except ValueError:
-            pass  # If the above items aren't in tags, we'll get a ValueError.
+        tags = tag_line.strip().split(",")
         for t in tags:
             self.parse_tag(t)
+        self.filter_tags()
 
     def to_dict(self):
         d = super().to_dict()
@@ -558,15 +560,10 @@ class NPCReaction(NPCFeature):
         self.wrap_tier_effects()
 
     def parse_tags(self, tag_line):
-        tags = tag_line.split(",")
-        try:
-            tags.remove("System")
-            tags.remove("Trait")
-            tags.remove("Template Feature")
-        except ValueError:
-            pass  # If the above items aren't in tags, we'll get a ValueError.
+        tags = tag_line.strip().split(",")
         for t in tags:
             self.parse_tag(t)
+        self.filter_tags()
 
     def to_dict(self):
         d = super().to_dict()

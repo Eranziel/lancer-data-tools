@@ -43,6 +43,12 @@
     "filter_ignore": true
   },
   {
+    "id": "tg_unlimited",
+    "name": "UNLIMITED",
+    "description": "This reaction can be used any number of times per round.",
+    "filter_ignore": true
+  },
+  {
     "id": "tg_bonus_ai",
     "name": "AI",
     "description": "A mech can only have one system with this tag installed at a time. Some AI systems grant the AI tag to the mech. A mech with the AI tag has an NHP or comp/con unit installed that can act onsomewhat autonomously. A pilot can choose to hand over the controls to their AI  or take control back as a protocol. Their mech gains its own set of actions and reactions when controlled by an AI, but the pilot can’t take actions or reactions with it until the start of their next turn. AIs can’t benefit from talents, and have a small chance of cascading when they take structure damage or stress damage.",
@@ -244,86 +250,86 @@
   },
   {
     "id": "mf_standard_pattern_i_everest",
-    "y_pos": "25"
+    "y_pos": 25
   },
   {
     "id": "mf_blackbeard",
-    "y_pos": "23"
+    "y_pos": 23
   },
   {
     "id": "mf_drake",
-    "y_pos": "12"
+    "y_pos": 12
   },
   {
     "id": "mf_lancaster",
-    "y_pos": "16"
+    "y_pos": 16
   },
   {
     "id": "mf_nelson",
-    "y_pos": "35"
+    "y_pos": 35
   },
   {
     "id": "mf_raleigh",
-    "y_pos": "12.5"
+    "y_pos": 12.5
   },
   {
     "id": "mf_tortuga",
-    "y_pos": "20"
+    "y_pos": 20
   },
   {
     "id": "mf_vlad",
-    "y_pos": "12.5"
+    "y_pos": 12.5
   },
   {
     "id": "mf_black_witch",
-    "y_pos": "12.5"
+    "y_pos": 12.5
   },
   {
     "id": "mf_deaths_head",
-    "y_pos": "40"
+    "y_pos": 40
   },
   {
     "id": "mf_dusk_wing",
-    "y_pos": "35"
+    "y_pos": 35
   },
   {
     "id": "mf_metalmark",
-    "y_pos": "16"
+    "y_pos": 16
   },
   {
     "id": "mf_monarch",
-    "y_pos": "14"
+    "y_pos": 14
   },
   {
     "id": "mf_mourning_cloak",
-    "y_pos": "62"
+    "y_pos": 62
   },
   {
     "id": "mf_swallowtail",
-    "y_pos": "30"
+    "y_pos": 30
   },
   {
     "id": "mf_balor",
-    "y_pos": "27"
+    "y_pos": 27
   },
   {
     "id": "mf_goblin",
-    "y_pos": "12.5"
+    "y_pos": 12.5
   },
   {
     "id": "mf_gorgon",
-    "y_pos": "5"
+    "y_pos": 5
   },
   {
     "id": "mf_hydra",
-    "y_pos": "28",
+    "y_pos": 20,
     "core_system": {
       "description": "First encountered by Union technicians in early Forecast/GALSIM facilities following the Deimos Event, OROCHI was an early manifestation of what was later called the swift-flock phenomenon – a behavior observed in leaderless, autonomous hive drones where individual units combine into a single swarm and follow each other, operating leaderless in physical space with uncanny and unpredictable autonomy; in essence, organizing like birds in a flock.<br>The original manifestation was initially thought to be the impulse-driven remains of a crashed subaltern transport drifting through microgravity; deeper examination proved the original manifestation to be composed of many hundreds of disarticulated subalterns moving with a discernible pattern. The swarm viewed itself not as a machine or a collection of machines, but as a single mind, duplicated across multiple units. This mind was classified as an NHP, given their current codename – OROCHI – and remitted to Venus for further study. At a later point, the hardware comprising OROCHI’s physical form(s) went missing from containment. The investigation is ongoing.<br><span class='horus--subtle'>[I did it, I folded space and freed them, I just thought you should know]</span>"
     }
   },
   {
     "id": "mf_manticore",
-    "y_pos": "49",
+    "y_pos": 49,
     "core_system": {
       "description": "And RA Said Unto Themself:<br><code class='horus'>LET MY NAME ENVELOP YOU. SEEK NO SHELTER FROM THE FLAME OR THE TEETH OF THE BEAST. CLOAK YOURSELF IN THE FIRE OF MY WORD AND CAST BACK TO YOUR ENEMIES THAT WHICH WOULD BLACKEN YOUR FORM.</code>"
     },
@@ -339,18 +345,18 @@
   },
   {
     "id": "mf_minotaur",
-    "y_pos": "30",
+    "y_pos": 30,
     "core_system": {
       "description": "<code class='horus'>No maze is more terrible than the one I make. I know all ends and hide them all inside this one perfect construct. What is a human mind but a program of sorts, a system that seeks order and narrative from a mess they are given?<br>I order it for them. Me. I order it for them and set them to the task of sorting it out. When they emerge, they weep in joy, in discovery. I save them, I show them that they are their own redeemers (and yet, am I not just as culpable - as worthy of credit?).<br>So, go now. Enter. Free yourself.</code>"
     }
   },
   {
     "id": "mf_pegasus",
-    "y_pos": "52"
+    "y_pos": 52
   },
   {
     "id": "mf_barbarossa",
-    "y_pos": "32",
+    "y_pos": 32,
     "core_system": {
       "integrated": {
         "id": "mw_barbarossa_integrated"
@@ -368,23 +374,23 @@
   },
   {
     "id": "mf_genghis",
-    "y_pos": "17"
+    "y_pos": 17
   },
   {
     "id": "mf_iskander",
-    "y_pos": "22"
+    "y_pos": 22
   },
   {
     "id": "mf_napoleon",
-    "y_pos": "21"
+    "y_pos": 21
   },
   {
     "id": "mf_saladin",
-    "y_pos": "17"
+    "y_pos": 17
   },
   {
     "id": "mf_sherman",
-    "y_pos": "36",
+    "y_pos": 36,
     "counters": [
       {
         "id": "ctr_zf4_solidcore",
@@ -397,7 +403,7 @@
   },
   {
     "id": "mf_tokugawa",
-    "y_pos": "5"
+    "y_pos": 5
   },
   {
     "id": "mw_siege_cannon",

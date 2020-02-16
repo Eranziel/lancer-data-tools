@@ -1,14 +1,56 @@
 [
   {
+    "id": "npcf_massive_size_ship",
+    "override": {
+      "sizes": [4],
+      "size": 4
+    }
+  },
+  {
+    "id": "npcf_chaff_grunt",
+    "override": {
+      "hp": 1
+    }
+  },
+  {
+    "id": "npcf_weak_grunt",
+    "override": {
+      "structure": 1,
+      "stress": 1
+    }
+  },
+  {
+    "id": "npcf_rank_and_file_grunt",
+    "exclusive": [
+      "npct_veteran",
+      "npct_elite",
+      "npct_ultra"
+    ]
+  },
+  {
     "id": "npcf_ready_and_waiting_elite",
     "bonus": {
       "activations": 1
     }
   },
   {
+    "id": "npcf_career_soldier_elite",
+    "exclusive": [
+      "npct_grunt",
+      "npct_ultra"
+    ]
+  },
+  {
+    "id": "npcf_best_of_the_best_ultra",
+    "exclusive": [
+      "npct_grunt",
+      "npct_elite"
+    ]
+  },
+  {
     "id": "npcf_shock_and_awe_ultra",
     "bonus": {
-      "activations": 3
+      "activations": 1
     }
   }
 ]
