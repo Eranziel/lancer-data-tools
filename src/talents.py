@@ -13,12 +13,12 @@ class Talent:
     * Grease Monkey: Rank 3 is numbered 2.
     """
 
-    START = ["Ace\n",
-             "Every pilot brags about their abilities;",
-             "Whether you’re a talented rookie or a grizzled "]
-    END = ["- Sabot (2 charges): The attack gains AP",
-           "Rank 3: Efficiency\n",
-           "If you perform a critical hit using"]
+    START = ["Spaceborn\n",
+             "You’re adept at planting your feet",
+             "Rank 1: Home in the Void"]
+    END = ["- Field Repair (full action): Heal",
+           "Rank 3: Rodeo Master",
+           "When you exit your mech, your pilot gains"]
 
     PREFIX = "t_"
 

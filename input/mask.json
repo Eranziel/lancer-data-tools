@@ -1,6 +1,29 @@
 [
   {
+    "id": "mf_atlas",
+    "y_pos": 14,
+    "image_url": "https://i.imgur.com/MWb5XtS.png"
+  },
+  {
+    "id": "mf_caliban",
+    "y_pos": 12.5,
+    "image_url": "https://i.imgur.com/111stQO.png"
+  },
+  {
+    "id": "mf_kobold",
+    "y_pos": 25
+  },
+  {
+    "id": "mf_lich",
+    "y_pos": 8
+  },
+  {
+    "id": "mf_sunzi",
+    "y_pos": 23
+  },
+  {
     "id": "mf_zheng",
+    "y_pos": 30,
     "counters": [
       {
         "id": "ctr_xiaoli_type_cqb_suite",
@@ -36,7 +59,7 @@
         "val": "1d6+1"
       }
     ],
-    "effect": "When the Caliban fires the flayer shotgun as part of any action, it can use a powered fist, weapon butt, or other strike to smack an adjacent character after the action resolves, dealing that character 1 kinetic damage and knocking them back 1 space.",
+    "effect": "When the Caliban fires the flayer shotgun as part of any action, it can use the butt end to smack an adjacent character after the action resolves, dealing that character 1 kinetic damage and knocking them back 1 space.",
     "description": "",
     "tags": [
       {
