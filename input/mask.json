@@ -1,6 +1,8 @@
 [
   {
     "id": "mf_white_witch",
+    "y_pos": 28,
+    "image_url": "https://i.imgur.com/DQHJ8Sq.png",
     "counters": [
       {
         "id": "ctr_ferroreactive_armor",
@@ -10,6 +12,11 @@
         "max": 12
       }
     ]
+  },
+  {
+    "id": "mf_emperor",
+    "y_pos": 10,
+    "image_url": ""
   },
   {
     "id": "mw_retort_loop",
