@@ -52,5 +52,11 @@
     "bonus": {
       "activations": 1
     }
+  },
+  {
+    "id": "npcf_argus_armor_ultra",
+    "override": {
+      "armor": 6
+    }
   }
 ]
